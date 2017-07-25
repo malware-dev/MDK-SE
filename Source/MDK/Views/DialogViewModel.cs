@@ -20,9 +20,7 @@ namespace MDK.Views
             CancelCommand = new ModelCommand(Cancel);
         }
 
-        /// <summary>
-        /// Fired whenever a trackable property changes.
-        /// </summary>
+        /// <inheritdoc />
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>

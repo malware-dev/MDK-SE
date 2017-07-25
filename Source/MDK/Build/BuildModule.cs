@@ -14,12 +14,21 @@ using Microsoft.CodeAnalysis.MSBuild;
 
 namespace MDK.Build
 {
+    /// <summary>
+    /// A service designed to combine C# class files into a coherent Space Engineers script.
+    /// </summary>
     public class BuildModule
     {
         readonly IProgress<float> _progress;
         Project[] _scriptProjects;
         int _steps;
 
+        /// <summary>
+        /// Creates a new instance of <see cref="BuildModule"/>
+        /// </summary>
+        /// <param name="package"></param>
+        /// <param name="solutionFileName"></param>
+        /// <param name="progress"></param>
         public BuildModule(MDKPackage package, [NotNull] string solutionFileName, IProgress<float> progress = null)
         {
             _progress = progress;
@@ -28,14 +37,29 @@ namespace MDK.Build
             SynchronizationContext = SynchronizationContext.Current;
         }
 
+        /// <summary>
+        /// The synchronization context the service will use to invoke any callbacks, as it runs asynchronously.
+        /// </summary>
         public SynchronizationContext SynchronizationContext { get; }
 
+        /// <summary>
+        /// The <see cref="MDKPackage"/>
+        /// </summary>
         public MDKPackage Package { get; }
 
+        /// <summary>
+        /// The file name of the solution to build
+        /// </summary>
         public string SolutionFileName { get; }
 
+        /// <summary>
+        /// The document analysis utility
+        /// </summary>
         public DocumentAnalyzer Analyzer { get; } = new DocumentAnalyzer();
 
+        /// <summary>
+        /// The current step index for the build. Moves towards <see cref="TotalSteps"/>.
+        /// </summary>
         protected int Steps
         {
             get => _steps;
@@ -48,17 +72,15 @@ namespace MDK.Build
             }
         }
 
+        /// <summary>
+        /// The total number of steps to reach before the build is complete.
+        /// </summary>
         protected int TotalSteps { get; private set; }
 
-        public Task Preload()
-        {
-            return Task.Run(async () =>
-            {
-                _scriptProjects = await LoadScriptProjects();
-                await Task.WhenAll(_scriptProjects.Select(Build)).ConfigureAwait(false);
-            });
-        }
-
+        /// <summary>
+        /// Starts the build.
+        /// </summary>
+        /// <returns></returns>
         public Task Run()
         {
             return Task.Run(async () =>

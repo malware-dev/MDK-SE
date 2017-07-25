@@ -1,6 +1,5 @@
 ﻿using System;
 using MDK.Build;
-using MDK.Services;
 using MDK.Views;
 using MDK.VisualStudio;
 using Microsoft.VisualStudio.Shell;
@@ -34,6 +33,8 @@ namespace MDK.Commands
                 var buildModule = new BuildModule(package, dte.Solution.FileName, statusBar);
                 await buildModule.Run();
             }
+
+            VsShellUtilities.ShowMessageBox(ServiceProvider, "Deployment Complete", "Your script(s) should now be available in the ingame local workshop.", OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
         }
     }
 }

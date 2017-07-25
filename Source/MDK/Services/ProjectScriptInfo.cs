@@ -17,14 +17,6 @@ namespace MDK.Services
     {
         const string Xmlns = "http://schemas.microsoft.com/developer/msbuild/2003";
 
-        enum MDKProperties
-        {
-            MDKGameBinPath,
-            MDKUtilityPath,
-            MDKOutputPath,
-            MDKMinify
-        }
-
         readonly MDKPackage _package;
         string _outputPath;
         bool _minify;
@@ -72,10 +64,10 @@ namespace MDK.Services
                 //                       ?? new XElement[0];
 
                 if (
-                    !propertyElements.TryGetValue(MDKProperties.MDKGameBinPath, out var gameBinPathElement) 
-                    || !propertyElements.TryGetValue(MDKProperties.MDKUtilityPath, out var utilityPathElement) 
+                    !propertyElements.TryGetValue(MDKProperties.MDKGameBinPath, out var gameBinPathElement)
+                    || !propertyElements.TryGetValue(MDKProperties.MDKUtilityPath, out var utilityPathElement)
                     || !propertyElements.TryGetValue(MDKProperties.MDKOutputPath, out var outputPathElement)
-                    )
+                )
                 {
                     IsValid = false;
                     return;
@@ -96,21 +88,7 @@ namespace MDK.Services
             }
         }
 
-        bool TryLoadMetaVersion(out Version version)
-        {
-            version = default(Version);
-            var metaFileName = Path.Combine(Path.GetDirectoryName(FileName) ?? ".", "mdk.meta");
-            if (!File.Exists(metaFileName))
-                return false;
-            var content = DictionaryFile.Load(metaFileName, StringComparer.CurrentCultureIgnoreCase);
-            if (!content.TryGetValue("version", out var versionString))
-                return false;
-            return Version.TryParse(versionString, out version);
-        }
-
-        /// <summary>
-        /// Fired when a trackable property has changed.
-        /// </summary>
+        /// <inheritdoc />
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
@@ -212,6 +190,18 @@ namespace MDK.Services
             }
         }
 
+        bool TryLoadMetaVersion(out Version version)
+        {
+            version = default(Version);
+            var metaFileName = Path.Combine(Path.GetDirectoryName(FileName) ?? ".", "mdk.meta");
+            if (!File.Exists(metaFileName))
+                return false;
+            var content = DictionaryFile.Load(metaFileName, StringComparer.CurrentCultureIgnoreCase);
+            if (!content.TryGetValue("version", out var versionString))
+                return false;
+            return Version.TryParse(versionString, out version);
+        }
+
         /// <summary>
         /// Saves the options of this project
         /// </summary>
@@ -286,6 +276,14 @@ namespace MDK.Services
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        enum MDKProperties
+        {
+            MDKGameBinPath,
+            MDKUtilityPath,
+            MDKOutputPath,
+            MDKMinify
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel.Design;
-using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 
 namespace MDK.VisualStudio

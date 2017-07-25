@@ -17,7 +17,7 @@
                  Title="Script Options">
     <Grid x:Name="Host" Margin="16" Width="432"
           d:DataContext="{d:DesignInstance views:RequestUpgradeDialogModel}">
-        
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
@@ -26,16 +26,16 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        
+
         <TextBlock Grid.Row="0" TextWrapping="Wrap">The following MDK projects must be upgraded in order to function correctly. Do you wish to do this now?</TextBlock>
 
         <ScrollViewer Grid.Row="1" MaxHeight="128" Margin="0,8,0,0">
-            <ItemsControl ItemsSource="{Binding Projects}"  MaxHeight="128" />
+            <ItemsControl ItemsSource="{Binding Projects}" MaxHeight="128" />
         </ScrollViewer>
-        
+
         <views:ButtonBar Grid.Row="2">
             <Button IsDefault="True" Command="{Binding SaveAndCloseCommand}">Upgrade</Button>
-            <Button IsCancel="True"  Command="{Binding CancelCommand}">Cancel</Button>
+            <Button IsCancel="True" Command="{Binding CancelCommand}">Cancel</Button>
         </views:ButtonBar>
     </Grid>
 </vs:DialogWindow>

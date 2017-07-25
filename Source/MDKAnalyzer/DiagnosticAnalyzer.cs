@@ -25,12 +25,12 @@ namespace Malware.MDKAnalyzer
         public override void Initialize(AnalysisContext context)
         {
             context.RegisterCompilationStartAction(LoadWhitelist);
-            context.RegisterSyntaxNodeAction(Analyze,
-                SyntaxKind.AliasQualifiedName,
-                SyntaxKind.QualifiedName,
-                SyntaxKind.GenericName,
-                SyntaxKind.IdentifierName);
-        }
+            //context.RegisterSyntaxNodeAction(Analyze,
+            //    SyntaxKind.AliasQualifiedName,
+            //    SyntaxKind.QualifiedName,
+            //    SyntaxKind.GenericName,
+            //    SyntaxKind.IdentifierName);
+        }  
 
         void LoadWhitelist(CompilationStartAnalysisContext context)
         {
@@ -46,13 +46,13 @@ namespace Malware.MDKAnalyzer
                 SyntaxKind.QualifiedName,
                 SyntaxKind.GenericName,
                 SyntaxKind.IdentifierName);
-            context.RegisterCompilationEndAction(EndAnalysis);
+            //context.RegisterCompilationEndAction(EndAnalysis);
         }
 
-        void EndAnalysis(CompilationAnalysisContext context)
-        {
-            //_whitelist.Clear();
-        }
+        //void EndAnalysis(CompilationAnalysisContext context)
+        //{
+        //    //_whitelist.Clear();
+        //}
 
         void Analyze(SyntaxNodeAnalysisContext context)
         {

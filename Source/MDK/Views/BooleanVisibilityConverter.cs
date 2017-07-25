@@ -23,13 +23,13 @@ namespace MDK.Views
         /// <inheritdoc cref="IValueConverter.Convert"/>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value is bool && (bool) value ? TrueVisibility : FalseVisibility;
+            return value is bool && (bool)value ? TrueVisibility : FalseVisibility;
         }
 
         /// <inheritdoc cref="IValueConverter.ConvertBack"/>
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value is Visibility && (Visibility) value == TrueVisibility;
+            return value is Visibility && (Visibility)value == TrueVisibility;
         }
     }
 }

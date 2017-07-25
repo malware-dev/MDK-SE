@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using MDK.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -17,14 +16,10 @@ namespace MDK.Commands
 
         protected override void OnExecute()
         {
-            var message = string.Format(CultureInfo.CurrentCulture, "Inside {0}.MenuItemCallback()", GetType().FullName);
-            var title = "RunMDKToolCommand";
-
-            // Show a message box to prove we were here
             VsShellUtilities.ShowMessageBox(
                 ServiceProvider,
-                message,
-                title,
+                "This operation has not yet been completed in this version. Please check to see if there has been an update to the package yet.",
+                "Incomplete operation",
                 OLEMSGICON.OLEMSGICON_INFO,
                 OLEMSGBUTTON.OLEMSGBUTTON_OK,
                 OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);

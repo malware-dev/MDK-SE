@@ -1,5 +1,4 @@
 ﻿using System;
-using MDK.Services;
 using MDK.Views;
 using MDK.VisualStudio;
 using Microsoft.VisualStudio.Shell;

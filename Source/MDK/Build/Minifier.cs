@@ -11,36 +11,12 @@ using Microsoft.CodeAnalysis.Rename;
 
 namespace MDK.Build
 {
+    /// <summary>
+    /// Attempts to make the passed-in C# code as small as possible in terms of characters.
+    /// </summary>
     public class Minifier
     {
         static readonly char[] BaseNChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
-
-        bool IsSymbolDeclaration(SyntaxNode node)
-        {
-            return node is ClassDeclarationSyntax
-                   || node is PropertyDeclarationSyntax
-                   || node is EventDeclarationSyntax
-                   || node is VariableDeclaratorSyntax
-                   || node is EnumDeclarationSyntax
-                   || node is EnumMemberDeclarationSyntax
-                   || node is ConstructorDeclarationSyntax
-                   || node is DelegateDeclarationSyntax
-                   || node is MethodDeclarationSyntax
-                   || node is StructDeclarationSyntax
-                   || node is InterfaceDeclarationSyntax
-                   || node is TypeParameterSyntax
-                   || node is ParameterSyntax
-                   || node is AnonymousObjectMemberDeclaratorSyntax;
-        }
-
-        public async Task<Document> PreMinify(Document document)
-        {
-            document = await TrimSyntax(document).ConfigureAwait(false);
-            document = await Refactor(document).ConfigureAwait(false);
-            document = await TrimTrivia(document).ConfigureAwait(false);
-            //document = await TrimWhitespace(document).ConfigureAwait(false);
-            return document;
-        }
 
         //async Task<Document> TrimWhitespace(Document document)
         //{
@@ -63,9 +39,53 @@ namespace MDK.Build
         //    return document.WithText(SourceText.From(cleanedCode));
         //}
 
+        /// <summary>
+        /// Determines whether the given symbol represents an interface implementation.
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <returns></returns>
         public static bool IsInterfaceImplementation(ISymbol symbol)
         {
             return symbol.ContainingType.AllInterfaces.SelectMany(i => i.GetMembers()).Any(member => symbol.ContainingType.FindImplementationForInterfaceMember(member).Equals(symbol));
+        }
+
+        //static bool IsMemberDeclaration(ISymbol symbol)
+        //{
+        //    return symbol is IMethodSymbol
+        //           || symbol is IPropertySymbol
+        //           || symbol is IEventSymbol;
+        //}
+
+        bool IsSymbolDeclaration(SyntaxNode node)
+        {
+            return node is ClassDeclarationSyntax
+                   || node is PropertyDeclarationSyntax
+                   || node is EventDeclarationSyntax
+                   || node is VariableDeclaratorSyntax
+                   || node is EnumDeclarationSyntax
+                   || node is EnumMemberDeclarationSyntax
+                   || node is ConstructorDeclarationSyntax
+                   || node is DelegateDeclarationSyntax
+                   || node is MethodDeclarationSyntax
+                   || node is StructDeclarationSyntax
+                   || node is InterfaceDeclarationSyntax
+                   || node is TypeParameterSyntax
+                   || node is ParameterSyntax
+                   || node is AnonymousObjectMemberDeclaratorSyntax;
+        }
+
+        /// <summary>
+        /// Minification is performed in multiple steps in relation to the build process. This runs the first step.
+        /// </summary>
+        /// <param name="document"></param>
+        /// <returns></returns>
+        public async Task<Document> PreMinify(Document document)
+        {
+            document = await TrimSyntax(document).ConfigureAwait(false);
+            document = await Refactor(document).ConfigureAwait(false);
+            document = await TrimTrivia(document).ConfigureAwait(false);
+            //document = await TrimWhitespace(document).ConfigureAwait(false);
+            return document;
         }
 
         async Task<Document> TrimTrivia(Document document)
@@ -164,13 +184,6 @@ namespace MDK.Build
             return document;
         }
 
-        static bool IsMemberDeclaration(ISymbol symbol)
-        {
-            return symbol is IMethodSymbol
-                   || symbol is IPropertySymbol
-                   || symbol is IEventSymbol;
-        }
-
         async Task<Document> TrimSyntax(Document document)
         {
             var trimmer = new SyntaxTrimmer();
@@ -179,6 +192,11 @@ namespace MDK.Build
             return document.WithSyntaxRoot(trimmer.Visit(root));
         }
 
+        /// <summary>
+        /// Minification is performed in multiple steps in relation to the build process. This runs the second step.
+        /// </summary>
+        /// <param name="script"></param>
+        /// <returns></returns>
         public string PostMinify(string script)
         {
             var regex = new Regex(@"(?<string>\$?((@""[^""]*(""""[^""]*)*"")|(""[^""\\\r\n]*(?:\\.[^""\\\r\n]*)*"")|('[^'\\\r\n]*(?:\\.[^'\\\r\n]*)*')))|(?<significant>\b\s+\b)|(?<insignificant>\s+)", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.ExplicitCapture);

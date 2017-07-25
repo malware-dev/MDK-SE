@@ -1,5 +1,4 @@
-﻿using System.Windows;
-using Microsoft.VisualStudio.PlatformUI;
+﻿using Microsoft.VisualStudio.PlatformUI;
 
 namespace MDK.Views
 {

@@ -11,6 +11,7 @@
         <BitmapImage x:Key="images/mainwindow/logo"
                      UriSource="pack://application:,,,/MDK;component/Resources/malware-circular.png" />
         <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Padding" Value="8,2,8,2" />
             <Setter Property="Margin" Value="8,0,0,0" />
             <Setter Property="MinWidth" Value="96" />
         </Style>
@@ -26,7 +27,9 @@
                 </Hyperlink>
             </TextBlock>
         </Border>
-        <ItemsControl ItemsSource="{Binding Buttons, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}" HorizontalAlignment="Right">
+        <ItemsControl
+            ItemsSource="{Binding Buttons, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
+            HorizontalAlignment="Right">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Horizontal" IsItemsHost="True" VerticalAlignment="Center" />

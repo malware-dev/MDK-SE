@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
-using EnvDTE;
 using MDK.Commands;
 using MDK.Services;
 using MDK.VisualStudio;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -98,14 +96,14 @@ namespace MDK
                     ScriptUpgrades.QueryUpgrade(scriptProjects);
             }
         }
+        //    foreach (Project project in solution.Projects)
+        //        return;
+        //    if (solution == null)
+        //    var solution = dte?.Solution;
+        //    var dte = (DTE)GetGlobalService(typeof(DTE));
+        //{
 
         //void OnCSharpProjectContextActivated()
-        //{
-        //    var dte = (DTE)GetGlobalService(typeof(DTE));
-        //    var solution = dte?.Solution;
-        //    if (solution == null)
-        //        return;
-        //    foreach (Project project in solution.Projects)
         //    {
         //        if (!string.IsNullOrEmpty(project.FileName))
         //            OnProjectLoaded(project);

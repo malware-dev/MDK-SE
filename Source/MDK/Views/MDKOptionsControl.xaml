@@ -56,7 +56,7 @@
             <TextBlock Text="Auto" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="2"
                        Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
                        Visibility="{Binding UseManualOutputPath, Converter={StaticResource converters/inverseBooleanVisibility}}" />
-            
+
             <views:ButtonBar Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="2" VerticalAlignment="Bottom" />
         </Grid>
     </Border>

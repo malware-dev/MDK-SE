@@ -7,8 +7,16 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MDK.Build
 {
+    /// <summary>
+    /// Analyses a document, finding <see cref="ScriptPart"/> and other useful information related to a build operation.
+    /// </summary>
     public class DocumentAnalyzer
     {
+        /// <summary>
+        /// Analyse the given document
+        /// </summary>
+        /// <param name="document"></param>
+        /// <returns></returns>
         public async Task<DocumentAnalysisResult> Analyze(Document document)
         {
             var text = await document.GetTextAsync();

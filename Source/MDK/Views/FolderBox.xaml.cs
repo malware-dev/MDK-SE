@@ -9,11 +9,22 @@ namespace MDK.Views
     /// </summary>
     public partial class FolderBox : UserControl
     {
+        /// <summary>
+        /// The dependency property backend for <see cref="DialogTitle"/>
+        /// </summary>
         public static readonly DependencyProperty DialogTitleProperty = DependencyProperty.Register(
-            "DialogTitle", typeof(string), typeof(FolderBox), new PropertyMetadata(default(string)));
+            "DialogTitle", typeof(string), typeof(FolderBox), new FrameworkPropertyMetadata(default(string)));
 
+        /// <summary>
+        /// The dependency property backend for <see cref="SelectedFolder"/>
+        /// </summary>
         public static readonly DependencyProperty SelectedFolderProperty = DependencyProperty.Register(
-            "SelectedFolder", typeof(string), typeof(FolderBox), new PropertyMetadata(default(string), NotifySelectedFolderChanged));
+            "SelectedFolder", typeof(string), typeof(FolderBox), new FrameworkPropertyMetadata(default(string), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, NotifySelectedFolderChanged));
+
+        static void NotifySelectedFolderChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            ((FolderBox)sender).OnSelectedFolderChanged(e);
+        }
 
         /// <summary>
         /// Creates a new instance of <see cref="FolderBox"/>
@@ -28,7 +39,7 @@ namespace MDK.Views
         /// </summary>
         public string DialogTitle
         {
-            get => (string) GetValue(DialogTitleProperty);
+            get => (string)GetValue(DialogTitleProperty);
             set => SetValue(DialogTitleProperty, value);
         }
 
@@ -37,24 +48,21 @@ namespace MDK.Views
         /// </summary>
         public string SelectedFolder
         {
-            get => (string) GetValue(SelectedFolderProperty);
+            get => (string)GetValue(SelectedFolderProperty);
             set => SetValue(SelectedFolderProperty, value);
-        }
-
-        static void NotifySelectedFolderChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
-        {
-            ((FolderBox) sender).OnSelectedFolderChanged(e);
         }
 
         /// <summary>
         /// Called whenever the <see cref="SelectedFolder"/> property changes
         /// </summary>
         /// <param name="e"></param>
-        protected virtual void OnSelectedFolderChanged(DependencyPropertyChangedEventArgs e) { }
+        protected virtual void OnSelectedFolderChanged(DependencyPropertyChangedEventArgs e)
+        { }
 
         void OnBrowseButtonClicked(object sender, RoutedEventArgs e)
         {
-            var dialog = new VistaFolderBrowserDialog {
+            var dialog = new VistaFolderBrowserDialog
+            {
                 Description = DialogTitle,
                 UseDescriptionForTitle = true,
                 SelectedPath = SelectedFolder,

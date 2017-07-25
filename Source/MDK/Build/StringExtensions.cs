@@ -3,21 +3,31 @@ using System.Linq;
 
 namespace MDK.Build
 {
+    /// <summary>
+    /// Utility string extensions
+    /// </summary>
     public static class StringExtensions
     {
         const char SingleWildcard = '?';
         const char MultipleWildcard = '*';
 
+        /// <summary>
+        /// Changes the given Base-N string into its integer representative
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="baseChars"></param>
+        /// <returns></returns>
         public static int ToBase10(this string value, char[] baseChars)
         {
             return value.Select(c => Array.IndexOf(baseChars, c)).Aggregate(0, (x, y) => x * baseChars.Length + y);
         }
 
         /// <summary>
-        /// An optimized method using an array as buffer instead of 
-        /// string concatenation. This is faster for return values having 
-        /// a length > 1.
+        /// Changes the given integer into a string representing it in Base-N
         /// </summary>
+        /// <param name="value">The value to convert</param>
+        /// <param name="baseChars">The characters the Base-N number system consists of</param>
+        /// <returns></returns>
         public static string ToNBaseString(this int value, char[] baseChars)
         {
             // 32 is the worst cast buffer size for base 2 and int.MaxValue

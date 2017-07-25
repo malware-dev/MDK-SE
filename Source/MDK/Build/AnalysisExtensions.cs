@@ -4,8 +4,17 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MDK.Build
 {
+    /// <summary>
+    /// Extra utility functions while dealing with Roslyn code analysis
+    /// </summary>
     public static class AnalysisExtensions
     {
+        /// <summary>
+        /// Retrieves the fully qualified name of the given symbol.
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="flags"></param>
+        /// <returns></returns>
         public static string GetFullName(this ISymbol symbol, DeclarationFullNameFlags flags = DeclarationFullNameFlags.Default)
         {
             var ident = new List<string>(10)
@@ -26,6 +35,12 @@ namespace MDK.Build
             return string.Join(".", ident);
         }
 
+        /// <summary>
+        /// Retrieves the fully qualified name of the given type declaration.
+        /// </summary>
+        /// <param name="typeDeclaration"></param>
+        /// <param name="flags"></param>
+        /// <returns></returns>
         public static string GetFullName(this TypeDeclarationSyntax typeDeclaration, DeclarationFullNameFlags flags = DeclarationFullNameFlags.Default)
         {
             var ident = new List<string>(10)

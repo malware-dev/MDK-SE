@@ -7,8 +7,14 @@ using Microsoft.Win32;
 
 namespace MDK.Services
 {
+    /// <summary>
+    /// A service for refreshing the Space Engineers ingame script whitelist cache file.
+    /// </summary>
     public class WhitelistCache
     {
+        /// <summary>
+        /// Start space engineers with a dedicated plugin designed to update the ingame script whitelist cache file.
+        /// </summary>
         public void Refresh()
         {
             var steam = new Steam();
@@ -26,7 +32,8 @@ namespace MDK.Services
 
             Registry.SetValue(@"HKEY_CURRENT_USER\Software\Malware\DevKit\SpaceEngineers", "WhitelistPath", targetPath);
 
-            var args = new List<string> {
+            var args = new List<string>
+            {
                 $"-applaunch {appId}",
                 $"-plugin \"{pluginPath}\"",
                 "-nosplash",
@@ -36,19 +43,14 @@ namespace MDK.Services
 
             var process = new Process
             {
-                StartInfo = {
+                StartInfo =
+                {
                     FileName = steam.ExePath,
                     Arguments = string.Join(" ", args)
                 },
                 EnableRaisingEvents = true
             };
             process.Start();
-            //try
-            //{
-            //}
-            //catch (Win32Exception e)
-            //{
-            //}
         }
     }
 }

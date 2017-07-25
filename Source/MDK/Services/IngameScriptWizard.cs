@@ -11,18 +11,28 @@ using Microsoft.VisualStudio.TemplateWizard;
 
 namespace MDK.Services
 {
+    /// <summary>
+    /// A project template wizard designed to augment the ingame script templates with MDK information macros
+    /// </summary>
     [ComVisible(true)]
     [Guid("0C84F679-2E43-491E-B9A6-75599C2C4AE5")]
     [ProgId("MDK.Services.IngameScriptWizard")]
     public class IngameScriptWizard : IWizard
     {
+        /// <summary>
+        /// Creates an instance of <see cref="IngameScriptWizard"/>
+        /// </summary>
         public IngameScriptWizard()
         {
             SpaceEngineers = new SpaceEngineers();
         }
 
+        /// <inheritdoc />
         public event PropertyChangedEventHandler PropertyChanged;
 
+        /// <summary>
+        /// The <see cref="SpaceEngineers"/> service
+        /// </summary>
         public SpaceEngineers SpaceEngineers { get; }
 
         void IWizard.BeforeOpeningFile(ProjectItem projectItem)
@@ -37,6 +47,7 @@ namespace MDK.Services
         void IWizard.RunFinished()
         { }
 
+        /// <inheritdoc />
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
         {
             var serviceProvider = new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)automationObject);
@@ -172,6 +183,10 @@ namespace MDK.Services
             return true;
         }
 
+        /// <summary>
+        /// Called when a trackable property changes
+        /// </summary>
+        /// <param name="propertyName">The name of the property, or <c>null</c> to indicate a global change</param>
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

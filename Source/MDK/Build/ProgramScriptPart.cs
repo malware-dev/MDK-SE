@@ -4,11 +4,20 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace MDK.Build
 {
+    /// <summary>
+    /// Represents a normal script part, which means types and members contained within the Program.
+    /// </summary>
     public class ProgramScriptPart : ScriptPart
     {
+        /// <summary>
+        /// Creates a new instance of <see cref="ProgramScriptPart"/>
+        /// </summary>
+        /// <param name="document"></param>
+        /// <param name="partRoot"></param>
         public ProgramScriptPart(Document document, SyntaxNode partRoot) : base(document, partRoot)
         { }
 
+        /// <inheritdoc />
         public override IEnumerable<SyntaxNode> ContentNodes()
         {
             foreach (var node in PartRoot.ChildNodes())
