@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" Type="Project" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
+  <TemplateData>
+    <Name>Ingame Script</Name>
+    <Description>Space Engineers Ingame Script</Description>
+    <Icon>IngameScript.ico</Icon>
+    <AppliesTo>CSharp</AppliesTo>
+    <ProjectType>CSharp</ProjectType>
+    <RequiredFrameworkVersion>4.6</RequiredFrameworkVersion>
+    <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
+    <SortOrder>1000</SortOrder>
+    <TemplateID>e8dc9f0e-c9d8-400b-b23d-b61e738f2a72</TemplateID>
+    <CreateNewFolder>true</CreateNewFolder>
+    <DefaultName>IngameScript</DefaultName>
+    <ProvideDefaultName>true</ProvideDefaultName>
+  </TemplateData>
+  <TemplateContent>
+    <Project File="ProjectTemplate.csproj" ReplaceParameters="true">
+      <ProjectItem ReplaceParameters="true" OpenInEditor="true">Program.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true">Bootstrapper.Debug.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true">Readme.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true">MDK.meta</ProjectItem>
+    </Project>
+  </TemplateContent>
+  <WizardExtension>
+    <Assembly>MDK, Version=1.0.0.0, Culture=Neutral, PublicKeyToken=ed62e9cc24aaaa2b</Assembly>
+    <FullClassName>MDK.Services.IngameScriptWizard</FullClassName>
+  </WizardExtension>
+</VSTemplate>

@@ -1,0 +1,63 @@
+﻿<UserControl x:Class="MDK.Views.MDKOptionsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:services="clr-namespace:MDK.Services"
+             xmlns:views="clr-namespace:MDK.Views"
+             mc:Ignorable="d"
+             Background="White"
+             d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{d:DesignInstance services:MDKOptions}">
+    <UserControl.Resources>
+        <views:BooleanVisibilityConverter x:Key="converters/booleanVisibility" TrueVisibility="Visible"
+                                          FalseVisibility="Hidden" />
+        <views:BooleanVisibilityConverter x:Key="converters/inverseBooleanVisibility" TrueVisibility="Collapsed"
+                                          FalseVisibility="Visible" />
+    </UserControl.Resources>
+    <Border x:Name="Host" Margin="16">
+        <Grid VerticalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <CheckBox Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" VerticalContentAlignment="Center"
+                      ToolTip="Check to manually select the binary folder"
+                      IsChecked="{Binding UseManualGameBinPath}">
+                <Label Target="{Binding ElementName=InstallPathTextBox}" Margin="2"
+                       ToolTip="The path where the game's binaries are installed">
+                    Game Install Path (Bin64)
+                </Label>
+            </CheckBox>
+            <views:FolderBox Grid.Column="1" Grid.Row="0"
+                             Visibility="{Binding UseManualGameBinPath, Converter={StaticResource converters/booleanVisibility}}"
+                             VerticalAlignment="Center"
+                             SelectedFolder="{Binding GameBinPath}"
+                             ToolTip="The path where the game's binaries are installed"
+                             DialogTitle="Please select the game's Bin64 folder" />
+            <TextBlock Text="Auto" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" Margin="2"
+                       Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
+                       Visibility="{Binding UseManualGameBinPath, Converter={StaticResource converters/inverseBooleanVisibility}}" />
+            <CheckBox Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" VerticalContentAlignment="Center"
+                      ToolTip="Check to manually select the output folder"
+                      IsChecked="{Binding UseManualOutputPath}">
+                <Label Target="{Binding ElementName=OutputPathTextBox}" Margin="2">Script Output Path</Label>
+            </CheckBox>
+            <views:FolderBox Grid.Column="1" Grid.Row="1"
+                             Visibility="{Binding UseManualOutputPath, Converter={StaticResource converters/booleanVisibility}}"
+                             VerticalAlignment="Center"
+                             SelectedFolder="{Binding OutputPath}"
+                             ToolTip="The path where the final ingame scripts are generated"
+                             DialogTitle="Please select the script output folder" />
+            <TextBlock Text="Auto" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="2"
+                       Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
+                       Visibility="{Binding UseManualOutputPath, Converter={StaticResource converters/inverseBooleanVisibility}}" />
+            
+            <views:ButtonBar Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="2" VerticalAlignment="Bottom" />
+        </Grid>
+    </Border>
+</UserControl>
