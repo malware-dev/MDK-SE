@@ -10,7 +10,7 @@ This is a project I pretty much made for _myself_. I'm publishing it in case som
 
 ## Contribution
 Yeah, sure. Absolutelyl. I will gladly accept contribution to the project. I'll be grateful for any assistance, especially for any features requested that I myself may not have any use for. But I won't be merging contributions willy nilly. I will expect a certain minimum standard, and I reserve the right to deny features I don't like. Another fair warning :D
- 
+
 ## Getting Started
 
 ### Step 1
@@ -28,17 +28,17 @@ After installing the extension, you can now start Visual Studio and create your 
 
 Now make sure you select the correct .NET Framework version.
 
-![Select .NET Framework 4.6.1](images\wiki-newproject-framework.jpg)
+![Select .NET Framework 4.6.1](https://github.com/malware-dev/MDK-SE/blob/master/images/wiki-newproject-framework.jpg)
 
 After this you can select the Space Engineers category on the left. You will now be able to see the ingame script template.
 
-![Select the Ingame Script template](images\wiki-newproject-template.jpg)
+![Select the Ingame Script template](https://github.com/malware-dev/MDK-SE/blob/master/images/wiki-newproject-template.jpg)
 
 
 
 Now you can select your project's location and names in the boxes below.
 
-![Enter your project information](images\wiki-newproject-properties.jpg)
+![Enter your project information](https://github.com/malware-dev/MDK-SE/blob/master/images/wiki-newproject-properties.jpg)
 
 Press** OK** to create your project.
 
@@ -49,7 +49,7 @@ You may now write your script directly in this class if you wish. If your script
 ### Deploying your script
 To deploy your script to Space Engineers, press the **Tools** menu and then **MDK** and **Deploy Script(s)**
 
-![Deploy Scripts](images\wiki-deploy.jpg)
+![Deploy Scripts](https://github.com/malware-dev/MDK-SE/blob/master/images/wiki-deploy.jpg)
 
 This will deploy all script projects in the active solution.
 
