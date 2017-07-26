@@ -15,7 +15,7 @@ Space Engineers is trademarked to Keen Software House. This toolkit is fan-made,
 This is a project I pretty much made for _myself_. I'm publishing it in case someone else might have a use for it. Fair warning: Make requests, by all means, but if your request is not something I myself have any use for, someone else is gonna have to do the work. I'm fully employed, and this is a spare-time project. I'll be working on it on and off.
 
 ## Contribution
-Yeah, sure. Absolutelyl. I will gladly accept contribution to the project. I'll be grateful for any assistance, especially for any features requested that I myself may not have any use for. But I won't be merging contributions willy nilly. I will expect a certain minimum standard, and I reserve the right to deny features I don't like. Another fair warning :D
+Yeah, sure. Absolutely. I will gladly accept contribution to the project. I'll be grateful for any assistance, especially for any features requested that I myself may not have any use for. But I won't be merging contributions willy nilly. I will expect a certain minimum standard, and I reserve the right to deny features I don't like. Another fair warning :D
 
 ## Getting Started
 
