@@ -48,8 +48,9 @@ namespace MDK.Services
         /// Attempts to determine the installation folder for the given game
         /// </summary>
         /// <param name="subfolderName">The install folder name of the game in question</param>
+        /// <param name="verificationFilePath">The relative path to a file which existence verify the correctness of the install folder.</param>
         /// <returns></returns>
-        public string GetInstallFolder(string subfolderName)
+        public string GetInstallFolder(string subfolderName, string verificationFilePath)
         {
             string basePath;
             try
@@ -75,14 +76,20 @@ namespace MDK.Services
                 return null;
             }
 
-            var basePaths = new List<string>();
+            var basePaths = new List<string>
+            {
+                basePath
+            };
+
             var matches = Regex.Matches(configuration, @"""\d+""[ \t]+""([^""]+)""", RegexOptions.Singleline);
             foreach (Match match in matches)
-            {
                 basePaths.Add(match.Groups[1].Value);
-            }
 
-            var path = basePaths.Select(p => Path.Combine(p, "SteamApps", "common", subfolderName)).FirstOrDefault(Directory.Exists);
+            // Search through the potential base path, returning the first path which contains the desired
+            // verification file.
+            var path = basePaths.Select(p => Path.Combine(p, "SteamApps", "common", subfolderName))
+                .FirstOrDefault(p => File.Exists(Path.Combine(p, verificationFilePath)));
+
             if (path != null && !path.EndsWith("\\"))
                 path += "\\";
             return path;

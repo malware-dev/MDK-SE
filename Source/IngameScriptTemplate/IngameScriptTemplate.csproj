@@ -54,9 +54,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="MDK.meta">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <None Include="Program.cs" />
     <None Include="Bootstrapper.Debug.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

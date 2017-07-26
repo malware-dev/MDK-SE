@@ -24,7 +24,7 @@ namespace MDK.Services
             var steam = new Steam();
             if (!steam.Exists)
                 return null;
-            var installFolder = steam.GetInstallFolder("SpaceEngineers");
+            var installFolder = steam.GetInstallFolder("SpaceEngineers", "Bin64\\SpaceEngineers.exe");
             if (string.IsNullOrEmpty(installFolder))
                 return null;
             if (subfolders == null || subfolders.Length == 0)

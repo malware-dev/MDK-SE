@@ -35,18 +35,6 @@ namespace MDK.Services
         /// </summary>
         public SpaceEngineers SpaceEngineers { get; }
 
-        void IWizard.BeforeOpeningFile(ProjectItem projectItem)
-        { }
-
-        void IWizard.ProjectFinishedGenerating(Project project)
-        { }
-
-        void IWizard.ProjectItemFinishedGenerating(ProjectItem projectItem)
-        { }
-
-        void IWizard.RunFinished()
-        { }
-
         /// <inheritdoc />
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
         {
@@ -80,10 +68,22 @@ namespace MDK.Services
             }
         }
 
+        void IWizard.BeforeOpeningFile(ProjectItem projectItem)
+        { }
+
+        void IWizard.ProjectItemFinishedGenerating(ProjectItem projectItem)
+        { }
+
+        void IWizard.RunFinished()
+        { }
+
         bool IWizard.ShouldAddProjectItem(string filePath)
         {
             return true;
         }
+
+        void IWizard.ProjectFinishedGenerating(Project project)
+        { }
 
         bool TryGetProperties(IServiceProvider serviceProvider, out Properties props)
         {
@@ -110,8 +110,9 @@ namespace MDK.Services
         {
             while (true)
             {
-                binPath = ((string)props.Item("GameBinPath")?.Value)?.Trim() ?? "";
-                if (binPath == "")
+                var useBinPath = (bool)props.Item(nameof(MDKOptions.UseManualGameBinPath)).Value;
+                binPath = ((string)props.Item(nameof(MDKOptions.GameBinPath))?.Value)?.Trim() ?? "";
+                if (!useBinPath || binPath == "")
                     binPath = SpaceEngineers.GetInstallPath("Bin64");
 
                 var binDirectory = new DirectoryInfo(binPath);
@@ -132,8 +133,9 @@ namespace MDK.Services
         {
             while (true)
             {
-                outputPath = ((string)props.Item("OutputPath")?.Value)?.Trim() ?? "";
-                if (outputPath == "")
+                var useOutputPath = (bool)props.Item(nameof(MDKOptions.UseManualOutputPath)).Value;
+                outputPath = ((string)props.Item(nameof(MDKOptions.OutputPath))?.Value)?.Trim() ?? "";
+                if (!useOutputPath || outputPath == "")
                     outputPath = SpaceEngineers.GetDataPath("IngameScripts", "local");
                 var outputDirectory = new DirectoryInfo(outputPath);
                 try
@@ -173,7 +175,7 @@ namespace MDK.Services
 
         bool TryGetFinalMinify(IServiceProvider serviceProvider, Properties props, out bool minify)
         {
-            minify = (bool)(props.Item("Minify")?.Value ?? false);
+            minify = (bool)(props.Item(nameof(MDKOptions.Minify))?.Value ?? false);
             return true;
         }
 

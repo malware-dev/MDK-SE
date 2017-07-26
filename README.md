@@ -1,6 +1,12 @@
 # MDK-SE
 (Malware's Development Kit for SE)
 
+----
+
+**WARNING** Still prerelease and buggy. Not ready for general use yet!
+
+----
+
 A toolkit to help with ingame script (programmable block) development for Keen Software House's space sandbox Space Engineers. It helps you create a ready-to-code project for writing ingame scripts, and provides  an analyzer which warns you if you're trying to use something that is not allowed in Space Engineers.
 
 Space Engineers is trademarked to Keen Software House. This toolkit is fan-made, and its developer has no relation to Keen Software House.
@@ -17,11 +23,15 @@ Yeah, sure. Absolutelyl. I will gladly accept contribution to the project. I'll 
 First of all, obviously, you need to make sure you have installed Visual Studio 2017. You can find instructions on how to do that here:
 https://www.visualstudio.com/vs/getting-started/new-install/
 
+
+
 ### Step 2
 Download the extension from here:
 https://github.com/malware-dev/MDK-SE/releases
 
 You should stay away from any pre-release builds unless you know what you're doing, or if you want to test.
+
+
 
 ### Step 3
 After installing the extension, you can now start Visual Studio and create your script project. You do this by finding the **File** menu, then **New** and **Project...**
@@ -40,7 +50,7 @@ Now you can select your project's location and names in the boxes below.
 
 ![Enter your project information](https://github.com/malware-dev/MDK-SE/blob/master/images/wiki-newproject-properties.jpg)
 
-Press** OK** to create your project.
+Press **OK** to create your project.
 
 You may now write your script directly in this class if you wish. If your scripts are not too large, this is quite fine. However this extension has another couple of tricks up its sleeve for the slightly more advanced users:
 
@@ -53,6 +63,14 @@ To deploy your script to Space Engineers, press the **Tools** menu and then **MD
 
 This will deploy all script projects in the active solution.
 
+
+
+### Script Project Settings
+
+_tutorial pending_
+
+
+
 ### Advanced 1: Utility Classes
 
 Right-click on your project and select **Add** and **New Item...**
@@ -62,6 +80,8 @@ Select the **Utility Class** template, name it and press **OK**
 You have now added a new utility class to your project. This class will be merged into your script when deploying, so you don't have to keep all your types in one single code file.
 
 Note that your new class resides within a partial Program class, just like your main script. This is what makes it a utility class, and any code here has the same access as the code in your Program code file.
+
+
 
 ### Advanced 2: Extension Classes
 
@@ -75,7 +95,15 @@ Extension classes is another advanced concept. It's officially allowed in progra
 
 Note though that code in extension classes reside _outside_ of the Program class. This means that it does _not_ immediately have the same access as the code in your Program code file. Any required information must be passed in.
 
+
+
 ### Advanced 3: Mixin Projects
 You can use Shared Projects as mixins.
+
+_tutorial pending_
+
+
+
+### Advanced 4: The Minifier
 
 _tutorial pending_

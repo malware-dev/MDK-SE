@@ -40,72 +40,71 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="Sandbox.Common">
-      <HintPath>$(MDKGameBinPath)\Sandbox.Common.dll</HintPath>
+      <HintPath>$mdkgamebinpath$\Sandbox.Common.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Sandbox.Game">
-      <HintPath>$(MDKGameBinPath)\Sandbox.Game.dll</HintPath>
+      <HintPath>$mdkgamebinpath$\Sandbox.Game.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Sandbox.Graphics">
-      <HintPath>$(MDKGameBinPath)\Sandbox.Graphics.dll</HintPath>
+      <HintPath>$mdkgamebinpath$\Sandbox.Graphics.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="SpaceEngineers.Game">
-      <HintPath>$(MDKGameBinPath)\SpaceEngineers.Game.dll</HintPath>
+      <HintPath>$mdkgamebinpath$\SpaceEngineers.Game.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="SpaceEngineers.ObjectBuilders">
-      <HintPath>$(MDKGameBinPath)\SpaceEngineers.ObjectBuilders.dll</HintPath>
+      <HintPath>$mdkgamebinpath$\SpaceEngineers.ObjectBuilders.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="VRage">
-      <HintPath>$(MDKGameBinPath)\VRage.dll</HintPath>
+      <HintPath>$mdkgamebinpath$\VRage.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="VRage.Audio">
-      <HintPath>$(MDKGameBinPath)\VRage.Audio.dll</HintPath>
+      <HintPath>$mdkgamebinpath$\VRage.Audio.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="VRage.Game">
-      <HintPath>$(MDKGameBinPath)\VRage.Game.dll</HintPath>
+      <HintPath>$mdkgamebinpath$\VRage.Game.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="VRage.Input">
-      <HintPath>$(MDKGameBinPath)\VRage.Input.dll</HintPath>
+      <HintPath>$mdkgamebinpath$\VRage.Input.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="VRage.Library">
-      <HintPath>$(MDKGameBinPath)\VRage.Library.dll</HintPath>
+      <HintPath>$mdkgamebinpath$\VRage.Library.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="VRage.Math">
-      <HintPath>$(MDKGameBinPath)\VRage.Math.dll</HintPath>
+      <HintPath>$mdkgamebinpath$\VRage.Math.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="VRage.Render">
-      <HintPath>$(MDKGameBinPath)\VRage.Render.dll</HintPath>
+      <HintPath>$mdkgamebinpath$\VRage.Render.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="VRage.Render11">
-      <HintPath>$(MDKGameBinPath)\VRage.Render11.dll</HintPath>
+      <HintPath>$mdkgamebinpath$\VRage.Render11.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="VRage.Scripting">
-      <HintPath>$(MDKGameBinPath)\VRage.Scripting.dll</HintPath>
+      <HintPath>$mdkgamebinpath$\VRage.Scripting.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="MDKUtilities">
-      <HintPath>$(MDKUtilityPath)\Utilities\MDKUtilities.dll</HintPath>
+      <HintPath>$mdkutilitypath$\MDKUtilities.dll</HintPath>
     </Reference>
-    <Analyzer Include="$(MDKUtilityPath)\Analyzers\MDKAnalyzer.dll" />
+    <Analyzer Include="$mdkutilitypath$\Analyzers\MDKAnalyzer.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Bootstrapper.Debug.cs" />
     <Compile Include="Readme.cs" />
-    <AdditionalFiles Include="MDK.meta" />
-    <AdditionalFiles Include="$(MDKUtilityPath)\Analyzers\whitelist.cache" />
+    <AdditionalFiles Include="$mdkutilitypath$\Analyzers\whitelist.cache" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

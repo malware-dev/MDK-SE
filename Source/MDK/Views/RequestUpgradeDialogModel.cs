@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using JetBrains.Annotations;
@@ -16,16 +15,19 @@ namespace MDK.Views
         /// Creates a new instance of this view model.
         /// </summary>
         /// <param name="package"></param>
-        /// <param name="projects"></param>
-        public RequestUpgradeDialogModel([NotNull] MDKPackage package, [NotNull] IEnumerable<ProjectScriptInfo> projects)
+        /// <param name="analysisResults"></param>
+        public RequestUpgradeDialogModel([NotNull] MDKPackage package, [NotNull] ScriptSolutionAnalysisResult analysisResults)
         {
             Package = package ?? throw new ArgumentNullException(nameof(package));
 
-            if (projects == null)
-                throw new ArgumentNullException(nameof(projects));
-
-            Projects = new ReadOnlyCollection<ProjectScriptInfo>(projects.ToArray());
+            AnalysisResults = analysisResults ?? throw new ArgumentNullException(nameof(analysisResults));
+            Projects = new ReadOnlyCollection<ProjectScriptInfo>(analysisResults.BadProjects.Select(p => p.ProjectInfo).ToArray());
         }
+
+        /// <summary>
+        /// The analysis reults
+        /// </summary>
+        public ScriptSolutionAnalysisResult AnalysisResults { get; set; }
 
         /// <summary>
         /// The associated MDK package
@@ -42,7 +44,7 @@ namespace MDK.Views
         /// </summary>
         protected override bool OnSave()
         {
-            Package.ScriptUpgrades.Upgrade(Package, Projects);
+            Package.ScriptUpgrades.Upgrade(Package, AnalysisResults);
             return true;
         }
     }

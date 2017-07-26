@@ -19,7 +19,6 @@
       <ProjectItem ReplaceParameters="true" OpenInEditor="true">Program.cs</ProjectItem>
       <ProjectItem ReplaceParameters="true">Bootstrapper.Debug.cs</ProjectItem>
       <ProjectItem ReplaceParameters="true">Readme.cs</ProjectItem>
-      <ProjectItem ReplaceParameters="true">MDK.meta</ProjectItem>
     </Project>
   </TemplateContent>
   <WizardExtension>

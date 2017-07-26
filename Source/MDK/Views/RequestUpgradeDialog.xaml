@@ -10,6 +10,7 @@
                  mc:Ignorable="d"
                  ResizeMode="NoResize"
                  SizeToContent="WidthAndHeight"
+                 WindowStartupLocation="CenterOwner"
                  UseLayoutRounding="True"
                  TextOptions.TextFormattingMode="Display"
                  TextOptions.TextHintingMode="Auto"

@@ -23,6 +23,7 @@ namespace MDK.Services
         bool _hasChanges;
         string _gameBinPath;
         string _utilityPath;
+        bool _useManualGameBinPath;
 
         /// <summary>
         /// Creates an instance of <see cref="ProjectScriptInfo"/>
@@ -43,38 +44,29 @@ namespace MDK.Services
                 return;
             }
 
-            if (!TryLoadMetaVersion(out var version))
-            {
-                IsValid = false;
-                return;
-            }
-            Version = version;
-
             try
             {
                 var document = XDocument.Load(projectFileName);
                 var xmlns = new XmlNamespaceManager(new NameTable());
                 xmlns.AddNamespace("ms", Xmlns);
                 var predicate = string.Join(" or ", Enum.GetNames(typeof(MDKProperties)).Select(tag => $"self::ms:{tag}"));
-                var propertyElements = document.XPathSelectElements($"//ms:PropertyGroup/*[{predicate}]", xmlns)
+                var propertyElements = document.XPathSelectElements($"/ms:Project/ms:PropertyGroup/*[{predicate}]", xmlns)
                     .ToDictionary(e => (MDKProperties)Enum.Parse(typeof(MDKProperties), e.Name.LocalName));
-                //var propertyElements = document.Root?.Elements(XName.Get("PropertyGroup", "http://schemas.microsoft.com/developer/msbuild/2003"))
-                //                           .SelectMany(e => e.Elements())
-                //                           .ToArray()
-                //                       ?? new XElement[0];
 
                 if (
-                    !propertyElements.TryGetValue(MDKProperties.MDKGameBinPath, out var gameBinPathElement)
-                    || !propertyElements.TryGetValue(MDKProperties.MDKUtilityPath, out var utilityPathElement)
+                    !propertyElements.TryGetValue(MDKProperties.MDKUtilityPath, out var utilityPathElement)
                     || !propertyElements.TryGetValue(MDKProperties.MDKOutputPath, out var outputPathElement)
                 )
                 {
                     IsValid = false;
                     return;
                 }
+                propertyElements.TryGetValue(MDKProperties.MDKGameBinPath, out var gameBinPathElement);
                 propertyElements.TryGetValue(MDKProperties.MDKMinify, out var minifyElement);
+                propertyElements.TryGetValue(MDKProperties.MDKUseManualGameBinPath, out var useManualGameBinPathElement);
 
-                GameBinPath = gameBinPathElement.Value;
+                UseManualGameBinPath = (useManualGameBinPathElement?.Value ?? "no").Trim().ToUpperInvariant() == "YES";
+                GameBinPath = gameBinPathElement?.Value ?? package.Options.GetActualGameBinPath();
                 UtilityPath = utilityPathElement.Value;
                 OutputPath = outputPathElement.Value;
                 Minify = (minifyElement?.Value ?? "no").Trim().ToUpperInvariant() == "YES";
@@ -92,14 +84,25 @@ namespace MDK.Services
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
+        /// Determines whether <see cref="GameBinPath"/> should be used, or the default value
+        /// </summary>
+        public bool UseManualGameBinPath
+        {
+            get => _useManualGameBinPath;
+            set
+            {
+                if (value == _useManualGameBinPath)
+                    return;
+                _useManualGameBinPath = value;
+                HasChanges = true;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
         /// Gets the name of the project
         /// </summary>
         public string Name { get; }
-
-        /// <summary>
-        /// Gets the current MDK version of this project
-        /// </summary>
-        public Version Version { get; }
 
         /// <summary>
         /// Determines whether changes have been made to the options for this project
@@ -136,7 +139,7 @@ namespace MDK.Services
             {
                 if (value == _gameBinPath)
                     return;
-                _gameBinPath = value;
+                _gameBinPath = value ?? "";
                 HasChanges = true;
                 OnPropertyChanged();
             }
@@ -152,7 +155,7 @@ namespace MDK.Services
             {
                 if (value == _utilityPath)
                     return;
-                _utilityPath = value;
+                _utilityPath = value ?? "";
                 HasChanges = true;
                 OnPropertyChanged();
             }
@@ -168,7 +171,7 @@ namespace MDK.Services
             {
                 if (value == _outputPath)
                     return;
-                _outputPath = value;
+                _outputPath = value ?? "";
                 HasChanges = true;
                 OnPropertyChanged();
             }
@@ -190,18 +193,6 @@ namespace MDK.Services
             }
         }
 
-        bool TryLoadMetaVersion(out Version version)
-        {
-            version = default(Version);
-            var metaFileName = Path.Combine(Path.GetDirectoryName(FileName) ?? ".", "mdk.meta");
-            if (!File.Exists(metaFileName))
-                return false;
-            var content = DictionaryFile.Load(metaFileName, StringComparer.CurrentCultureIgnoreCase);
-            if (!content.TryGetValue("version", out var versionString))
-                return false;
-            return Version.TryParse(versionString, out version);
-        }
-
         /// <summary>
         /// Saves the options of this project
         /// </summary>
@@ -214,13 +205,10 @@ namespace MDK.Services
                 var xmlns = new XmlNamespaceManager(new NameTable());
                 xmlns.AddNamespace("ms", Xmlns);
                 var predicate = string.Join(" or ", Enum.GetNames(typeof(MDKProperties)).Select(tag => $"self::ms:{tag}"));
-                var propertyElements = document.XPathSelectElements($"//ms:PropertyGroup/*[{predicate}]", xmlns)
+                var propertyElements = document.XPathSelectElements($"/ms:Project/ms:PropertyGroup/*[{predicate}]", xmlns)
                     .ToDictionary(e => (MDKProperties)Enum.Parse(typeof(MDKProperties), e.Name.LocalName));
-                //var propertyElements = document.Root?.Elements(XName.Get("PropertyGroup", "http://schemas.microsoft.com/developer/msbuild/2003"))
-                //                           .SelectMany(e => e.Elements())
-                //                           .ToArray()
-                //                       ?? new XElement[0];
 
+                propertyElements.TryGetValue(MDKProperties.MDKUseManualGameBinPath, out var useManualGameBinPathElement);
                 propertyElements.TryGetValue(MDKProperties.MDKGameBinPath, out var gameBinPathElement);
                 propertyElements.TryGetValue(MDKProperties.MDKUtilityPath, out var utilityPathElement);
                 propertyElements.TryGetValue(MDKProperties.MDKOutputPath, out var outputPathElement);
@@ -233,6 +221,11 @@ namespace MDK.Services
                     document.Root?.Add(propertyGroupElement);
                 }
 
+                if (useManualGameBinPathElement == null)
+                {
+                    useManualGameBinPathElement = new XElement(XName.Get(nameof(MDKProperties.MDKUseManualGameBinPath), Xmlns));
+                    propertyGroupElement.Add(useManualGameBinPathElement);
+                }
                 if (gameBinPathElement == null)
                 {
                     gameBinPathElement = new XElement(XName.Get(nameof(MDKProperties.MDKGameBinPath), Xmlns));
@@ -254,6 +247,7 @@ namespace MDK.Services
                     propertyGroupElement.Add(minifyElement);
                 }
 
+                useManualGameBinPathElement.Value = UseManualGameBinPath ? "yes" : "no";
                 gameBinPathElement.Value = GameBinPath.TrimEnd('\\');
                 utilityPathElement.Value = UtilityPath.TrimEnd('\\');
                 outputPathElement.Value = OutputPath.TrimEnd('\\');
@@ -283,7 +277,8 @@ namespace MDK.Services
             MDKGameBinPath,
             MDKUtilityPath,
             MDKOutputPath,
-            MDKMinify
+            MDKMinify,
+            MDKUseManualGameBinPath
         }
     }
 }

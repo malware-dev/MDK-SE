@@ -3,7 +3,7 @@
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011"
                  xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="MDK.Morten Aune Lyrstad.e02b602e-3099-44a5-88c6-cb30cab978f6" Version="0.9.1" Language="en-US"
+    <Identity Id="MDK.Morten Aune Lyrstad.e02b602e-3099-44a5-88c6-cb30cab978f6" Version="0.9.3" Language="en-US"
               Publisher="Morten Aune Lyrstad" />
     <DisplayName>MDK/SE</DisplayName>
     <Description xml:space="preserve">A toolkit to help with ingame script (programmable block) development for Keen Software House's space sandbox Space Engineers.
@@ -38,8 +38,7 @@ Space Engineers is trademarked to Keen Software House. This toolkit is fan-made,
            Path="|%CurrentProject%|" AssemblyName="|%CurrentProject%;AssemblyName|" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="%CurrentProject%WhitelistExtractor"
            Path="|MDKWhitelistExtractor|" AssemblyName="|MDKWhitelistExtractor;AssemblyName|" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="%CurrentProject%Utilities"
-           d:VsixSubPath="Utilities" Path="|MDKUtilities|" AssemblyName="|MDKUtilities;AssemblyName|" />
+    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="%CurrentProject%Utilities" Path="|MDKUtilities|" AssemblyName="|MDKUtilities;AssemblyName|" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="%CurrentProject%Analyzer" d:VsixSubPath="Analyzers" Path="|MDKAnalyzer|" AssemblyName="|MDKAnalyzer;AssemblyName|" />
   </Assets>
   <Prerequisites>

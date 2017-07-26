@@ -71,7 +71,12 @@
     <Compile Include="MDKPackage.GeneratedInfo.cs">
       <DependentUpon>MDKPackage.GeneratedInfo.csx</DependentUpon>
     </Compile>
+    <Compile Include="Services\BadReference.cs" />
+    <Compile Include="Services\BadReferenceType.cs" />
+    <Compile Include="Services\ScriptProjectAnalysisResult.cs" />
+    <Compile Include="Services\ScriptSolutionAnalysisResult.cs" />
     <Compile Include="Services\ScriptUpgrades.cs" />
+    <Compile Include="Services\XDocumentExtensions.cs" />
     <Compile Include="Views\DialogClosingEventArgs.cs" />
     <Compile Include="Views\DialogViewModel.cs" />
     <Compile Include="Views\RequestUpgradeDialogModel.cs" />
@@ -82,6 +87,7 @@
       <DependentUpon>RequestUpgradeDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="VisualStudio\Animation.cs" />
+    <Compile Include="VisualStudio\DTEExtensions.cs" />
     <Compile Include="VisualStudio\ExtendedPackage.cs" />
     <Compile Include="VisualStudio\StatusBarAnimation.cs" />
     <Compile Include="VisualStudio\StatusBarProgressBar.cs" />
@@ -149,7 +155,6 @@
     <ProjectReference Include="..\MDKUtilities\MDKUtilities.csproj">
       <Project>{5C6B59B5-82CB-4886-94A7-AD610F75B1A6}</Project>
       <Name>MDKUtilities</Name>
-      <VSIXSubPath>Utilities</VSIXSubPath>
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>

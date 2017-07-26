@@ -20,7 +20,7 @@ namespace MDK.Services
         {
             return File.ReadAllLines(fileName)
                 .Select(l => l.Trim())
-                .Where(l => l.Length > 0)
+                .Where(l => l.Length > 0 && !l.StartsWith("//"))
                 .Select(SplitIt)
                 .ToDictionary(p => p.Key, p => p.Value, comparer ?? StringComparer.CurrentCulture);
         }
@@ -38,9 +38,13 @@ namespace MDK.Services
         /// </summary>
         /// <param name="metaFileName"></param>
         /// <param name="content"></param>
-        public static void Save(string metaFileName, Dictionary<string, string> content)
+        /// <param name="headercomment">A comment to add to the top of the file</param>
+        public static void Save(string metaFileName, Dictionary<string, string> content, string headercomment = null)
         {
             var text = string.Join(Environment.NewLine, content.Select(pair => $"{pair.Key}={pair.Value}"));
+            if (!string.IsNullOrWhiteSpace(headercomment))
+                text = "// " + string.Join(Environment.NewLine + "// ", headercomment.Split(new[] {"\r\n", "\n", "\r"}, StringSplitOptions.None)) + Environment.NewLine + text;
+
             File.WriteAllText(metaFileName, text);
         }
     }

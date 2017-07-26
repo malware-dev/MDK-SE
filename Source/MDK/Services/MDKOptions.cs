@@ -146,5 +146,23 @@ namespace MDK.Services
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        /// <summary>
+        /// Returns the actual game bin path which should be used, taking all settings into account.
+        /// </summary>
+        /// <returns></returns>
+        public string GetActualGameBinPath()
+        {
+            return UseManualGameBinPath ? GameBinPath : SpaceEngineers.GetInstallPath("Bin64");
+        }
+
+        /// <summary>
+        /// Returns the actual output path which should be used, taking all settings into account.
+        /// </summary>
+        /// <returns></returns>
+        public string GetActualOutputPath()
+        {
+            return UseManualOutputPath ? OutputPath : SpaceEngineers.GetDataPath("IngameScripts", "local");
+        }
     }
 }
