@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Microsoft.CodeAnalysis;
 
 namespace Malware.MDKAnalyzer
@@ -6,6 +8,9 @@ namespace Malware.MDKAnalyzer
     class Whitelist
     {
         HashSet<string> _symbolKeys = new HashSet<string>();
+
+        public bool IsEnabled { get; set; }
+
 
         public void Load(string[] symbolKeys)
         {

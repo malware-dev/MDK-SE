@@ -2,12 +2,12 @@
 using System.IO;
 using System.Linq;
 
-namespace MDK.Services
+namespace Malware.MDKUtilities
 {
     /// <summary>
     /// Utility service to retrieve information about Space Engineers (copyright Keen Software House, no affiliation)
     /// </summary>
-    public class SpaceEngineers
+    class SpaceEngineers
     {
         /// <summary>
         /// The Steam App ID of Space Engineers

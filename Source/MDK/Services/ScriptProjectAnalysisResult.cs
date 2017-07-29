@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Immutable;
 using System.Xml.Linq;
 using EnvDTE;
@@ -6,19 +5,14 @@ using EnvDTE;
 namespace MDK.Services
 {
     /// <summary>
-    /// Represents the results for a single project of an analysis made by <see cref="ScriptUpgrades.Analyze(Project, Version)"/>.
+    /// Represents the results for a single project of an analysis made by <see cref="ScriptUpgrades.Analyze(Project,ScriptUpgradeAnalysisOptions,MDKPackage)"/>.
     /// </summary>
     public class ScriptProjectAnalysisResult
     {
         /// <summary>
         /// Represents the results of an analysis which was ignored and should be disregarded.
         /// </summary>
-        public static readonly ScriptProjectAnalysisResult Ignored = new ScriptProjectAnalysisResult();
-
-        ScriptProjectAnalysisResult()
-        {
-            IsIgnored = true;
-        }
+        public static readonly ScriptProjectAnalysisResult NonScriptProjectResult = new ScriptProjectAnalysisResult(null, null, ImmutableArray<BadReference>.Empty);
 
         /// <summary>
         /// Creates a new instance of <see cref="ScriptProjectAnalysisResult"/>
@@ -31,13 +25,14 @@ namespace MDK.Services
             ProjectInfo = projectInfo;
             ProjectDocument = projectDocument;
             BadReferences = badReferences;
+            IsScriptProject = projectInfo != null;
             IsValid = BadReferences.Length == 0;
         }
 
         /// <summary>
-        /// This analysis was ignored and should be disregarded.
+        /// This is not a script project and should be ignored.
         /// </summary>
-        public bool IsIgnored { get; set; }
+        public bool IsScriptProject { get; }
 
         /// <summary>
         /// Basic information about the analyzed project.

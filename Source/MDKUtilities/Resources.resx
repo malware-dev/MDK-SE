@@ -98,6 +98,9 @@
 	<resheader name="writer">
 		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
 	</resheader>
+  <data name="MDK_Load_InvalidOptions" xml:space="preserve">
+    <value>The MDK options file is invalid</value>
+  </data>
   <data name="MDK_Load_PathNotFound" xml:space="preserve">
     <value>The directory {0} does not exist</value>
   </data>

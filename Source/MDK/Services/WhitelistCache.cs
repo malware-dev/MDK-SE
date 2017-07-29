@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using Malware.MDKUtilities;
 using Microsoft.Win32;
 
 namespace MDK.Services

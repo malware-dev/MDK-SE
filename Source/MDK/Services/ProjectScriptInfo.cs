@@ -1,11 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Xml;
 using System.Xml.Linq;
-using System.Xml.XPath;
 using JetBrains.Annotations;
 
 namespace MDK.Services
@@ -15,89 +12,67 @@ namespace MDK.Services
     /// </summary>
     public class ProjectScriptInfo : INotifyPropertyChanged
     {
-        const string Xmlns = "http://schemas.microsoft.com/developer/msbuild/2003";
-
-        readonly MDKPackage _package;
-        string _outputPath;
-        bool _minify;
-        bool _hasChanges;
-        string _gameBinPath;
-        string _utilityPath;
-        bool _useManualGameBinPath;
-
         /// <summary>
-        /// Creates an instance of <see cref="ProjectScriptInfo"/>
+        /// Loads script information from the given project file.
         /// </summary>
-        /// <param name="package"></param>
-        /// <param name="projectFileName"></param>
-        /// <param name="projectName"></param>
-        public ProjectScriptInfo([NotNull] MDKPackage package, [NotNull] string projectFileName, [NotNull] string projectName)
+        /// <param name="projectFileName">The file name of this project</param>
+        /// <param name="projectName">The display name of this project</param>
+        /// <returns></returns>
+        public static ProjectScriptInfo Load([NotNull] string projectFileName, string projectName = null)
         {
             if (string.IsNullOrEmpty(projectFileName))
                 throw new ArgumentException("Value cannot be null or empty.", nameof(projectFileName));
-            _package = package ?? throw new ArgumentNullException(nameof(package));
-            FileName = Path.GetFullPath(projectFileName);
-            Name = projectName ?? throw new ArgumentNullException(nameof(projectName));
-            if (!File.Exists(FileName))
-            {
-                IsValid = false;
-                return;
-            }
+            var fileName = Path.GetFullPath(projectFileName);
+            var name = projectName ?? Path.GetFileNameWithoutExtension(projectFileName);
+            if (!File.Exists(fileName))
+                return new ProjectScriptInfo(fileName, name, false);
+            var mdkOptionsFileName = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName) ?? ".", @"..\mdk\mdk.options"));
+            if (!File.Exists(mdkOptionsFileName))
+                return new ProjectScriptInfo(fileName, name, false);
 
             try
             {
-                var document = XDocument.Load(projectFileName);
-                var xmlns = new XmlNamespaceManager(new NameTable());
-                xmlns.AddNamespace("ms", Xmlns);
-                var predicate = string.Join(" or ", Enum.GetNames(typeof(MDKProperties)).Select(tag => $"self::ms:{tag}"));
-                var propertyElements = document.XPathSelectElements($"/ms:Project/ms:PropertyGroup/*[{predicate}]", xmlns)
-                    .ToDictionary(e => (MDKProperties)Enum.Parse(typeof(MDKProperties), e.Name.LocalName));
+                var document = XDocument.Load(mdkOptionsFileName);
+                var root = document.Element("mdk");
+                var useManualGameBinPath = ((string)root?.Element("gamebinpath")?.Attribute("enabled") ?? "no").Trim().Equals("yes", StringComparison.CurrentCultureIgnoreCase);
+                var gameBinPath = (string)root?.Element("gamebinpath");
+                var installPath = (string)root?.Element("installpath");
+                var outputPath = (string)root?.Element("outputpath");
+                var minify = ((string)root?.Element("minify") ?? "no").Trim().Equals("yes", StringComparison.CurrentCultureIgnoreCase);
 
-                if (
-                    !propertyElements.TryGetValue(MDKProperties.MDKUtilityPath, out var utilityPathElement)
-                    || !propertyElements.TryGetValue(MDKProperties.MDKOutputPath, out var outputPathElement)
-                )
+                var result = new ProjectScriptInfo(fileName, name, true)
                 {
-                    IsValid = false;
-                    return;
-                }
-                propertyElements.TryGetValue(MDKProperties.MDKGameBinPath, out var gameBinPathElement);
-                propertyElements.TryGetValue(MDKProperties.MDKMinify, out var minifyElement);
-                propertyElements.TryGetValue(MDKProperties.MDKUseManualGameBinPath, out var useManualGameBinPathElement);
-
-                UseManualGameBinPath = (useManualGameBinPathElement?.Value ?? "no").Trim().ToUpperInvariant() == "YES";
-                GameBinPath = gameBinPathElement?.Value ?? package.Options.GetActualGameBinPath();
-                UtilityPath = utilityPathElement.Value;
-                OutputPath = outputPathElement.Value;
-                Minify = (minifyElement?.Value ?? "no").Trim().ToUpperInvariant() == "YES";
-                IsValid = true;
-                HasChanges = false;
+                    UseManualGameBinPath = useManualGameBinPath,
+                    GameBinPath = gameBinPath,
+                    InstallPath = installPath,
+                    OutputPath = outputPath,
+                    Minify = minify
+                };
+                result.Commit();
+                return result;
             }
             catch (Exception e)
             {
-                package.LogPackageError(GetType().FullName, e);
-                IsValid = false;
+                throw new ProjectScriptInfoException($"An error occurred while attempting to load project information from {fileName}.", e);
             }
+        }
+
+        bool _minify;
+        bool _hasChanges;
+        string _gameBinPath;
+        string _installPath;
+        bool _useManualGameBinPath;
+        string _outputPath;
+
+        ProjectScriptInfo(string fileName, string name, bool isValid)
+        {
+            FileName = fileName;
+            Name = name;
+            IsValid = isValid;
         }
 
         /// <inheritdoc />
         public event PropertyChangedEventHandler PropertyChanged;
-
-        /// <summary>
-        /// Determines whether <see cref="GameBinPath"/> should be used, or the default value
-        /// </summary>
-        public bool UseManualGameBinPath
-        {
-            get => _useManualGameBinPath;
-            set
-            {
-                if (value == _useManualGameBinPath)
-                    return;
-                _useManualGameBinPath = value;
-                HasChanges = true;
-                OnPropertyChanged();
-            }
-        }
 
         /// <summary>
         /// Gets the name of the project
@@ -130,6 +105,22 @@ namespace MDK.Services
         public string FileName { get; }
 
         /// <summary>
+        /// Determines whether <see cref="GameBinPath"/> should be used, or the default value
+        /// </summary>
+        public bool UseManualGameBinPath
+        {
+            get => _useManualGameBinPath;
+            set
+            {
+                if (value == _useManualGameBinPath)
+                    return;
+                _useManualGameBinPath = value;
+                HasChanges = true;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
         /// Determines the path to the game's installed binaries.
         /// </summary>
         public string GameBinPath
@@ -148,14 +139,14 @@ namespace MDK.Services
         /// <summary>
         /// Determines the installation path for the extension.
         /// </summary>
-        public string UtilityPath
+        public string InstallPath
         {
-            get => _utilityPath;
+            get => _installPath;
             set
             {
-                if (value == _utilityPath)
+                if (value == _installPath)
                     return;
-                _utilityPath = value ?? "";
+                _installPath = value ?? "";
                 HasChanges = true;
                 OnPropertyChanged();
             }
@@ -194,6 +185,14 @@ namespace MDK.Services
         }
 
         /// <summary>
+        /// Commits all changes without saving. <see cref="HasChanges"/> will be false after this. This method is not required when calling <see cref="Save"/>.
+        /// </summary>
+        public void Commit()
+        {
+            HasChanges = true;
+        }
+
+        /// <summary>
         /// Saves the options of this project
         /// </summary>
         /// <remarks>Warning: If the originating project is not saved first, these changes might be overwritten.</remarks>
@@ -201,55 +200,67 @@ namespace MDK.Services
         {
             try
             {
-                var document = XDocument.Load(FileName);
-                var xmlns = new XmlNamespaceManager(new NameTable());
-                xmlns.AddNamespace("ms", Xmlns);
-                var predicate = string.Join(" or ", Enum.GetNames(typeof(MDKProperties)).Select(tag => $"self::ms:{tag}"));
-                var propertyElements = document.XPathSelectElements($"/ms:Project/ms:PropertyGroup/*[{predicate}]", xmlns)
-                    .ToDictionary(e => (MDKProperties)Enum.Parse(typeof(MDKProperties), e.Name.LocalName));
-
-                propertyElements.TryGetValue(MDKProperties.MDKUseManualGameBinPath, out var useManualGameBinPathElement);
-                propertyElements.TryGetValue(MDKProperties.MDKGameBinPath, out var gameBinPathElement);
-                propertyElements.TryGetValue(MDKProperties.MDKUtilityPath, out var utilityPathElement);
-                propertyElements.TryGetValue(MDKProperties.MDKOutputPath, out var outputPathElement);
-                propertyElements.TryGetValue(MDKProperties.MDKMinify, out var minifyElement);
-
-                var propertyGroupElement = gameBinPathElement?.Parent ?? utilityPathElement?.Parent ?? outputPathElement?.Parent ?? minifyElement?.Parent;
-                if (propertyGroupElement == null)
+                var mdkOptionsFileName = new FileInfo(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(FileName) ?? ".", @"..\mdk\mdk.options")));
+                if (!mdkOptionsFileName.Directory?.Exists ?? true)
+                    mdkOptionsFileName.Directory?.Create();
+                XDocument document;
+                XElement gameBinPathElement = null;
+                XAttribute useManualGameBinPathAttribute = null;
+                XElement installPathElement = null;
+                XElement outputPathElement = null;
+                XElement minifyElement = null;
+                XElement root;
+                if (!mdkOptionsFileName.Exists)
                 {
-                    propertyGroupElement = new XElement(XName.Get("PropertyGroup", Xmlns));
-                    document.Root?.Add(propertyGroupElement);
+                    document = new XDocument(new XDeclaration("1.0", "UTF-8", "yes"));
+                    root = new XElement("mdk", new XAttribute("version", MDKPackage.Version));
+                    document.Add(root);
+                }
+                else
+                {
+                    document = XDocument.Load(FileName);
+                    root = document.Element("mdk");
+                    // ReSharper disable once JoinNullCheckWithUsage
+                    if (root == null)
+                        throw new InvalidOperationException("Not a valid MDK Options File");
+
+                    gameBinPathElement = root.Element("gamebinpath");
+                    useManualGameBinPathAttribute = gameBinPathElement?.Attribute("enabled");
+                    installPathElement = root.Element("installpath");
+                    outputPathElement = root.Element("installpath");
+                    minifyElement = root.Element("minify");
                 }
 
-                if (useManualGameBinPathElement == null)
-                {
-                    useManualGameBinPathElement = new XElement(XName.Get(nameof(MDKProperties.MDKUseManualGameBinPath), Xmlns));
-                    propertyGroupElement.Add(useManualGameBinPathElement);
-                }
                 if (gameBinPathElement == null)
                 {
-                    gameBinPathElement = new XElement(XName.Get(nameof(MDKProperties.MDKGameBinPath), Xmlns));
-                    propertyGroupElement.Add(gameBinPathElement);
+                    gameBinPathElement = new XElement("gamebinpath");
+                    root.Add(gameBinPathElement);
                 }
-                if (utilityPathElement == null)
+                if (useManualGameBinPathAttribute == null)
                 {
-                    utilityPathElement = new XElement(XName.Get(nameof(MDKProperties.MDKUtilityPath), Xmlns));
-                    propertyGroupElement.Add(utilityPathElement);
+                    useManualGameBinPathAttribute = new XAttribute("enabled", "");
+                    gameBinPathElement.Add(useManualGameBinPathAttribute);
+                }
+
+                if (installPathElement == null)
+                {
+                    installPathElement = new XElement("installpath");
+                    root.Add(installPathElement);
                 }
                 if (outputPathElement == null)
                 {
-                    outputPathElement = new XElement(XName.Get(nameof(MDKProperties.MDKOutputPath), Xmlns));
-                    propertyGroupElement.Add(outputPathElement);
+                    outputPathElement = new XElement("outputpath");
+                    root.Add(outputPathElement);
                 }
                 if (minifyElement == null)
                 {
-                    minifyElement = new XElement(XName.Get(nameof(MDKProperties.MDKMinify), Xmlns));
-                    propertyGroupElement.Add(minifyElement);
+                    minifyElement = new XElement("minify");
+                    root.Add(minifyElement);
                 }
 
-                useManualGameBinPathElement.Value = UseManualGameBinPath ? "yes" : "no";
                 gameBinPathElement.Value = GameBinPath.TrimEnd('\\');
-                utilityPathElement.Value = UtilityPath.TrimEnd('\\');
+                useManualGameBinPathAttribute.Value = UseManualGameBinPath ? "yes" : "no";
+                installPathElement.Value = InstallPath.TrimEnd('\\');
                 outputPathElement.Value = OutputPath.TrimEnd('\\');
                 minifyElement.Value = Minify ? "yes" : "no";
                 HasChanges = false;
@@ -258,7 +269,7 @@ namespace MDK.Services
             }
             catch (Exception e)
             {
-                _package.LogPackageError(GetType().FullName, e);
+                throw new ProjectScriptInfoException($"An error occurred while attempting to save project information to {FileName}.", e);
             }
         }
 
@@ -272,13 +283,16 @@ namespace MDK.Services
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        enum MDKProperties
+        /// <summary>
+        /// Returns the actual game bin path to use, depending on the settings in this project.
+        /// </summary>
+        /// <param name="defaultPath">The default path to use when <see cref="UseManualGameBinPath"/> is <c>false</c></param>
+        /// <returns></returns>
+        public string GetActualGameBinPath(string defaultPath)
         {
-            MDKGameBinPath,
-            MDKUtilityPath,
-            MDKOutputPath,
-            MDKMinify,
-            MDKUseManualGameBinPath
+            if (UseManualGameBinPath)
+                return Path.GetFullPath(string.IsNullOrEmpty(GameBinPath) ? defaultPath : GameBinPath);
+            return Path.GetFullPath(defaultPath);
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
@@ -35,20 +34,6 @@ namespace MDK.Services
         }
 
         /// <summary>
-        /// Creates a new instance of <see cref="ScriptUpgrades"/>
-        /// </summary>
-        /// <param name="package"></param>
-        public ScriptUpgrades([NotNull] MDKPackage package)
-        {
-            Package = package ?? throw new ArgumentNullException(nameof(package));
-        }
-
-        /// <summary>
-        /// The associated <see cref="MDKPackage"/>
-        /// </summary>
-        public MDKPackage Package { get; }
-
-        /// <summary>
         /// Determines whether the service is currently busy working.
         /// </summary>
         public bool IsBusy { get; private set; }
@@ -57,69 +42,43 @@ namespace MDK.Services
         /// Shows a dialog to inform the user that some script projects needs to be upgraded. Performs the
         /// upgrade if the user accepts.
         /// </summary>
-        /// <param name="result"></param>
-        public void QueryUpgrade(ScriptSolutionAnalysisResult result)
-        {
-            var model = new RequestUpgradeDialogModel(Package, result);
-            RequestUpgradeDialog.ShowDialog(model);
-        }
-
-        /// <summary>
-        /// Upgrades the provided projects.
-        /// </summary>
         /// <param name="package"></param>
-        /// <param name="analysisResults"></param>
-        public void Upgrade(MDKPackage package, ScriptSolutionAnalysisResult analysisResults)
+        /// <param name="result"></param>
+        public void QueryUpgrade([NotNull] MDKPackage package, ScriptSolutionAnalysisResult result)
         {
-            foreach (var project in analysisResults.BadProjects)
-                Upgrade(project);
-        }
-
-        /// <summary>
-        /// Upgrades the provided project to the current package version.
-        /// </summary>
-        /// <param name="projectResult"></param>
-        void Upgrade(ScriptProjectAnalysisResult projectResult)
-        {
-            foreach (var badReference in projectResult.BadReferences)
-            {
-                switch (badReference.Type)
-                {
-                    case BadReferenceType.File:
-                        badReference.Element.AddOrUpdateAttribute("Include", badReference.ExpectedPath);
-                        break;
-                    case BadReferenceType.Assembly:
-                        badReference.Element.AddOrUpdateElement(XName.Get("HintPath", Xmlns), badReference.ExpectedPath);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-            projectResult.ProjectDocument.Save(projectResult.ProjectInfo.FileName, SaveOptions.OmitDuplicateNamespaces);
+            if (package == null)
+                throw new ArgumentNullException(nameof(package));
+            var model = new RequestUpgradeDialogModel(package, result);
+            RequestUpgradeDialog.ShowDialog(model);
         }
 
         /// <summary>
         /// Analyzes all the projects in the given solution, attempting to find irregularities like bad assembly- or file references.
         /// </summary>
         /// <param name="solution"></param>
-        /// <param name="targetVersion"></param>
+        /// <param name="options"></param>
+        /// <param name="package"></param>
         /// <returns></returns>
-        public async Task<ScriptSolutionAnalysisResult> Analyze([NotNull] Solution solution, Version targetVersion)
+        public async Task<ScriptSolutionAnalysisResult> AnalyzeAsync([NotNull] Solution solution, ScriptUpgradeAnalysisOptions options, MDKPackage package = null)
         {
-            using (new StatusBarAnimation(Package, Animation.General))
+            StatusBarAnimation animation = null;
+            if (package != null)
+                animation = new StatusBarAnimation(package, Animation.General);
+
+            IsBusy = true;
+            try
             {
-                IsBusy = true;
-                try
-                {
-                    var results = (await Task.WhenAll(solution.Projects.Cast<Project>().Select(project => AnalyzeProject(project, targetVersion))))
-                        .Where(a => !a.IsIgnored && !a.IsValid)
-                        .ToArray();
-                    return new ScriptSolutionAnalysisResult(results.ToImmutableArray());
-                }
-                finally
-                {
-                    IsBusy = false;
-                }
+                var results = (await Task.WhenAll(solution.Projects.Cast<Project>().Select(project => Task.Run(() => AnalyzeProject(project, options)))))
+                    .Where(a => a.IsScriptProject)
+                    .ToArray();
+                if (!results.Any())
+                    return ScriptSolutionAnalysisResult.NoScriptProjectsResult;
+                return new ScriptSolutionAnalysisResult(results.Where(r => !r.IsValid).ToImmutableArray());
+            }
+            finally
+            {
+                IsBusy = false;
+                animation?.Dispose();
             }
         }
 
@@ -127,52 +86,79 @@ namespace MDK.Services
         /// Analyzes the given project, attempting to find irregularities like bad assembly- or file references.
         /// </summary>
         /// <param name="project"></param>
-        /// <param name="targetVersion"></param>
+        /// <param name="options"></param>
+        /// <param name="package"></param>
         /// <returns></returns>
-        public async Task<ScriptSolutionAnalysisResult> Analyze([NotNull] Project project, Version targetVersion)
+        public async Task<ScriptSolutionAnalysisResult> AnalyzeAsync([NotNull] Project project, ScriptUpgradeAnalysisOptions options, MDKPackage package = null)
         {
-            using (new StatusBarAnimation(Package, Animation.General))
+            StatusBarAnimation animation = null;
+            if (package != null)
+                animation = new StatusBarAnimation(package, Animation.General);
+
+            IsBusy = true;
+            try
             {
-                IsBusy = true;
-                try
-                {
-                    var result = await AnalyzeProject(project, targetVersion);
-                    if (!result.IsValid)
-                        return new ScriptSolutionAnalysisResult(ImmutableArray<ScriptProjectAnalysisResult>.Empty.Add(result));
-                    else
-                        return new ScriptSolutionAnalysisResult(ImmutableArray<ScriptProjectAnalysisResult>.Empty);
-                }
-                finally
-                {
-                    IsBusy = false;
-                }
+                return await Task.Run(() => Analyze(project, options, package));
+            }
+            finally
+            {
+                IsBusy = false;
+                animation?.Dispose();
             }
         }
 
-        Task<ScriptProjectAnalysisResult> AnalyzeProject(Project project, Version targetVersion)
+        /// <summary>
+        /// Analyzes the given project, attempting to find irregularities like bad assembly- or file references.
+        /// </summary>
+        /// <param name="project"></param>
+        /// <param name="options"></param>
+        /// <param name="package"></param>
+        /// <returns></returns>
+        public ScriptSolutionAnalysisResult Analyze([NotNull] Project project, ScriptUpgradeAnalysisOptions options, MDKPackage package = null)
+        {
+            StatusBarAnimation animation = null;
+            if (package != null)
+                animation = new StatusBarAnimation(package, Animation.General);
+
+            IsBusy = true;
+            try
+            {
+                var result = AnalyzeProject(project, options);
+                if (!result.IsScriptProject)
+                    return ScriptSolutionAnalysisResult.NoScriptProjectsResult;
+                if (!result.IsValid)
+                    return new ScriptSolutionAnalysisResult(ImmutableArray<ScriptProjectAnalysisResult>.Empty.Add(result));
+                else
+                    return new ScriptSolutionAnalysisResult(ImmutableArray<ScriptProjectAnalysisResult>.Empty);
+            }
+            finally
+            {
+                IsBusy = false;
+                animation?.Dispose();
+            }
+        }
+
+        ScriptProjectAnalysisResult AnalyzeProject(Project project, ScriptUpgradeAnalysisOptions options)
         {
             if (!project.IsLoaded())
-                return Task.FromResult(ScriptProjectAnalysisResult.Ignored);
-            var projectInfo = new ProjectScriptInfo(Package, project.FullName, project.Name);
+                return ScriptProjectAnalysisResult.NonScriptProjectResult;
+            var projectInfo = ProjectScriptInfo.Load(project.FullName, project.Name);
             if (!projectInfo.IsValid)
-                return Task.FromResult(ScriptProjectAnalysisResult.Ignored);
-            return Task.Run(() =>
-            {
-                var expectedGamePath = Path.GetFullPath(Package.Options.GetActualGameBinPath()).TrimEnd('\\');
-                var expectedUtilityPath = Package.InstallPath.FullName.TrimEnd('\\');
+                return ScriptProjectAnalysisResult.NonScriptProjectResult;
+            var expectedGamePath = projectInfo.GetActualGameBinPath(options.DefaultGameBinPath).TrimEnd('\\');
+            var expectedUtilityPath = options.InstallPath.TrimEnd('\\');
 
-                var badReferences = ImmutableArray.CreateBuilder<BadReference>();
-                var projectFile = new FileInfo(projectInfo.FileName);
-                var projectDir = projectFile.Directory ?? throw new InvalidOperationException($"Unexpected error: Could not determine the directory of the project {projectInfo.FileName}");
-                var document = XDocument.Load(projectInfo.FileName);
-                var xmlns = new XmlNamespaceManager(new NameTable());
-                xmlns.AddNamespace("ms", Xmlns);
+            var badReferences = ImmutableArray.CreateBuilder<BadReference>();
+            var projectFile = new FileInfo(projectInfo.FileName);
+            var projectDir = projectFile.Directory ?? throw new InvalidOperationException($"Unexpected error: Could not determine the directory of the project {projectInfo.FileName}");
+            var document = XDocument.Load(projectInfo.FileName);
+            var xmlns = new XmlNamespaceManager(new NameTable());
+            xmlns.AddNamespace("ms", Xmlns);
 
-                AnalyzeReferences(document, xmlns, projectDir, expectedGamePath, expectedUtilityPath, badReferences);
-                AnalyzeFiles(document, xmlns, projectDir, expectedGamePath, expectedUtilityPath, badReferences);
+            AnalyzeReferences(document, xmlns, projectDir, expectedGamePath, expectedUtilityPath, badReferences);
+            AnalyzeFiles(document, xmlns, projectDir, expectedGamePath, expectedUtilityPath, badReferences);
 
-                return new ScriptProjectAnalysisResult(projectInfo, document, badReferences.ToImmutable());
-            });
+            return new ScriptProjectAnalysisResult(projectInfo, document, badReferences.ToImmutable());
         }
 
         void AnalyzeFiles(XDocument document, XmlNamespaceManager xmlns, DirectoryInfo projectDir, string expectedGamePath, string expectedUtilityPath, ImmutableArray<BadReference>.Builder badReferences)
@@ -183,10 +169,10 @@ namespace MDK.Services
                 var file = ResolvePath(projectDir, include);
                 var gameFile = MDKPackage.GameFiles.FirstOrDefault(fileName => file.EndsWith(fileName, StringComparison.CurrentCultureIgnoreCase));
                 if (gameFile != null)
-                    CheckFileReference(element, expectedGamePath, include, gameFile, badReferences);
+                    CheckFileReference(element, expectedGamePath, file, gameFile, badReferences);
                 var utilityFile = MDKPackage.UtilityFiles.FirstOrDefault(fileName => file.EndsWith(fileName, StringComparison.CurrentCultureIgnoreCase));
                 if (utilityFile != null)
-                    CheckFileReference(element, expectedUtilityPath, include, utilityFile, badReferences);
+                    CheckFileReference(element, expectedUtilityPath, file, utilityFile, badReferences);
             }
         }
 
@@ -218,6 +204,39 @@ namespace MDK.Services
             var correctPath = Path.GetFullPath(Path.Combine(expectedPath, $"{assemblyName}.dll"));
             if (!string.Equals(dllFile, correctPath, StringComparison.CurrentCultureIgnoreCase))
                 badReferences.Add(new BadReference(BadReferenceType.Assembly, element, dllFile, correctPath));
+        }
+
+        /// <summary>
+        /// Upgrades the provided projects.
+        /// </summary>
+        /// <param name="analysisResults"></param>
+        public void Upgrade(ScriptSolutionAnalysisResult analysisResults)
+        {
+            foreach (var project in analysisResults.BadProjects)
+                Upgrade(project);
+        }
+
+        /// <summary>
+        /// Upgrades the provided project to the current package version.
+        /// </summary>
+        /// <param name="projectResult"></param>
+        void Upgrade(ScriptProjectAnalysisResult projectResult)
+        {
+            foreach (var badReference in projectResult.BadReferences)
+            {
+                switch (badReference.Type)
+                {
+                    case BadReferenceType.File:
+                        badReference.Element.AddOrUpdateAttribute("Include", badReference.ExpectedPath);
+                        break;
+                    case BadReferenceType.Assembly:
+                        badReference.Element.AddOrUpdateElement(XName.Get("HintPath", Xmlns), badReference.ExpectedPath);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+            projectResult.ProjectDocument.Save(projectResult.ProjectInfo.FileName, SaveOptions.OmitDuplicateNamespaces);
         }
     }
 }

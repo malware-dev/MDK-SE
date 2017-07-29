@@ -83,6 +83,13 @@
           <ButtonText>Refresh Whitelist Cache</ButtonText>
         </Strings>
       </Button>
+      <Button guid="guidMDKCmdSet" id="CheckForUpdatesCommandId" priority="0x0103" type="Button">
+        <Parent guid="guidMDKCmdSet" id="MDKMenuGroup" />
+        <!--<Icon guid="guidImages" id="bmpPic1" />-->
+        <Strings>
+          <ButtonText>Check for Updates</ButtonText>
+        </Strings>
+      </Button>
     </Buttons>
 
     <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
@@ -114,6 +121,7 @@
       <IDSymbol name="DeployScriptCommandId" value="0x0100" />
       <IDSymbol name="ScriptOptionsCommandId" value="0x0101" />
       <IDSymbol name="RefreshWhitelistCacheCommandId" value="0x0102" />
+      <IDSymbol name="CheckForUpdatesCommandId" value="0x0103" />
     </GuidSymbol>
 
     <GuidSymbol name="guidImages" value="{016ced72-6df6-4278-a645-5d8a568294d5}" >

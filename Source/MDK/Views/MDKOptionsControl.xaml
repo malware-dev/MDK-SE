@@ -23,6 +23,8 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <CheckBox Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" VerticalContentAlignment="Center"
@@ -57,7 +59,10 @@
                        Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
                        Visibility="{Binding UseManualOutputPath, Converter={StaticResource converters/inverseBooleanVisibility}}" />
 
-            <views:ButtonBar Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="2" VerticalAlignment="Bottom" />
+            <CheckBox Grid.Column="0" Grid.Row="2" IsChecked="{Binding NotifyUpdates}">Check for updates</CheckBox>
+            <CheckBox Grid.Column="1" Grid.Row="3" IsChecked="{Binding NotifyPrereleaseUpdates}">Include prerelease versions</CheckBox>
+            
+            <views:ButtonBar Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="5" VerticalAlignment="Bottom" />
         </Grid>
     </Border>
 </UserControl>

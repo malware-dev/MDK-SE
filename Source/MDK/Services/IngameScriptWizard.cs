@@ -5,6 +5,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using EnvDTE;
+using Malware.MDKUtilities;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TemplateWizard;
@@ -19,21 +20,18 @@ namespace MDK.Services
     [ProgId("MDK.Services.IngameScriptWizard")]
     public class IngameScriptWizard : IWizard
     {
+        SpaceEngineers _spaceEngineers;
+
         /// <summary>
         /// Creates an instance of <see cref="IngameScriptWizard"/>
         /// </summary>
         public IngameScriptWizard()
         {
-            SpaceEngineers = new SpaceEngineers();
+            _spaceEngineers = new SpaceEngineers();
         }
 
         /// <inheritdoc />
         public event PropertyChangedEventHandler PropertyChanged;
-
-        /// <summary>
-        /// The <see cref="SpaceEngineers"/> service
-        /// </summary>
-        public SpaceEngineers SpaceEngineers { get; }
 
         /// <inheritdoc />
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
@@ -45,6 +43,10 @@ namespace MDK.Services
                 if (!TryGetProperties(serviceProvider, out Properties props))
                     throw new WizardCancelledException();
 
+                if (!TryGetFinalUseManualGameBinPath(serviceProvider, props, out bool useManualGameBinPath))
+                    throw new WizardCancelledException();
+                replacementsDictionary["$mdkusemanualgamebinpath$"] = useManualGameBinPath ? "yes" : "no";
+
                 if (!TryGetFinalBinPath(serviceProvider, props, out string binPath))
                     throw new WizardCancelledException();
                 replacementsDictionary["$mdkgamebinpath$"] = binPath;
@@ -53,9 +55,9 @@ namespace MDK.Services
                     throw new WizardCancelledException();
                 replacementsDictionary["$mdkoutputpath$"] = outputPath;
 
-                if (!TryGetFinalUtilityPath(serviceProvider, props, out string utilityPath))
+                if (!TryGetFinalInstallPath(serviceProvider, props, out string installPath))
                     throw new WizardCancelledException();
-                replacementsDictionary["$mdkutilitypath$"] = utilityPath;
+                replacementsDictionary["$mdkinstallpath$"] = installPath;
 
                 if (!TryGetFinalMinify(serviceProvider, props, out bool minify))
                     throw new WizardCancelledException();
@@ -66,6 +68,36 @@ namespace MDK.Services
                 replacementsDictionary["$mdkversion$"] = version.ToString();
                 return;
             }
+        }
+
+        /// <inheritdoc />
+        public void ProjectFinishedGenerating(Project project)
+        {
+            // Visual Studio sometimes generates invalid paths. This is an attempt to work around that problem.
+            // If we detect any failure, we simply ignore it - the probability is negligible, and the
+            // result is merely an inconvenience.
+            // ReSharper disable once SuspiciousTypeConversion.Global
+            var serviceProvider = new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)project.DTE);
+
+            if (!TryGetProperties(serviceProvider, out Properties props))
+                return;
+
+            if (!TryGetFinalBinPath(serviceProvider, props, out string binPath))
+                return;
+
+            if (!TryGetFinalInstallPath(serviceProvider, props, out string utilityPath))
+                return;
+
+            var scriptUpgrades = new ScriptUpgrades();
+            var result = scriptUpgrades.Analyze(project, new ScriptUpgradeAnalysisOptions
+            {
+                DefaultGameBinPath = binPath,
+                InstallPath = utilityPath,
+                TargetVersion = MDKPackage.Version
+            });
+            if (result.IsValid)
+                return;
+            scriptUpgrades.Upgrade(result);
         }
 
         void IWizard.BeforeOpeningFile(ProjectItem projectItem)
@@ -81,9 +113,6 @@ namespace MDK.Services
         {
             return true;
         }
-
-        void IWizard.ProjectFinishedGenerating(Project project)
-        { }
 
         bool TryGetProperties(IServiceProvider serviceProvider, out Properties props)
         {
@@ -113,7 +142,7 @@ namespace MDK.Services
                 var useBinPath = (bool)props.Item(nameof(MDKOptions.UseManualGameBinPath)).Value;
                 binPath = ((string)props.Item(nameof(MDKOptions.GameBinPath))?.Value)?.Trim() ?? "";
                 if (!useBinPath || binPath == "")
-                    binPath = SpaceEngineers.GetInstallPath("Bin64");
+                    binPath = _spaceEngineers.GetInstallPath("Bin64");
 
                 var binDirectory = new DirectoryInfo(binPath);
                 if (!binDirectory.Exists)
@@ -136,7 +165,7 @@ namespace MDK.Services
                 var useOutputPath = (bool)props.Item(nameof(MDKOptions.UseManualOutputPath)).Value;
                 outputPath = ((string)props.Item(nameof(MDKOptions.OutputPath))?.Value)?.Trim() ?? "";
                 if (!useOutputPath || outputPath == "")
-                    outputPath = SpaceEngineers.GetDataPath("IngameScripts", "local");
+                    outputPath = _spaceEngineers.GetDataPath("IngameScripts", "local");
                 var outputDirectory = new DirectoryInfo(outputPath);
                 try
                 {
@@ -155,20 +184,20 @@ namespace MDK.Services
             }
         }
 
-        bool TryGetFinalUtilityPath(IServiceProvider serviceProvider, Properties props, out string utilityPath)
+        bool TryGetFinalInstallPath(IServiceProvider serviceProvider, Properties props, out string installPath)
         {
             while (true)
             {
-                utilityPath = Path.GetDirectoryName(new Uri(GetType().Assembly.CodeBase).LocalPath)?.Trim() ?? "ERROR";
-                var utilityDirectory = new DirectoryInfo(utilityPath);
-                if (!utilityDirectory.Exists)
+                installPath = Path.GetDirectoryName(new Uri(GetType().Assembly.CodeBase).LocalPath)?.Trim() ?? "ERROR";
+                var installDirectory = new DirectoryInfo(installPath);
+                if (!installDirectory.Exists)
                 {
-                    var res = VsShellUtilities.ShowMessageBox(serviceProvider, "Cannot find the MDK/SE utility path. The install might be corrupted. Please reinstall the extension.", "Cannot Find MDK Utility Path", OLEMSGICON.OLEMSGICON_CRITICAL, OLEMSGBUTTON.OLEMSGBUTTON_RETRYCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_SECOND);
+                    var res = VsShellUtilities.ShowMessageBox(serviceProvider, "Cannot find the MDK/SE install path. The install might be corrupted. Please reinstall the extension.", "Cannot Find MDK Utility Path", OLEMSGICON.OLEMSGICON_CRITICAL, OLEMSGBUTTON.OLEMSGBUTTON_RETRYCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_SECOND);
                     if (res == 4)
                         continue;
                     return false;
                 }
-                utilityPath = utilityDirectory.ToString().TrimEnd('\\');
+                installPath = installDirectory.ToString().TrimEnd('\\');
                 return true;
             }
         }
@@ -176,6 +205,12 @@ namespace MDK.Services
         bool TryGetFinalMinify(IServiceProvider serviceProvider, Properties props, out bool minify)
         {
             minify = (bool)(props.Item(nameof(MDKOptions.Minify))?.Value ?? false);
+            return true;
+        }
+
+        bool TryGetFinalUseManualGameBinPath(IServiceProvider serviceProvider, Properties props, out bool minify)
+        {
+            minify = (bool)(props.Item(nameof(MDKOptions.UseManualGameBinPath))?.Value ?? false);
             return true;
         }
 

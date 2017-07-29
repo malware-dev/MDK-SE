@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using EnvDTE;
 using MDK.Commands;
 using MDK.Services;
@@ -51,8 +54,7 @@ namespace MDK
         /// </summary>
         public MDKPackage()
         {
-            ScriptUpgrades = new ScriptUpgrades(this);
-            Steam = new Steam();
+            ScriptUpgrades = new ScriptUpgrades();
         }
 
         /// <summary>
@@ -64,11 +66,6 @@ namespace MDK
         /// The <see cref="ScriptUpgrades"/> service
         /// </summary>
         public ScriptUpgrades ScriptUpgrades { get; }
-
-        /// <summary>
-        /// The <see cref="Steam"/> service
-        /// </summary>
-        public Steam Steam { get; }
 
         /// <summary>
         /// Gets the installation path for the current MDK package
@@ -90,11 +87,60 @@ namespace MDK
             AddCommand(
                 new DeployScriptCommand(this),
                 new ScriptOptionsCommand(this),
-                new RefreshWhitelistCacheCommand(this)
+                new RefreshWhitelistCacheCommand(this),
+                new CheckForUpdatesCommand(this)
             );
 
             base.Initialize();
+
+            if (Options.NotifyUpdates)
+                KnownUIContexts.ShellInitializedContext.WhenActivated(CheckForUpdates);
         }
+
+        async void CheckForUpdates()
+        {
+            if (!Options.NotifyUpdates)
+                return;
+            var version = await CheckForUpdates(Options.NotifyPrereleaseUpdates);
+            if (version != null)
+                OnUpdateDetected(version);
+        }
+
+        /// <summary>
+        /// Checks the GitHub sites for any updated releases.
+        /// </summary>
+        /// <returns>The newest release version on GitHub, or <c>null</c> if the current version is the latest</returns>
+        public async Task<Version> CheckForUpdates(bool includePrerelease)
+        {
+            try
+            {
+                var client = new GitHub("malware-dev", "mdk-se", "mdk-se");
+                var latestRelease = (await client.ReleasesAsync())
+                    .Where(release => !string.IsNullOrWhiteSpace(release.TagName) && (!release.Prerelease || includePrerelease))
+                    .OrderByDescending(r => r.PublishedAt)
+                    .FirstOrDefault();
+                if (latestRelease == null)
+                    return null;
+
+                var match = Regex.Match(latestRelease.TagName, @"\d+\.\d+(\.\d+)?");
+                if (match.Success)
+                {
+                    var detectedVersion = new Version(match.Value);
+                    if (detectedVersion > Version)
+                        return detectedVersion;
+                }
+                return null;
+            }
+            catch (Exception e)
+            {
+                LogPackageError("CheckForUpdates", e);
+                // We don't want to make a fuss about this.
+                return null;
+            }
+        }
+
+        void OnUpdateDetected(Version detectedVersion)
+        { }
 
         async void OnFirstSolutionLoaded()
         {
@@ -113,11 +159,16 @@ namespace MDK
         {
             if (ScriptUpgrades.IsBusy)
                 return;
-            var results = await ScriptUpgrades.Analyze(project, Version);
-            if (results.IsValid)
+            var result = await ScriptUpgrades.AnalyzeAsync(project, new ScriptUpgradeAnalysisOptions
+            {
+                DefaultGameBinPath = Options.GetActualGameBinPath(),
+                InstallPath = InstallPath.FullName,
+                TargetVersion = Version
+            }, this);
+            if (!result.HasScriptProjects || result.IsValid)
                 return;
 
-            ScriptUpgrades.QueryUpgrade(results);
+            ScriptUpgrades.QueryUpgrade(this, result);
         }
 
         async void SolutionExistsAndFullyLoadedContextOnUIContextChanged(object sender, UIContextChangedEventArgs e)
@@ -128,11 +179,19 @@ namespace MDK
 
         async Task AnalyzeSolution()
         {
-            var results = await ScriptUpgrades.Analyze(DTE.Solution, Version);
-            if (results.IsValid)
+            var result = await ScriptUpgrades.AnalyzeAsync(DTE.Solution, new ScriptUpgradeAnalysisOptions
+            {
+                DefaultGameBinPath = Options.GetActualGameBinPath(),
+                InstallPath = InstallPath.FullName,
+                TargetVersion = Version
+            }, this);
+            if (!result.HasScriptProjects)
                 return;
 
-            ScriptUpgrades.QueryUpgrade(results);
+            if (!result.IsValid)
+                ScriptUpgrades.QueryUpgrade(this, result);
+
+            CheckForUpdates();
         }
 
         int IVsSolutionEvents.OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)

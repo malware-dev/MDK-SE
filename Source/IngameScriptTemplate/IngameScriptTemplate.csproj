@@ -54,8 +54,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="MDK\MDK.options" />
     <None Include="Program.cs" />
-    <None Include="Bootstrapper.Debug.cs" />
+    <None Include="MDK\Bootstrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="Readme.cs" />
   </ItemGroup>

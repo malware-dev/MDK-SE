@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("UtilityClass")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Morten A. Lyrstad")]
-[assembly: AssemblyProduct("UtilityClass")]
-[assembly: AssemblyCopyright("Copyright © Morten A. Lyrstad 2017")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("MDK/SE")]
+[assembly: AssemblyCopyright("Copyright © Morten Aune Lyrstad 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

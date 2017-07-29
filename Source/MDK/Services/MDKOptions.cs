@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows;
+using Malware.MDKUtilities;
 using MDK.Views;
 using Microsoft.VisualStudio.Shell;
 
@@ -20,26 +21,24 @@ namespace MDK.Services
         string _outputPath;
         bool _useManualGameBinPath;
         bool _useManualOutputPath;
+        bool _notifyUpdates = true;
+        bool _notifyPrereleaseUpdates;
+        SpaceEngineers _spaceEngineers;
 
         /// <summary>
         /// Creates an instance of <see cref="MDKOptions" />
         /// </summary>
         public MDKOptions()
         {
-            SpaceEngineers = new SpaceEngineers();
+            _spaceEngineers = new SpaceEngineers();
 
             ((MDKOptionsControl)Child).Options = this;
-            _gameBinPath = SpaceEngineers.GetInstallPath("Bin64");
-            _outputPath = SpaceEngineers.GetDataPath("IngameScripts", "local");
+            _gameBinPath = _spaceEngineers.GetInstallPath("Bin64");
+            _outputPath = _spaceEngineers.GetDataPath("IngameScripts", "local");
         }
 
         /// <inheritdoc />
         public event PropertyChangedEventHandler PropertyChanged;
-
-        /// <summary>
-        /// The <see cref="SpaceEngineers"/> service
-        /// </summary>
-        public SpaceEngineers SpaceEngineers { get; }
 
         /// <summary>
         /// Determines whether <see cref="GameBinPath"/> should be used rather than the automatically retrieved one.
@@ -74,7 +73,7 @@ namespace MDK.Services
                     return;
                 _gameBinPath = value;
                 if (string.IsNullOrWhiteSpace(_gameBinPath))
-                    _gameBinPath = SpaceEngineers.GetInstallPath("Bin64");
+                    _gameBinPath = _spaceEngineers.GetInstallPath("Bin64");
                 OnPropertyChanged();
             }
         }
@@ -112,7 +111,7 @@ namespace MDK.Services
                     return;
                 _outputPath = value;
                 if (string.IsNullOrWhiteSpace(_outputPath))
-                    _outputPath = SpaceEngineers.GetDataPath("IngameScripts", "local");
+                    _outputPath = _spaceEngineers.GetDataPath("IngameScripts", "local");
                 OnPropertyChanged();
             }
         }
@@ -135,6 +134,42 @@ namespace MDK.Services
             }
         }
 
+        /// <summary>
+        /// Whether script projects should default to generating minified scripts.
+        /// </summary>
+        [Category("MDK/SE")]
+        [DisplayName("Notify me about updates")]
+        [Description("Checks for new releases on the GitHub repository, and shows a Visual Studio notification if a new version is detected.")]
+        public bool NotifyUpdates
+        {
+            get => _notifyUpdates;
+            set
+            {
+                if (_notifyUpdates == value)
+                    return;
+                _notifyUpdates = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Whether script projects should default to generating minified scripts.
+        /// </summary>
+        [Category("MDK/SE")]
+        [DisplayName("Include prerelease versions")]
+        [Description("Include prerelease versions when checking for new releases on the GitHub repository.")]
+        public bool NotifyPrereleaseUpdates
+        {
+            get => _notifyPrereleaseUpdates;
+            set
+            {
+                if (_notifyPrereleaseUpdates == value)
+                    return;
+                _notifyPrereleaseUpdates = value;
+                OnPropertyChanged();
+            }
+        }
+
         /// <inheritdoc />
         protected sealed override UIElement Child { get; } = new MDKOptionsControl();
 
@@ -153,7 +188,7 @@ namespace MDK.Services
         /// <returns></returns>
         public string GetActualGameBinPath()
         {
-            return UseManualGameBinPath ? GameBinPath : SpaceEngineers.GetInstallPath("Bin64");
+            return UseManualGameBinPath ? GameBinPath : _spaceEngineers.GetInstallPath("Bin64");
         }
 
         /// <summary>
@@ -162,7 +197,7 @@ namespace MDK.Services
         /// <returns></returns>
         public string GetActualOutputPath()
         {
-            return UseManualOutputPath ? OutputPath : SpaceEngineers.GetDataPath("IngameScripts", "local");
+            return UseManualOutputPath ? OutputPath : _spaceEngineers.GetDataPath("IngameScripts", "local");
         }
     }
 }

@@ -44,7 +44,7 @@ namespace MDK.Views
         /// </summary>
         protected override bool OnSave()
         {
-            Package.ScriptUpgrades.Upgrade(Package, AnalysisResults);
+            Package.ScriptUpgrades.Upgrade(AnalysisResults);
             return true;
         }
     }

@@ -17,6 +17,8 @@ This is a project I pretty much made for _myself_. I'm publishing it in case som
 ## Contribution
 Yeah, sure. Absolutely. I will gladly accept contribution to the project. I'll be grateful for any assistance, especially for any features requested that I myself may not have any use for. But I won't be merging contributions willy nilly. I will expect a certain minimum standard, and I reserve the right to deny features I don't like. Another fair warning :D
 
+
+
 ## Getting Started
 
 ### Step 1
@@ -29,16 +31,21 @@ https://www.visualstudio.com/vs/getting-started/new-install/
 Download the extension from here:
 https://github.com/malware-dev/MDK-SE/releases
 
+In most circumstances you will be interested in downloading the file named **MDK.vsix**. This is a installer package format used by Visual Studio to install extensions.
+
 You should stay away from any pre-release builds unless you know what you're doing, or if you want to test.
 
 
 
 ### Step 3
+
 After installing the extension, you can now start Visual Studio and create your script project. You do this by finding the **File** menu, then **New** and **Project...**
 
 Now make sure you select the correct .NET Framework version.
 
 ![Select .NET Framework 4.6.1](https://github.com/malware-dev/MDK-SE/blob/master/images/wiki-newproject-framework.jpg)
+
+
 
 After this you can select the Space Engineers category on the left. You will now be able to see the ingame script template.
 

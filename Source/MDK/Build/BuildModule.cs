@@ -196,7 +196,7 @@ namespace MDK.Build
         {
             try
             {
-                var projectInfo = new ProjectScriptInfo(Package, project.FilePath, project.Name);
+                var projectInfo = ProjectScriptInfo.Load(project.FilePath, project.Name);
                 return new BuildConfig
                 {
                     Minify = projectInfo.Minify,

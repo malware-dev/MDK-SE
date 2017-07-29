@@ -12,7 +12,7 @@ namespace IngameScript
         {
             // WARNING: This path is _not_ automatically updated if you change the game binary location.
             // You will have to change it yourself.
-            MDKMockups.Load(@"$mdkgamebinpath$\");
+            MDKUtilityFramework.Load(@"$mdkgamebinpath$\");
         }
 
         public static void Main()

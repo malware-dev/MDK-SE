@@ -8,7 +8,7 @@ namespace MDK
 	    /// <summary>
 		/// The current package version
 		/// </summary>
-		public static readonly Version Version = new Version("0.9.3");
+		public static readonly Version Version = new Version("0.9.9");
 
         /// <summary>
         /// A list of the game assemblies referenced by script projects
@@ -36,7 +36,7 @@ namespace MDK
         /// </summary>
         public static readonly ReadOnlyCollection<string> UtilityAssemblyNames = new ReadOnlyCollection<string>(new string[] 
         {
-            "MDKUtilities"
+            
         });
 
         /// <summary>
@@ -52,8 +52,7 @@ namespace MDK
         /// </summary>
         public static readonly ReadOnlyCollection<string> UtilityFiles = new ReadOnlyCollection<string>(new string[] 
         {
-            "\\Analyzers\\MDKAnalyzer.dll",
-            "\\Analyzers\\whitelist.cache"
+            
         });
 	}
 }

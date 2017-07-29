@@ -5,12 +5,12 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.Win32;
 
-namespace MDK.Services
+namespace Malware.MDKUtilities
 {
     /// <summary>
     /// A service to retrieve information about the current Steam (copyright Valve, no affiliation) installation.
     /// </summary>
-    public class Steam
+    class Steam
     {
         string _exePath;
         bool _isLoaded;

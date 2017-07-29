@@ -13,6 +13,19 @@ namespace MDK.Views
     /// </summary>
     public class ScriptOptionsDialogModel : DialogViewModel
     {
+        static ProjectScriptInfo LoadScriptInfo(MDKPackage package, Project project)
+        {
+            try
+            {
+                return ProjectScriptInfo.Load(project.FullName, project.Name);
+            }
+            catch (Exception e)
+            {
+                package?.LogPackageError(typeof(ProjectScriptInfo).FullName, e);
+                throw;
+            }
+        }
+
         ProjectScriptInfo _activeProject;
 
         /// <summary>
@@ -29,7 +42,7 @@ namespace MDK.Views
 
             var activeProject = dte.ActiveDocument?.ProjectItem?.ContainingProject;
             var allProjects = dte.Solution.Projects.Cast<Project>().Where(p => p.IsLoaded()).ToArray();
-            Projects = new ReadOnlyCollection<ProjectScriptInfo>(allProjects.Where(p => !string.IsNullOrEmpty(p.FullName)).Select(p => new ProjectScriptInfo(package, p.FullName, p.Name)).Where(p => p.IsValid).ToArray());
+            Projects = new ReadOnlyCollection<ProjectScriptInfo>(allProjects.Where(p => !string.IsNullOrEmpty(p.FullName)).Select(p => LoadScriptInfo(package, p)).Where(p => p.IsValid).ToArray());
             ActiveProject = activeProject != null ? Projects.FirstOrDefault(p => p.FileName == activeProject.FullName) ?? Projects.FirstOrDefault() : Projects.FirstOrDefault();
         }
 

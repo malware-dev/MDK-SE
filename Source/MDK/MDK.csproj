@@ -47,7 +47,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\Bin\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -68,13 +68,18 @@
     <Compile Include="Build\ScriptPart.cs" />
     <Compile Include="Build\UsingDirectiveComparer.cs" />
     <Compile Include="Commands\CommandGroups.cs" />
+    <Compile Include="Commands\CheckForUpdatesCommand.cs" />
     <Compile Include="MDKPackage.GeneratedInfo.cs">
       <DependentUpon>MDKPackage.GeneratedInfo.csx</DependentUpon>
     </Compile>
     <Compile Include="Services\BadReference.cs" />
     <Compile Include="Services\BadReferenceType.cs" />
+    <Compile Include="Services\GitHub.cs" />
+    <Compile Include="Services\GitHubRelease.cs" />
+    <Compile Include="Services\ProjectScriptInfoException.cs" />
     <Compile Include="Services\ScriptProjectAnalysisResult.cs" />
     <Compile Include="Services\ScriptSolutionAnalysisResult.cs" />
+    <Compile Include="Services\ScriptUpgradeAnalysisOptions.cs" />
     <Compile Include="Services\ScriptUpgrades.cs" />
     <Compile Include="Services\XDocumentExtensions.cs" />
     <Compile Include="Views\DialogClosingEventArgs.cs" />
@@ -114,8 +119,6 @@
     <Compile Include="Views\MDKOptionsControl.xaml.cs">
       <DependentUpon>MDKOptionsControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Services\SpaceEngineers.cs" />
-    <Compile Include="Services\Steam.cs" />
     <Compile Include="Services\WhitelistCache.cs" />
     <Compile Include="Views\ScriptOptionsDialog.xaml.cs">
       <DependentUpon>ScriptOptionsDialog.xaml</DependentUpon>
@@ -377,6 +380,7 @@
       <HintPath>..\packages\System.IO.FileSystem.Primitives.4.3.0\lib\net46\System.IO.FileSystem.Primitives.dll</HintPath>
       <ForceIncludeInVSIX>true</ForceIncludeInVSIX>
     </Reference>
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Reflection.Metadata, Version=1.4.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Reflection.Metadata.1.4.2\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
@@ -479,8 +483,12 @@
     <Error Condition="!Exists('..\packages\Microsoft.VSSDK.BuildTools.15.1.192\build\Microsoft.VSSDK.BuildTools.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.VSSDK.BuildTools.15.1.192\build\Microsoft.VSSDK.BuildTools.targets'))" />
     <Error Condition="!Exists('..\packages\Scripty.MsBuild.0.7.4\build\Scripty.MsBuild.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Scripty.MsBuild.0.7.4\build\Scripty.MsBuild.targets'))" />
   </Target>
+  <Import Project="..\SteamAndSE\SteamAndSE.projitems" Label="Shared" />
   <Import Project="..\packages\Microsoft.VSSDK.BuildTools.15.1.192\build\Microsoft.VSSDK.BuildTools.targets" Condition="Exists('..\packages\Microsoft.VSSDK.BuildTools.15.1.192\build\Microsoft.VSSDK.BuildTools.targets')" />
   <Import Project="..\packages\Scripty.MsBuild.0.7.4\build\Scripty.MsBuild.targets" Condition="Exists('..\packages\Scripty.MsBuild.0.7.4\build\Scripty.MsBuild.targets')" />
+  <PropertyGroup>
+    <PostBuildEvent>"$(ProjectDir)deploy.bat" $(ConfigurationName) "$(ProjectDir)..\..\Bin" "$(TargetDir)$(TargetName).vsix"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

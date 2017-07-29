@@ -24,12 +24,6 @@
     <Prefer32Bit>true</Prefer32Bit>
     <LangVersion>6</LangVersion>
   </PropertyGroup>
-  <PropertyGroup>
-    <MDKGameBinPath>$mdkgamebinpath$</MDKGameBinPath>
-    <MDKUtilityPath>$mdkutilitypath$</MDKUtilityPath>
-    <MDKOutputPath>$mdkoutputpath$</MDKOutputPath>
-    <MDKMinify>$mdkminify$</MDKMinify>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -96,15 +90,23 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="MDKUtilities">
-      <HintPath>$mdkutilitypath$\MDKUtilities.dll</HintPath>
+      <HintPath>$mdkinstallpath$\MDKUtilities.dll</HintPath>
     </Reference>
-    <Analyzer Include="$mdkutilitypath$\Analyzers\MDKAnalyzer.dll" />
+    <Analyzer Include="$mdkinstallpath$\Analyzers\MDKAnalyzer.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MDK\Bootstrapper.cs" />
+    <AdditionalFiles Include="MDK\MDK.options">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AdditionalFiles>
     <Compile Include="Program.cs" />
-    <Compile Include="Bootstrapper.Debug.cs" />
     <Compile Include="Readme.cs" />
-    <AdditionalFiles Include="$mdkutilitypath$\Analyzers\whitelist.cache" />
+    <AdditionalFiles Include="$mdkinstallpath$\Analyzers\whitelist.cache">
+      <Link>MDK\whitelist.cache</Link>
+    </AdditionalFiles>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="mdk\mdk.options" DestinationFolder="$(TargetDir)\mdk" />
+  </Target>
 </Project>

@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<mdk version="$mdkversion$">
+  <gamebinpath enabled="$mdkusemanualgamebinpath$">$mdkgamebinpath$</gamebinpath>
+  <installpath>$mdkinstallpath$</installpath>
+  <outputpath>$mdkoutputpath$</outputpath>
+  <minify>$mdkminify$</minify>
+  <ignore>
+    <folder>mdk</folder>
+  </ignore>
+</mdk>

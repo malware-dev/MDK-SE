@@ -97,6 +97,15 @@ namespace Malware.MDKUtilities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The MDK options file is invalid.
+        /// </summary>
+        internal static string MDK_Load_InvalidOptions {
+            get {
+                return ResourceManager.GetString("MDK_Load_InvalidOptions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The directory {0} does not exist.
         /// </summary>
         internal static string MDK_Load_PathNotFound {
