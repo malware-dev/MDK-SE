@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Xml.Linq;
 using JetBrains.Annotations;
@@ -39,6 +42,14 @@ namespace MDK.Services
                 var installPath = (string)root?.Element("installpath");
                 var outputPath = (string)root?.Element("outputpath");
                 var minify = ((string)root?.Element("minify") ?? "no").Trim().Equals("yes", StringComparison.CurrentCultureIgnoreCase);
+                string[] ignoredFolders = null;
+                string[] ignoredFiles = null;
+                var ignoreElement = root?.Element("ignore");
+                if (ignoreElement != null)
+                {
+                    ignoredFolders = ignoreElement.Elements("folder").Select(e => (string)e).ToArray();
+                    ignoredFiles = ignoreElement.Elements("file").Select(e => (string)e).ToArray();
+                }
 
                 var result = new ProjectScriptInfo(fileName, name, true)
                 {
@@ -48,6 +59,12 @@ namespace MDK.Services
                     OutputPath = outputPath,
                     Minify = minify
                 };
+                if (ignoredFolders != null)
+                    foreach (var item in ignoredFolders)
+                        result.IgnoredFolders.Add(item);
+                if (ignoredFiles != null)
+                    foreach (var item in ignoredFiles)
+                        result.IgnoredFiles.Add(item);
                 result.Commit();
                 return result;
             }
@@ -63,12 +80,19 @@ namespace MDK.Services
         string _installPath;
         bool _useManualGameBinPath;
         string _outputPath;
+        string[] _ignoredFilesCache;
+        string[] _ignoredFoldersCache;
+        string _baseDir;
 
         ProjectScriptInfo(string fileName, string name, bool isValid)
         {
             FileName = fileName;
+            if (fileName != null)
+                _baseDir = Path.GetFullPath(Path.GetDirectoryName(fileName) ?? ".");
             Name = name;
             IsValid = isValid;
+            IgnoredFolders.CollectionChanged += OnIgnoredFoldersChanged;
+            IgnoredFiles.CollectionChanged += OnIgnoredFilesChanged;
         }
 
         /// <inheritdoc />
@@ -185,6 +209,41 @@ namespace MDK.Services
         }
 
         /// <summary>
+        /// A list of folders which code will not be included in neither analysis nor deployment
+        /// </summary>
+        public ObservableCollection<string> IgnoredFolders { get; } = new ObservableCollection<string>();
+
+        /// <summary>
+        /// A list of files which code will not be included in neither analysis nor deployment
+        /// </summary>
+        public ObservableCollection<string> IgnoredFiles { get; } = new ObservableCollection<string>();
+
+        string FullyQualifiedFile(string path)
+        {
+            if (Path.IsPathRooted(path))
+                return Path.GetFullPath(path);
+            return Path.GetFullPath(Path.Combine(_baseDir, path));
+        }
+
+        string FullyQualifiedFolder(string path)
+        {
+            path = FullyQualifiedFile(path);
+            if (path.EndsWith("\\"))
+                return path;
+            return path + "\\";
+        }
+
+        void OnIgnoredFilesChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
+        {
+            _ignoredFilesCache = null;
+        }
+
+        void OnIgnoredFoldersChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
+        {
+            _ignoredFoldersCache = null;
+        }
+
+        /// <summary>
         /// Commits all changes without saving. <see cref="HasChanges"/> will be false after this. This method is not required when calling <see cref="Save"/>.
         /// </summary>
         public void Commit()
@@ -200,7 +259,7 @@ namespace MDK.Services
         {
             try
             {
-                var mdkOptionsFileName = new FileInfo(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(FileName) ?? ".", @"..\mdk\mdk.options")));
+                var mdkOptionsFileName = new FileInfo(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(FileName) ?? ".", @"mdk\mdk.options")));
                 if (!mdkOptionsFileName.Directory?.Exists ?? true)
                     mdkOptionsFileName.Directory?.Create();
                 XDocument document;
@@ -209,6 +268,7 @@ namespace MDK.Services
                 XElement installPathElement = null;
                 XElement outputPathElement = null;
                 XElement minifyElement = null;
+                XElement ignoreElement = null;
                 XElement root;
                 if (!mdkOptionsFileName.Exists)
                 {
@@ -218,7 +278,7 @@ namespace MDK.Services
                 }
                 else
                 {
-                    document = XDocument.Load(FileName);
+                    document = XDocument.Load(mdkOptionsFileName.FullName);
                     root = document.Element("mdk");
                     // ReSharper disable once JoinNullCheckWithUsage
                     if (root == null)
@@ -227,8 +287,9 @@ namespace MDK.Services
                     gameBinPathElement = root.Element("gamebinpath");
                     useManualGameBinPathAttribute = gameBinPathElement?.Attribute("enabled");
                     installPathElement = root.Element("installpath");
-                    outputPathElement = root.Element("installpath");
+                    outputPathElement = root.Element("outputpath");
                     minifyElement = root.Element("minify");
+                    ignoreElement = root.Element("ignore");
                 }
 
                 if (gameBinPathElement == null)
@@ -257,15 +318,28 @@ namespace MDK.Services
                     minifyElement = new XElement("minify");
                     root.Add(minifyElement);
                 }
+                if (ignoreElement == null && IgnoredFolders.Count > 0)
+                {
+                    ignoreElement = new XElement("ignore");
+                    root.Add(ignoreElement);
+                }
 
                 gameBinPathElement.Value = GameBinPath.TrimEnd('\\');
                 useManualGameBinPathAttribute.Value = UseManualGameBinPath ? "yes" : "no";
                 installPathElement.Value = InstallPath.TrimEnd('\\');
                 outputPathElement.Value = OutputPath.TrimEnd('\\');
                 minifyElement.Value = Minify ? "yes" : "no";
+                ignoreElement?.RemoveNodes();
+                if (ignoreElement != null)
+                {
+                    foreach (var folder in IgnoredFolders)
+                        ignoreElement.Add(new XElement("folder", folder));
+                    foreach (var file in IgnoredFiles)
+                        ignoreElement.Add(new XElement("file", file));
+                }
                 HasChanges = false;
 
-                document.Save(FileName, SaveOptions.OmitDuplicateNamespaces);
+                document.Save(mdkOptionsFileName.FullName, SaveOptions.OmitDuplicateNamespaces);
             }
             catch (Exception e)
             {
@@ -299,6 +373,28 @@ namespace MDK.Services
         public override string ToString()
         {
             return Name;
+        }
+
+        /// <summary>
+        /// Determines whether the given file path is within one of the ignored folders or files.
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        public bool IsIgnoredFilePath(string filePath)
+        {
+            filePath = Path.GetFullPath(filePath);
+
+            if (_ignoredFilesCache == null)
+                _ignoredFilesCache = IgnoredFiles.Select(FullyQualifiedFile).ToArray();
+            if (_ignoredFilesCache.Any(path => filePath.Equals(path, StringComparison.CurrentCultureIgnoreCase)))
+                return true;
+
+            if (_ignoredFoldersCache == null)
+                _ignoredFoldersCache = IgnoredFolders.Select(FullyQualifiedFolder).ToArray();
+            if (_ignoredFoldersCache.Any(path => filePath.StartsWith(path, StringComparison.CurrentCultureIgnoreCase)))
+                return true;
+
+            return false;
         }
     }
 }

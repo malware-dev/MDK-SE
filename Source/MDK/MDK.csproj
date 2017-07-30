@@ -54,7 +54,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Build\AnalysisExtensions.cs" />
-    <Compile Include="Build\BuildConfig.cs" />
     <Compile Include="Build\BuildException.cs" />
     <Compile Include="Build\BuildModule.cs" />
     <Compile Include="Build\DocumentAnalysisResult.cs" />

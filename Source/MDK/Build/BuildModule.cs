@@ -110,8 +110,7 @@ namespace MDK.Build
         async Task Build(Project project)
         {
             var config = LoadConfig(project);
-            config.Minify = false;
-            var content = await LoadContent(project).ConfigureAwait(false);
+            var content = await LoadContent(project, config).ConfigureAwait(false);
             Steps++;
 
             var document = CreateProgramDocument(project, content);
@@ -130,11 +129,11 @@ namespace MDK.Build
                 script = content.Readme + script;
             }
 
-            WriteScript(project, config.Output, script);
+            WriteScript(project, config.OutputPath, script);
             Steps++;
         }
 
-        async Task<(Minifier Minifier, Document Document)> PreMinify(Project project, BuildConfig config, Document document)
+        async Task<(Minifier Minifier, Document Document)> PreMinify(Project project, ProjectScriptInfo config, Document document)
         {
             try
             {
@@ -192,16 +191,11 @@ namespace MDK.Build
             }
         }
 
-        BuildConfig LoadConfig(Project project)
+        ProjectScriptInfo LoadConfig(Project project)
         {
             try
             {
-                var projectInfo = ProjectScriptInfo.Load(project.FilePath, project.Name);
-                return new BuildConfig
-                {
-                    Minify = projectInfo.Minify,
-                    Output = projectInfo.OutputPath
-                };
+                return ProjectScriptInfo.Load(project.FilePath, project.Name);
             }
             catch (Exception e)
             {
@@ -248,14 +242,14 @@ namespace MDK.Build
             }
         }
 
-        async Task<ProjectContent> LoadContent(Project project)
+        async Task<ProjectContent> LoadContent(Project project, ProjectScriptInfo config)
         {
             try
             {
                 var usingDirectives = ImmutableArray.CreateBuilder<UsingDirectiveSyntax>();
                 var parts = ImmutableArray.CreateBuilder<ScriptPart>();
                 var documents = project.Documents
-                    .Where(document => !IsDebugDocument(document.FilePath))
+                    .Where(document => !IsDebugDocument(document.FilePath, config))
                     .ToList();
 
                 var readmeDocument = project.Documents
@@ -289,7 +283,7 @@ namespace MDK.Build
             }
         }
 
-        bool IsDebugDocument(string filePath)
+        bool IsDebugDocument(string filePath, ProjectScriptInfo config)
         {
             var fileName = Path.GetFileName(filePath);
             if (string.IsNullOrWhiteSpace(fileName))
@@ -304,7 +298,7 @@ namespace MDK.Build
             if (fileName.IndexOf(".debug.", StringComparison.CurrentCultureIgnoreCase) >= 0)
                 return true;
 
-            return false;
+            return config.IsIgnoredFilePath(filePath);
         }
 
         /// <summary>

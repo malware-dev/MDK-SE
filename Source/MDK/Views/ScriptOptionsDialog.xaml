@@ -8,6 +8,7 @@
                  xmlns:services="clr-namespace:MDK.Services"
                  mc:Ignorable="d"
                  UseLayoutRounding="True"
+                 SizeToContent="Height"
                  WindowStartupLocation="CenterOwner"
                  TextOptions.TextFormattingMode="Display"
                  TextOptions.TextHintingMode="Auto"
