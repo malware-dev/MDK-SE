@@ -8,7 +8,7 @@ namespace MDK
 	    /// <summary>
 		/// The current package version
 		/// </summary>
-		public static readonly Version Version = new Version("0.9.17");
+		public static readonly Version Version = new Version("0.9.18");
 
         /// <summary>
         /// A list of the game assemblies referenced by script projects
