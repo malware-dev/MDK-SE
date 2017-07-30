@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:MDK.Views"
+             xmlns:properties="clr-namespace:MDK.Properties"
              mc:Ignorable="d"
              Margin="0,16,0,0"
              d:DesignHeight="24" d:DesignWidth="300">
@@ -19,7 +20,7 @@
     <DockPanel>
         <Border DockPanel.Dock="Left">
             <TextBlock HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="0">
-                <Hyperlink TextDecorations="{x:Null}">
+                <Hyperlink TextDecorations="{x:Null}" NavigateUri="{Binding Source={x:Static properties:Settings.Default}, Path=HelpPageUrl, Mode=OneWay}" RequestNavigate="OnHyperlinkClicked">
                     <Image Source="{StaticResource images/mainwindow/logo}"
                            Width="24"
                            Height="24"

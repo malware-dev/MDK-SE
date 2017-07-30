@@ -14,6 +14,11 @@ namespace Malware.MDKUtilities
         static readonly Dictionary<string, AssemblyName> AssemblyNames = new Dictionary<string, AssemblyName>();
 
         /// <summary>
+        /// Gets the game binary path as defined through <see cref="Load"/>.
+        /// </summary>
+        public static string GameBinPath { get; internal set; }
+
+        /// <summary>
         ///     Initializes the mock system. Pass in the path to the Space Engineers Bin64 folder.
         /// </summary>
         /// <param name="mdkOptionsPath">The path to the MDK options file</param>
@@ -57,6 +62,8 @@ namespace Malware.MDKUtilities
                 AssemblyNames[assemblyName.FullName] = assemblyName;
             }
             AppDomain.CurrentDomain.AssemblyResolve += OnResolveAssembly;
+
+            GameBinPath = directory.FullName;
         }
 
         static Assembly OnResolveAssembly(object sender, ResolveEventArgs args)

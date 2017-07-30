@@ -1,7 +1,6 @@
 ﻿using System;
+using MDK.Views;
 using MDK.VisualStudio;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 
 namespace MDK.Commands
 {
@@ -16,13 +15,9 @@ namespace MDK.Commands
 
         protected override void OnExecute()
         {
-            VsShellUtilities.ShowMessageBox(
-                ServiceProvider,
-                "This operation has not yet been completed in this version. Please check to see if there has been an update to the package yet.",
-                "Incomplete operation",
-                OLEMSGICON.OLEMSGICON_INFO,
-                OLEMSGBUTTON.OLEMSGBUTTON_OK,
-                OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+            var package = (MDKPackage)Package;
+
+            RefreshWhitelistCacheDialog.ShowDialog(new RefreshWhitelistCacheDialogModel(package, package.DTE));
         }
     }
 }

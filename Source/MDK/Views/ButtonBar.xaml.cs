@@ -1,8 +1,10 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
+using System.Windows.Navigation;
 
 namespace MDK.Views
 {
@@ -38,5 +40,11 @@ namespace MDK.Views
         /// Returns the buttons collection for the button bar.
         /// </summary>
         public ObservableCollection<Button> Buttons => (ObservableCollection<Button>)GetValue(ButtonsProperty);
+
+        void OnHyperlinkClicked(object sender, RequestNavigateEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
+            e.Handled = true;
+        }
     }
 }

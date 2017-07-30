@@ -91,6 +91,7 @@
     </Reference>
     <Reference Include="MDKUtilities">
       <HintPath>$mdkinstallpath$\MDKUtilities.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Analyzer Include="$mdkinstallpath$\Analyzers\MDKAnalyzer.dll" />
   </ItemGroup>

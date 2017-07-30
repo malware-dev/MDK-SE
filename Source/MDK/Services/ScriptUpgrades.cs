@@ -146,7 +146,7 @@ namespace MDK.Services
             if (!projectInfo.IsValid)
                 return ScriptProjectAnalysisResult.NonScriptProjectResult;
             var expectedGamePath = projectInfo.GetActualGameBinPath(options.DefaultGameBinPath).TrimEnd('\\');
-            var expectedUtilityPath = options.InstallPath.TrimEnd('\\');
+            var expectedInstallPath = options.InstallPath.TrimEnd('\\');
 
             var badReferences = ImmutableArray.CreateBuilder<BadReference>();
             var projectFile = new FileInfo(projectInfo.FileName);
@@ -155,13 +155,13 @@ namespace MDK.Services
             var xmlns = new XmlNamespaceManager(new NameTable());
             xmlns.AddNamespace("ms", Xmlns);
 
-            AnalyzeReferences(document, xmlns, projectDir, expectedGamePath, expectedUtilityPath, badReferences);
-            AnalyzeFiles(document, xmlns, projectDir, expectedGamePath, expectedUtilityPath, badReferences);
+            AnalyzeReferences(document, xmlns, projectDir, expectedGamePath, expectedInstallPath, badReferences);
+            AnalyzeFiles(document, xmlns, projectDir, expectedGamePath, expectedInstallPath, badReferences);
 
             return new ScriptProjectAnalysisResult(projectInfo, document, badReferences.ToImmutable());
         }
 
-        void AnalyzeFiles(XDocument document, XmlNamespaceManager xmlns, DirectoryInfo projectDir, string expectedGamePath, string expectedUtilityPath, ImmutableArray<BadReference>.Builder badReferences)
+        void AnalyzeFiles(XDocument document, XmlNamespaceManager xmlns, DirectoryInfo projectDir, string expectedGamePath, string expectedInstallPath, ImmutableArray<BadReference>.Builder badReferences)
         {
             foreach (var element in document.XPathSelectElements("/ms:Project/ms:ItemGroup/ms:*", xmlns))
             {
@@ -172,7 +172,7 @@ namespace MDK.Services
                     CheckFileReference(element, expectedGamePath, file, gameFile, badReferences);
                 var utilityFile = MDKPackage.UtilityFiles.FirstOrDefault(fileName => file.EndsWith(fileName, StringComparison.CurrentCultureIgnoreCase));
                 if (utilityFile != null)
-                    CheckFileReference(element, expectedUtilityPath, file, utilityFile, badReferences);
+                    CheckFileReference(element, expectedInstallPath, file, utilityFile, badReferences);
             }
         }
 
@@ -183,7 +183,7 @@ namespace MDK.Services
                 badReferences.Add(new BadReference(BadReferenceType.File, element, currentPath, correctPath));
         }
 
-        void AnalyzeReferences(XDocument document, XmlNamespaceManager xmlns, DirectoryInfo projectDir, string expectedGamePath, string expectedUtilityPath, ImmutableArray<BadReference>.Builder badReferences)
+        void AnalyzeReferences(XDocument document, XmlNamespaceManager xmlns, DirectoryInfo projectDir, string expectedGamePath, string expectedInstallPath, ImmutableArray<BadReference>.Builder badReferences)
         {
             foreach (var element in document.XPathSelectElements("/ms:Project/ms:ItemGroup/ms:Reference", xmlns))
             {
@@ -194,7 +194,7 @@ namespace MDK.Services
                     CheckAssemblyReference(projectDir, element, expectedGamePath, hintPath, gameAssemblyName, badReferences);
                 var utilityAssemblyName = MDKPackage.UtilityAssemblyNames.FirstOrDefault(dll => dll == include);
                 if (utilityAssemblyName != null)
-                    CheckAssemblyReference(projectDir, element, expectedUtilityPath, hintPath, utilityAssemblyName, badReferences);
+                    CheckAssemblyReference(projectDir, element, expectedInstallPath, hintPath, utilityAssemblyName, badReferences);
             }
         }
 

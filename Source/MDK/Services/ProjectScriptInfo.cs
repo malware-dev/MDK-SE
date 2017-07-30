@@ -26,7 +26,7 @@ namespace MDK.Services
             var name = projectName ?? Path.GetFileNameWithoutExtension(projectFileName);
             if (!File.Exists(fileName))
                 return new ProjectScriptInfo(fileName, name, false);
-            var mdkOptionsFileName = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName) ?? ".", @"..\mdk\mdk.options"));
+            var mdkOptionsFileName = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName) ?? ".", @"mdk\mdk.options"));
             if (!File.Exists(mdkOptionsFileName))
                 return new ProjectScriptInfo(fileName, name, false);
 
@@ -293,6 +293,12 @@ namespace MDK.Services
             if (UseManualGameBinPath)
                 return Path.GetFullPath(string.IsNullOrEmpty(GameBinPath) ? defaultPath : GameBinPath);
             return Path.GetFullPath(defaultPath);
+        }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return Name;
         }
     }
 }

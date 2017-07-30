@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using Malware.MDKUtilities;
-using Microsoft.Win32;
 
 namespace MDK.Services
 {
@@ -16,22 +14,19 @@ namespace MDK.Services
         /// <summary>
         /// Start space engineers with a dedicated plugin designed to update the ingame script whitelist cache file.
         /// </summary>
-        public void Refresh()
+        public void Refresh(string installPath)
         {
             var steam = new Steam();
             if (!steam.Exists)
-            {
-                throw new NotImplementedException();
-            }
+                throw new InvalidOperationException("Cannot find Steam");
+
             var appId = SpaceEngineers.SteamAppId;
-            var pluginPath = Path.Combine(Path.GetDirectoryName(new Uri(Assembly.GetEntryAssembly().CodeBase).LocalPath) ?? ".", "MDKWhitelistExtractor.dll");
-            var targetPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Malware", "SpaceEngineers", "Toolkit");
+            var pluginPath = Path.Combine(installPath, "MDKWhitelistExtractor.dll");
+            var targetPath = Path.Combine(installPath, "Analyzers");
             var directoryInfo = new DirectoryInfo(targetPath);
             if (!directoryInfo.Exists)
                 directoryInfo.Create();
             targetPath = Path.Combine(targetPath, "whitelist.cache");
-
-            Registry.SetValue(@"HKEY_CURRENT_USER\Software\Malware\DevKit\SpaceEngineers", "WhitelistPath", targetPath);
 
             var args = new List<string>
             {
@@ -48,8 +43,7 @@ namespace MDK.Services
                 {
                     FileName = steam.ExePath,
                     Arguments = string.Join(" ", args)
-                },
-                EnableRaisingEvents = true
+                }
             };
             process.Start();
         }

@@ -14,6 +14,11 @@ namespace Malware.MDKUtilities
     public class MDK
     {
         /// <summary>
+        /// Gets the game binary path as defined through <see cref="MDKUtilityFramework.Load"/>.
+        /// </summary>
+        public static string GameBinPath => MDKUtilityFramework.GameBinPath;
+
+        /// <summary>
         ///     The default implementation of the mocked Echo function. Simply dumps the content to the console and the debug
         ///     output.
         /// </summary>

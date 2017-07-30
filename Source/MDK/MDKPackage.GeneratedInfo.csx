@@ -27,7 +27,7 @@ foreach (var element in projectTemplate.XPathSelectElements("/ms:Project/ms:Item
     var hintPath = (string)element.Element(XName.Get("HintPath", Xmlns));
     if (hintPath?.StartsWith("$mdkgamebinpath$\\") ?? false)
         gameAssemblies.Add($"\"{(string)element.Attribute("Include")}\"");
-    if (hintPath?.StartsWith("$mdkutilitypath$\\") ?? false)
+    if (hintPath?.StartsWith("$mdkinstallpath$\\") ?? false)
         utilityAssemblies.Add($"\"{(string)element.Attribute("Include")}\"");
 }
 foreach (var element in projectTemplate.XPathSelectElements("/ms:Project/ms:ItemGroup/ms:*", xmlns))
@@ -35,7 +35,7 @@ foreach (var element in projectTemplate.XPathSelectElements("/ms:Project/ms:Item
     var include = (string)element.Attribute("Include");
     if (include?.StartsWith("$mdkgamebinpath$\\") ?? false)
         gameFiles.Add($"\"{include.Substring(16).Replace("\\", "\\\\")}\"");
-    if (include?.StartsWith("$mdkutilitypath$\\") ?? false)
+    if (include?.StartsWith("$mdkinstallpath$\\") ?? false)
         utilityFiles.Add($"\"{include.Substring(16).Replace("\\", "\\\\")}\"");
 }
 

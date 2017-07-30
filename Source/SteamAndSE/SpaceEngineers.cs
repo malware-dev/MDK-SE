@@ -10,6 +10,11 @@ namespace Malware.MDKUtilities
     class SpaceEngineers
     {
         /// <summary>
+        /// The <see cref="Steam"/> service
+        /// </summary>
+        public Steam Steam { get; } = new Steam();
+
+        /// <summary>
         /// The Steam App ID of Space Engineers
         /// </summary>
         public const long SteamAppId = 244850;
@@ -21,10 +26,9 @@ namespace Malware.MDKUtilities
         /// <returns></returns>
         public string GetInstallPath(params string[] subfolders)
         {
-            var steam = new Steam();
-            if (!steam.Exists)
+            if (!Steam.Exists)
                 return null;
-            var installFolder = steam.GetInstallFolder("SpaceEngineers", "Bin64\\SpaceEngineers.exe");
+            var installFolder = Steam.GetInstallFolder("SpaceEngineers", "Bin64\\SpaceEngineers.exe");
             if (string.IsNullOrEmpty(installFolder))
                 return null;
             if (subfolders == null || subfolders.Length == 0)

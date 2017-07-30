@@ -40,7 +40,7 @@ namespace MDK.Services
 
             while (true)
             {
-                if (!TryGetProperties(serviceProvider, out Properties props))
+                if (!TryGetProperties(serviceProvider, out EnvDTE.Properties props))
                     throw new WizardCancelledException();
 
                 if (!TryGetFinalUseManualGameBinPath(serviceProvider, props, out bool useManualGameBinPath))
@@ -79,20 +79,20 @@ namespace MDK.Services
             // ReSharper disable once SuspiciousTypeConversion.Global
             var serviceProvider = new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)project.DTE);
 
-            if (!TryGetProperties(serviceProvider, out Properties props))
+            if (!TryGetProperties(serviceProvider, out EnvDTE.Properties props))
                 return;
 
             if (!TryGetFinalBinPath(serviceProvider, props, out string binPath))
                 return;
 
-            if (!TryGetFinalInstallPath(serviceProvider, props, out string utilityPath))
+            if (!TryGetFinalInstallPath(serviceProvider, props, out string installPath))
                 return;
 
             var scriptUpgrades = new ScriptUpgrades();
             var result = scriptUpgrades.Analyze(project, new ScriptUpgradeAnalysisOptions
             {
                 DefaultGameBinPath = binPath,
-                InstallPath = utilityPath,
+                InstallPath = installPath,
                 TargetVersion = MDKPackage.Version
             });
             if (result.IsValid)
@@ -114,7 +114,7 @@ namespace MDK.Services
             return true;
         }
 
-        bool TryGetProperties(IServiceProvider serviceProvider, out Properties props)
+        bool TryGetProperties(IServiceProvider serviceProvider, out EnvDTE.Properties props)
         {
             while (true)
             {
@@ -135,7 +135,7 @@ namespace MDK.Services
             }
         }
 
-        bool TryGetFinalBinPath(IServiceProvider serviceProvider, Properties props, out string binPath)
+        bool TryGetFinalBinPath(IServiceProvider serviceProvider, EnvDTE.Properties props, out string binPath)
         {
             while (true)
             {
@@ -158,7 +158,7 @@ namespace MDK.Services
         }
 
 
-        bool TryGetFinalOutputPath(IServiceProvider serviceProvider, Properties props, out string outputPath)
+        bool TryGetFinalOutputPath(IServiceProvider serviceProvider, EnvDTE.Properties props, out string outputPath)
         {
             while (true)
             {
@@ -184,7 +184,7 @@ namespace MDK.Services
             }
         }
 
-        bool TryGetFinalInstallPath(IServiceProvider serviceProvider, Properties props, out string installPath)
+        bool TryGetFinalInstallPath(IServiceProvider serviceProvider, EnvDTE.Properties props, out string installPath)
         {
             while (true)
             {
@@ -202,19 +202,19 @@ namespace MDK.Services
             }
         }
 
-        bool TryGetFinalMinify(IServiceProvider serviceProvider, Properties props, out bool minify)
+        bool TryGetFinalMinify(IServiceProvider serviceProvider, EnvDTE.Properties props, out bool minify)
         {
             minify = (bool)(props.Item(nameof(MDKOptions.Minify))?.Value ?? false);
             return true;
         }
 
-        bool TryGetFinalUseManualGameBinPath(IServiceProvider serviceProvider, Properties props, out bool minify)
+        bool TryGetFinalUseManualGameBinPath(IServiceProvider serviceProvider, EnvDTE.Properties props, out bool minify)
         {
             minify = (bool)(props.Item(nameof(MDKOptions.UseManualGameBinPath))?.Value ?? false);
             return true;
         }
 
-        bool TryGetExtensionVersion(ServiceProvider serviceProvider, Properties props, out Version currentVersion)
+        bool TryGetExtensionVersion(ServiceProvider serviceProvider, EnvDTE.Properties props, out Version currentVersion)
         {
             currentVersion = MDKPackage.Version;
             return true;

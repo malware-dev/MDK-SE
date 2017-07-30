@@ -72,6 +72,11 @@
     <Compile Include="MDKPackage.GeneratedInfo.cs">
       <DependentUpon>MDKPackage.GeneratedInfo.csx</DependentUpon>
     </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
     <Compile Include="Services\BadReference.cs" />
     <Compile Include="Services\BadReferenceType.cs" />
     <Compile Include="Services\GitHub.cs" />
@@ -84,6 +89,10 @@
     <Compile Include="Services\XDocumentExtensions.cs" />
     <Compile Include="Views\DialogClosingEventArgs.cs" />
     <Compile Include="Views\DialogViewModel.cs" />
+    <Compile Include="Views\RefreshWhitelistCacheDialogModel.cs" />
+    <Compile Include="Views\RefreshWhitelistCacheDialog.xaml.cs">
+      <DependentUpon>RefreshWhitelistCacheDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\RequestUpgradeDialogModel.cs" />
     <Compile Include="Views\ButtonBar.xaml.cs">
       <DependentUpon>ButtonBar.xaml</DependentUpon>
@@ -130,6 +139,10 @@
     <None Include="Key.snk" />
     <None Include="MDKPackage.GeneratedInfo.csx" />
     <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
@@ -454,6 +467,10 @@
     <Page Include="Views\MDKOptionsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RefreshWhitelistCacheDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\RequestUpgradeDialog.xaml">
       <Generator>MSBuild:Compile</Generator>

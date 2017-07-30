@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using MDK.Properties;
 using MDK.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -25,7 +26,7 @@ namespace MDK.Commands
             else
                 result = VsShellUtilities.ShowMessageBox(ServiceProvider, "No new versions are available. Do you want to open the download page anyway?", "No New Version", OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_YESNO, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_SECOND);
             if (result == 6)
-                Process.Start("https://github.com/malware-dev/MDK-SE/releases");
+                Process.Start(Settings.Default.ReleasePageUrl);
         }
     }
 }
