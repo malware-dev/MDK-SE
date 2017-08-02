@@ -5,6 +5,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using EnvDTE;
+using Malware.MDKServices;
 using Malware.MDKUtilities;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -21,6 +22,7 @@ namespace MDK.Services
     public class IngameScriptWizard : IWizard
     {
         SpaceEngineers _spaceEngineers;
+        bool _promoteMDK = true;
 
         /// <summary>
         /// Creates an instance of <see cref="IngameScriptWizard"/>
@@ -38,36 +40,34 @@ namespace MDK.Services
         {
             var serviceProvider = new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)automationObject);
 
-            while (true)
-            {
-                if (!TryGetProperties(serviceProvider, out EnvDTE.Properties props))
-                    throw new WizardCancelledException();
+            if (!TryGetProperties(serviceProvider, out EnvDTE.Properties props))
+                throw new WizardCancelledException();
 
-                if (!TryGetFinalUseManualGameBinPath(serviceProvider, props, out bool useManualGameBinPath))
-                    throw new WizardCancelledException();
-                replacementsDictionary["$mdkusemanualgamebinpath$"] = useManualGameBinPath ? "yes" : "no";
+            if (!TryGetFinalUseManualGameBinPath(serviceProvider, props, out bool useManualGameBinPath))
+                throw new WizardCancelledException();
+            replacementsDictionary["$mdkusemanualgamebinpath$"] = useManualGameBinPath ? "yes" : "no";
 
-                if (!TryGetFinalBinPath(serviceProvider, props, out string binPath))
-                    throw new WizardCancelledException();
-                replacementsDictionary["$mdkgamebinpath$"] = binPath;
+            if (!TryGetFinalBinPath(serviceProvider, props, out string binPath))
+                throw new WizardCancelledException();
+            replacementsDictionary["$mdkgamebinpath$"] = binPath;
 
-                if (!TryGetFinalOutputPath(serviceProvider, props, out string outputPath))
-                    throw new WizardCancelledException();
-                replacementsDictionary["$mdkoutputpath$"] = outputPath;
+            if (!TryGetFinalOutputPath(serviceProvider, props, out string outputPath))
+                throw new WizardCancelledException();
+            replacementsDictionary["$mdkoutputpath$"] = outputPath;
 
-                if (!TryGetFinalInstallPath(serviceProvider, props, out string installPath))
-                    throw new WizardCancelledException();
-                replacementsDictionary["$mdkinstallpath$"] = installPath;
+            if (!TryGetFinalInstallPath(serviceProvider, props, out string installPath))
+                throw new WizardCancelledException();
+            replacementsDictionary["$mdkinstallpath$"] = installPath;
 
-                if (!TryGetFinalMinify(serviceProvider, props, out bool minify))
-                    throw new WizardCancelledException();
-                replacementsDictionary["$mdkminify$"] = minify ? "yes" : "no";
+            if (!TryGetFinalMinify(serviceProvider, props, out bool minify))
+                throw new WizardCancelledException();
+            replacementsDictionary["$mdkminify$"] = minify ? "yes" : "no";
 
-                if (!TryGetExtensionVersion(serviceProvider, props, out Version version))
-                    throw new WizardCancelledException();
-                replacementsDictionary["$mdkversion$"] = version.ToString();
-                return;
-            }
+            replacementsDictionary["$mdkversion$"] = MDKPackage.Version.ToString();
+
+            if (!TryGetFinalPromoteMDK(serviceProvider, props, out bool promoteMDK))
+                _promoteMDK = true;
+            _promoteMDK = promoteMDK;
         }
 
         /// <inheritdoc />
@@ -93,7 +93,11 @@ namespace MDK.Services
             {
                 DefaultGameBinPath = binPath,
                 InstallPath = installPath,
-                TargetVersion = MDKPackage.Version
+                TargetVersion = MDKPackage.Version,
+                GameAssemblyNames = MDKPackage.GameAssemblyNames,
+                GameFiles = MDKPackage.GameFiles,
+                UtilityAssemblyNames = MDKPackage.UtilityAssemblyNames,
+                UtilityFiles = MDKPackage.UtilityFiles
             });
             if (result.IsValid)
                 return;
@@ -111,6 +115,14 @@ namespace MDK.Services
 
         bool IWizard.ShouldAddProjectItem(string filePath)
         {
+            switch (filePath.ToLowerInvariant())
+            {
+                case "thumb.png":
+                    return !_promoteMDK;
+
+                case "thumbwithpromotion.png":
+                    return _promoteMDK;
+            }
             return true;
         }
 
@@ -208,15 +220,15 @@ namespace MDK.Services
             return true;
         }
 
-        bool TryGetFinalUseManualGameBinPath(IServiceProvider serviceProvider, EnvDTE.Properties props, out bool minify)
+        bool TryGetFinalPromoteMDK(IServiceProvider serviceProvider, EnvDTE.Properties props, out bool promoteMDK)
         {
-            minify = (bool)(props.Item(nameof(MDKOptions.UseManualGameBinPath))?.Value ?? false);
+            promoteMDK = (bool)(props.Item(nameof(MDKOptions.PromoteMDK))?.Value ?? false);
             return true;
         }
 
-        bool TryGetExtensionVersion(ServiceProvider serviceProvider, EnvDTE.Properties props, out Version currentVersion)
+        bool TryGetFinalUseManualGameBinPath(IServiceProvider serviceProvider, EnvDTE.Properties props, out bool minify)
         {
-            currentVersion = MDKPackage.Version;
+            minify = (bool)(props.Item(nameof(MDKOptions.UseManualGameBinPath))?.Value ?? false);
             return true;
         }
 

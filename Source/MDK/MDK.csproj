@@ -76,16 +76,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Services\BadReference.cs" />
-    <Compile Include="Services\BadReferenceType.cs" />
-    <Compile Include="Services\GitHub.cs" />
-    <Compile Include="Services\GitHubRelease.cs" />
-    <Compile Include="Services\ProjectScriptInfoException.cs" />
-    <Compile Include="Services\ScriptProjectAnalysisResult.cs" />
-    <Compile Include="Services\ScriptSolutionAnalysisResult.cs" />
-    <Compile Include="Services\ScriptUpgradeAnalysisOptions.cs" />
-    <Compile Include="Services\ScriptUpgrades.cs" />
-    <Compile Include="Services\XDocumentExtensions.cs" />
+    <Compile Include="Resources\Bitmaps.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Bitmaps.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Services\IngameScriptWizard.cs" />
     <Compile Include="Views\DialogClosingEventArgs.cs" />
     <Compile Include="Views\DialogViewModel.cs" />
     <Compile Include="Views\RefreshWhitelistCacheDialogModel.cs" />
@@ -100,22 +96,18 @@
       <DependentUpon>RequestUpgradeDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="VisualStudio\Animation.cs" />
-    <Compile Include="VisualStudio\DTEExtensions.cs" />
     <Compile Include="VisualStudio\ExtendedPackage.cs" />
     <Compile Include="VisualStudio\StatusBarAnimation.cs" />
     <Compile Include="VisualStudio\StatusBarProgressBar.cs" />
     <Compile Include="VisualStudio\Command.cs" />
     <Compile Include="Commands\ScriptOptionsCommand.cs" />
     <Compile Include="Build\DeclarationFullNameFlags.cs" />
-    <Compile Include="Services\DictionaryFile.cs" />
-    <Compile Include="Services\IngameScriptWizard.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Commands\RefreshWhitelistCacheCommand.cs" />
     <Compile Include="Commands\DeployScriptCommand.cs" />
     <Compile Include="MDKPackage.cs" />
     <Compile Include="Build\StringExtensions.cs" />
     <Compile Include="Views\ModelCommand.cs" />
-    <Compile Include="Services\ProjectScriptInfo.cs" />
     <Compile Include="Views\ScriptOptionsDialogModel.cs" />
     <Compile Include="Views\BooleanVisibilityConverter.cs" />
     <Compile Include="Views\FolderBox.xaml.cs">
@@ -156,10 +148,17 @@
     </Content>
     <Resource Include="Resources\backdrop.jpg" />
     <Resource Include="Resources\malware-circular.png" />
+    <None Include="Resources\Image1.bmp" />
+    <Content Include="Resources\PBIcon.png" />
+    <Content Include="Resources\PBIconWithPromotion.png" />
     <Content Include="Resources\RunMDKToolCommand.png" />
     <Content Include="Resources\RunMDKToolCommandPackage.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MDKServices\MDKServices.csproj">
+      <Project>{b76a0b75-34b1-4110-accd-6cea981fe0d6}</Project>
+      <Name>MDKServices</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MDKAnalyzer\MDKAnalyzer.csproj">
       <Project>{012BB8BB-043F-42CE-976D-5E874D489EB5}</Project>
       <Name>MDKAnalyzer</Name>
@@ -232,10 +231,10 @@
       <HintPath>..\packages\Microsoft.CodeAnalysis.CSharp.2.3.1\lib\netstandard1.3\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
       <ForceIncludeInVSIX>true</ForceIncludeInVSIX>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.CSharp.Extensions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <!--<Reference Include="Microsoft.CodeAnalysis.CSharp.Extensions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeAnalysis.CSharp.Extensions.1.0.0\lib\portable45-net45+win8\Microsoft.CodeAnalysis.CSharp.Extensions.dll</HintPath>
       <ForceIncludeInVSIX>true</ForceIncludeInVSIX>
-    </Reference>
+    </Reference>-->
     <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces, Version=2.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeAnalysis.CSharp.Workspaces.2.3.1\lib\netstandard1.3\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
       <ForceIncludeInVSIX>true</ForceIncludeInVSIX>
@@ -449,6 +448,11 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\Bitmaps.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Bitmaps.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="VSPackage.resx">
       <MergeWithCTO>true</MergeWithCTO>
       <ManifestResourceName>VSPackage</ManifestResourceName>

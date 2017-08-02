@@ -1,10 +1,10 @@
 using System.Collections.Immutable;
 using EnvDTE;
 
-namespace MDK.Services
+namespace Malware.MDKServices
 {
     /// <summary>
-    /// Represents the results of an analysis made by <see cref="ScriptUpgrades.Analyze(Project,ScriptUpgradeAnalysisOptions,MDKPackage)"/>.
+    /// Represents the results of an analysis made by <see cref="ScriptUpgrades.Analyze(Project,ScriptUpgradeAnalysisOptions)"/>.
     /// </summary>
     public class ScriptSolutionAnalysisResult
     {

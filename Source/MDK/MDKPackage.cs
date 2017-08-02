@@ -6,8 +6,11 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using EnvDTE;
+using JetBrains.Annotations;
+using Malware.MDKServices;
 using MDK.Commands;
 using MDK.Services;
+using MDK.Views;
 using MDK.VisualStudio;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
@@ -163,12 +166,24 @@ namespace MDK
             {
                 DefaultGameBinPath = Options.GetActualGameBinPath(),
                 InstallPath = InstallPath.FullName,
-                TargetVersion = Version
-            }, this);
+                TargetVersion = Version,
+                GameAssemblyNames = GameAssemblyNames,
+                GameFiles = GameFiles,
+                UtilityAssemblyNames = UtilityAssemblyNames,
+                UtilityFiles = UtilityFiles
+            });
             if (!result.HasScriptProjects || result.IsValid)
                 return;
 
-            ScriptUpgrades.QueryUpgrade(this, result);
+            QueryUpgrade(this, result);
+        }
+
+        void QueryUpgrade([NotNull] MDKPackage package, ScriptSolutionAnalysisResult result)
+        {
+            if (package == null)
+                throw new ArgumentNullException(nameof(package));
+            var model = new RequestUpgradeDialogModel(package, result);
+            RequestUpgradeDialog.ShowDialog(model);
         }
 
         async void SolutionExistsAndFullyLoadedContextOnUIContextChanged(object sender, UIContextChangedEventArgs e)
@@ -183,13 +198,17 @@ namespace MDK
             {
                 DefaultGameBinPath = Options.GetActualGameBinPath(),
                 InstallPath = InstallPath.FullName,
-                TargetVersion = Version
-            }, this);
+                TargetVersion = Version,
+                GameAssemblyNames = GameAssemblyNames,
+                GameFiles = GameFiles,
+                UtilityAssemblyNames = UtilityAssemblyNames,
+                UtilityFiles = UtilityFiles
+            });
             if (!result.HasScriptProjects)
                 return;
 
             if (!result.IsValid)
-                ScriptUpgrades.QueryUpgrade(this, result);
+                QueryUpgrade(this, result);
 
             CheckForUpdates();
         }

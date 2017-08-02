@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using EnvDTE;
 using JetBrains.Annotations;
+using Malware.MDKServices;
 using MDK.Services;
 using MDK.VisualStudio;
 

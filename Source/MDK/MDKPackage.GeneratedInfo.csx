@@ -40,7 +40,7 @@ foreach (var element in projectTemplate.XPathSelectElements("/ms:Project/ms:Item
 }
 
 Context.Output.WriteLine($@"using System;
-using System.Collections.ObjectModel;
+using System.Collections.Immutable;
 
 namespace {namespaceName} 
 {{
@@ -54,33 +54,33 @@ namespace {namespaceName}
         /// <summary>
         /// A list of the game assemblies referenced by script projects
         /// </summary>
-        public static readonly ReadOnlyCollection<string> GameAssemblyNames = new ReadOnlyCollection<string>(new string[] 
+        public static readonly ImmutableArray<string> GameAssemblyNames = new string[] 
         {{
             {string.Join($",{Environment.NewLine}            ", gameAssemblies)}
-        }});
+        }}.ToImmutableArray();
 
         /// <summary>
         /// A list of the utility assemblies referenced by script projects
         /// </summary>
-        public static readonly ReadOnlyCollection<string> UtilityAssemblyNames = new ReadOnlyCollection<string>(new string[] 
+        public static readonly ImmutableArray<string> UtilityAssemblyNames = new string[] 
         {{
             {string.Join($",{Environment.NewLine}            ", utilityAssemblies)}
-        }});
+        }}.ToImmutableArray();
 
         /// <summary>
         /// A list of the game files included by script projects
         /// </summary>
-        public static readonly ReadOnlyCollection<string> GameFiles = new ReadOnlyCollection<string>(new string[] 
+        public static readonly ImmutableArray<string> GameFiles = new string[] 
         {{
             {string.Join($",{Environment.NewLine}            ", gameFiles)}
-        }});
+        }}.ToImmutableArray();
 
         /// <summary>
         /// A list of the utility files included by script projects
         /// </summary>
-        public static readonly ReadOnlyCollection<string> UtilityFiles = new ReadOnlyCollection<string>(new string[] 
+        public static readonly ImmutableArray<string> UtilityFiles = new string[] 
         {{
             {string.Join($",{Environment.NewLine}            ", utilityFiles)}
-        }});
+        }}.ToImmutableArray();
 	}}
 }}");

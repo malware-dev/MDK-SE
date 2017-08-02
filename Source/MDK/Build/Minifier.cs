@@ -256,7 +256,9 @@ namespace MDK.Build
                 var modifiers = node.Modifiers.Select(m => m.Kind()).ToList();
                 if (modifiers.Remove(SyntaxKind.ReadOnlyKeyword))
                 {
-                    return node.WithModifiers(modifiers.ToArray());
+                    return node.WithModifiers(
+                        SyntaxFactory.TokenList(modifiers.Select(SyntaxFactory.Token).ToArray())
+                        );
                 }
                 return changed;
             }

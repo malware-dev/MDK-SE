@@ -1,7 +1,7 @@
 ﻿using System;
 using EnvDTE;
 
-namespace MDK.VisualStudio
+namespace Malware.MDKServices
 {
     /// <summary>
     /// Extension helper method for the Visual Studio DTE

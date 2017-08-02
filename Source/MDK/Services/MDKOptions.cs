@@ -24,6 +24,7 @@ namespace MDK.Services
         bool _notifyUpdates = true;
         bool _notifyPrereleaseUpdates;
         SpaceEngineers _spaceEngineers;
+        bool _promoteMDK = true;
 
         /// <summary>
         /// Creates an instance of <see cref="MDKOptions" />
@@ -130,6 +131,24 @@ namespace MDK.Services
                 if (_minify == value)
                     return;
                 _minify = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Whether script projects should default to generating minified scripts.
+        /// </summary>
+        [Category("MDK/SE")]
+        [DisplayName("Promote MDK on thumbnail")]
+        [Description("Whether to use a variant of the game's thumbnail which promotes MDK or the default game one.")]
+        public bool PromoteMDK
+        {
+            get => _promoteMDK;
+            set
+            {
+                if (_promoteMDK == value)
+                    return;
+                _promoteMDK = value;
                 OnPropertyChanged();
             }
         }

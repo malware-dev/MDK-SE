@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace MDK.Services
+namespace Malware.MDKServices
 {
     /// <summary>
     /// Provides basic information about a single release on GitHub.

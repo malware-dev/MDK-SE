@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace MDK.Services
+namespace Malware.MDKServices
 {
     /// <summary>
     /// Exception which happens during operations in <see cref="ProjectScriptInfo"/>

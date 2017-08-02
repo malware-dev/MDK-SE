@@ -1,4 +1,4 @@
-namespace MDK.Services
+namespace Malware.MDKServices
 {
     /// <summary>
     /// Defines the type of a <see cref="BadReference"/>

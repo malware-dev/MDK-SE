@@ -59,10 +59,16 @@
                        Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
                        Visibility="{Binding UseManualOutputPath, Converter={StaticResource converters/inverseBooleanVisibility}}" />
 
-            <CheckBox Grid.Column="0" Grid.Row="2" IsChecked="{Binding NotifyUpdates}">Check for updates</CheckBox>
-            <CheckBox Grid.Column="1" Grid.Row="3" IsChecked="{Binding NotifyPrereleaseUpdates}">Include prerelease versions</CheckBox>
+            <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" IsChecked="{Binding NotifyUpdates}" VerticalAlignment="Center" VerticalContentAlignment="Center">
+                <Label>Check for updates</Label></CheckBox>
+            <CheckBox Grid.Column="1" Grid.Row="2" IsChecked="{Binding NotifyPrereleaseUpdates}" VerticalAlignment="Center" VerticalContentAlignment="Center">
+                <Label>Include prerelease versions</Label>
+            </CheckBox>
+            <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" IsChecked="{Binding PromoteMDK}" VerticalAlignment="Center" VerticalContentAlignment="Center">
+                <Label>Promote MDK on the default script thumbnail</Label>
+            </CheckBox>
             
-            <views:ButtonBar Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="5" VerticalAlignment="Bottom" />
+            <views:ButtonBar Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="4" VerticalAlignment="Bottom" />
         </Grid>
     </Border>
 </UserControl>

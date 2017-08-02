@@ -8,12 +8,12 @@ using System.Runtime.CompilerServices;
 using System.Xml.Linq;
 using JetBrains.Annotations;
 
-namespace MDK.Services
+namespace Malware.MDKServices
 {
     /// <summary>
     /// Provides information about a given project and its script.
     /// </summary>
-    public class ProjectScriptInfo : INotifyPropertyChanged
+    public partial class ProjectScriptInfo : INotifyPropertyChanged
     {
         /// <summary>
         /// Loads script information from the given project file.
@@ -273,7 +273,7 @@ namespace MDK.Services
                 if (!mdkOptionsFileName.Exists)
                 {
                     document = new XDocument(new XDeclaration("1.0", "UTF-8", "yes"));
-                    root = new XElement("mdk", new XAttribute("version", MDKPackage.Version));
+                    root = new XElement("mdk", new XAttribute("version", TargetPackageVersion));
                     document.Add(root);
                 }
                 else

@@ -8,10 +8,8 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 using EnvDTE;
 using JetBrains.Annotations;
-using MDK.Views;
-using MDK.VisualStudio;
 
-namespace MDK.Services
+namespace Malware.MDKServices
 {
     /// <summary>
     /// A service designed to detect whether a solution's script projects are in need of an upgrade after the VSPackage has been updated.
@@ -33,23 +31,38 @@ namespace MDK.Services
             return Path.GetFullPath(Path.Combine(baseDirectory.FullName, path));
         }
 
+        int _busyCount;
+
+        /// <summary>
+        /// Fired whenever the <see cref="IsBusy"/> property changes.
+        /// </summary>
+        public event EventHandler IsBusyChanged;
+
         /// <summary>
         /// Determines whether the service is currently busy working.
         /// </summary>
-        public bool IsBusy { get; private set; }
+        public bool IsBusy => _busyCount > 0;
 
         /// <summary>
-        /// Shows a dialog to inform the user that some script projects needs to be upgraded. Performs the
-        /// upgrade if the user accepts.
+        /// Called to begin a work load block. Manages the <see cref="IsBusy"/> property and <see cref="IsBusyChanged"/> event.
         /// </summary>
-        /// <param name="package"></param>
-        /// <param name="result"></param>
-        public void QueryUpgrade([NotNull] MDKPackage package, ScriptSolutionAnalysisResult result)
+        protected void BeginBusy()
         {
-            if (package == null)
-                throw new ArgumentNullException(nameof(package));
-            var model = new RequestUpgradeDialogModel(package, result);
-            RequestUpgradeDialog.ShowDialog(model);
+            _busyCount++;
+            if (_busyCount == 1)
+                IsBusyChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// Called to end a work load block. Manages the <see cref="IsBusy"/> property and <see cref="IsBusyChanged"/> event.
+        /// </summary>
+        protected void EndBusy()
+        {
+            if (_busyCount == 0)
+                return;
+            _busyCount--;
+            if (_busyCount == 0)
+                IsBusyChanged?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -57,15 +70,10 @@ namespace MDK.Services
         /// </summary>
         /// <param name="solution"></param>
         /// <param name="options"></param>
-        /// <param name="package"></param>
         /// <returns></returns>
-        public async Task<ScriptSolutionAnalysisResult> AnalyzeAsync([NotNull] Solution solution, ScriptUpgradeAnalysisOptions options, MDKPackage package = null)
+        public async Task<ScriptSolutionAnalysisResult> AnalyzeAsync([NotNull] Solution solution, ScriptUpgradeAnalysisOptions options)
         {
-            StatusBarAnimation animation = null;
-            if (package != null)
-                animation = new StatusBarAnimation(package, Animation.General);
-
-            IsBusy = true;
+            BeginBusy();
             try
             {
                 var results = (await Task.WhenAll(solution.Projects.Cast<Project>().Select(project => Task.Run(() => AnalyzeProject(project, options)))))
@@ -77,8 +85,7 @@ namespace MDK.Services
             }
             finally
             {
-                IsBusy = false;
-                animation?.Dispose();
+                EndBusy();
             }
         }
 
@@ -87,23 +94,17 @@ namespace MDK.Services
         /// </summary>
         /// <param name="project"></param>
         /// <param name="options"></param>
-        /// <param name="package"></param>
         /// <returns></returns>
-        public async Task<ScriptSolutionAnalysisResult> AnalyzeAsync([NotNull] Project project, ScriptUpgradeAnalysisOptions options, MDKPackage package = null)
+        public async Task<ScriptSolutionAnalysisResult> AnalyzeAsync([NotNull] Project project, ScriptUpgradeAnalysisOptions options)
         {
-            StatusBarAnimation animation = null;
-            if (package != null)
-                animation = new StatusBarAnimation(package, Animation.General);
-
-            IsBusy = true;
+            BeginBusy();
             try
             {
-                return await Task.Run(() => Analyze(project, options, package));
+                return await Task.Run(() => Analyze(project, options));
             }
             finally
             {
-                IsBusy = false;
-                animation?.Dispose();
+                EndBusy();
             }
         }
 
@@ -112,15 +113,10 @@ namespace MDK.Services
         /// </summary>
         /// <param name="project"></param>
         /// <param name="options"></param>
-        /// <param name="package"></param>
         /// <returns></returns>
-        public ScriptSolutionAnalysisResult Analyze([NotNull] Project project, ScriptUpgradeAnalysisOptions options, MDKPackage package = null)
+        public ScriptSolutionAnalysisResult Analyze([NotNull] Project project, ScriptUpgradeAnalysisOptions options)
         {
-            StatusBarAnimation animation = null;
-            if (package != null)
-                animation = new StatusBarAnimation(package, Animation.General);
-
-            IsBusy = true;
+            BeginBusy();
             try
             {
                 var result = AnalyzeProject(project, options);
@@ -133,8 +129,7 @@ namespace MDK.Services
             }
             finally
             {
-                IsBusy = false;
-                animation?.Dispose();
+                EndBusy();
             }
         }
 
@@ -155,22 +150,22 @@ namespace MDK.Services
             var xmlns = new XmlNamespaceManager(new NameTable());
             xmlns.AddNamespace("ms", Xmlns);
 
-            AnalyzeReferences(document, xmlns, projectDir, expectedGamePath, expectedInstallPath, badReferences);
-            AnalyzeFiles(document, xmlns, projectDir, expectedGamePath, expectedInstallPath, badReferences);
+            AnalyzeReferences(options, document, xmlns, projectDir, expectedGamePath, expectedInstallPath, badReferences);
+            AnalyzeFiles(options, document, xmlns, projectDir, expectedGamePath, expectedInstallPath, badReferences);
 
             return new ScriptProjectAnalysisResult(projectInfo, document, badReferences.ToImmutable());
         }
 
-        void AnalyzeFiles(XDocument document, XmlNamespaceManager xmlns, DirectoryInfo projectDir, string expectedGamePath, string expectedInstallPath, ImmutableArray<BadReference>.Builder badReferences)
+        void AnalyzeFiles(ScriptUpgradeAnalysisOptions options, XDocument document, XmlNamespaceManager xmlns, DirectoryInfo projectDir, string expectedGamePath, string expectedInstallPath, ImmutableArray<BadReference>.Builder badReferences)
         {
             foreach (var element in document.XPathSelectElements("/ms:Project/ms:ItemGroup/ms:*", xmlns))
             {
                 var include = (string)element.Attribute("Include");
                 var file = ResolvePath(projectDir, include);
-                var gameFile = MDKPackage.GameFiles.FirstOrDefault(fileName => file.EndsWith(fileName, StringComparison.CurrentCultureIgnoreCase));
+                var gameFile = options.GameFiles.FirstOrDefault(fileName => file.EndsWith(fileName, StringComparison.CurrentCultureIgnoreCase));
                 if (gameFile != null)
                     CheckFileReference(element, expectedGamePath, file, gameFile, badReferences);
-                var utilityFile = MDKPackage.UtilityFiles.FirstOrDefault(fileName => file.EndsWith(fileName, StringComparison.CurrentCultureIgnoreCase));
+                var utilityFile = options.UtilityFiles.FirstOrDefault(fileName => file.EndsWith(fileName, StringComparison.CurrentCultureIgnoreCase));
                 if (utilityFile != null)
                     CheckFileReference(element, expectedInstallPath, file, utilityFile, badReferences);
             }
@@ -183,16 +178,16 @@ namespace MDK.Services
                 badReferences.Add(new BadReference(BadReferenceType.File, element, currentPath, correctPath));
         }
 
-        void AnalyzeReferences(XDocument document, XmlNamespaceManager xmlns, DirectoryInfo projectDir, string expectedGamePath, string expectedInstallPath, ImmutableArray<BadReference>.Builder badReferences)
+        void AnalyzeReferences(ScriptUpgradeAnalysisOptions options, XDocument document, XmlNamespaceManager xmlns, DirectoryInfo projectDir, string expectedGamePath, string expectedInstallPath, ImmutableArray<BadReference>.Builder badReferences)
         {
             foreach (var element in document.XPathSelectElements("/ms:Project/ms:ItemGroup/ms:Reference", xmlns))
             {
                 var include = (string)element.Attribute("Include");
                 var hintPath = (string)element.Element(XName.Get("HintPath", Xmlns));
-                var gameAssemblyName = MDKPackage.GameAssemblyNames.FirstOrDefault(dll => dll == include);
+                var gameAssemblyName = options.GameAssemblyNames.FirstOrDefault(dll => dll == include);
                 if (gameAssemblyName != null)
                     CheckAssemblyReference(projectDir, element, expectedGamePath, hintPath, gameAssemblyName, badReferences);
-                var utilityAssemblyName = MDKPackage.UtilityAssemblyNames.FirstOrDefault(dll => dll == include);
+                var utilityAssemblyName = options.UtilityAssemblyNames.FirstOrDefault(dll => dll == include);
                 if (utilityAssemblyName != null)
                     CheckAssemblyReference(projectDir, element, expectedInstallPath, hintPath, utilityAssemblyName, badReferences);
             }

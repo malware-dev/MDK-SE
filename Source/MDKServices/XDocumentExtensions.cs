@@ -1,6 +1,6 @@
 ﻿using System.Xml.Linq;
 
-namespace MDK.Services
+namespace Malware.MDKServices
 {
     /// <summary>
     /// Utility extensions for XDocument

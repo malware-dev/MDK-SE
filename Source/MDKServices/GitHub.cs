@@ -4,7 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace MDK.Services
+namespace Malware.MDKServices
 {
     /// <summary>
     /// A service providing access to GitHub information

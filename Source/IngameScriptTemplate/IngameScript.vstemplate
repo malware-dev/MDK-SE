@@ -20,6 +20,8 @@
       <ProjectItem ReplaceParameters="true">MDK\MDK.options</ProjectItem>
       <ProjectItem ReplaceParameters="true" OpenInEditor="true">Program.cs</ProjectItem>
       <ProjectItem ReplaceParameters="true">Readme.cs</ProjectItem>
+      <ProjectItem TargetFileName="thumb.png">thumb.png</ProjectItem>
+      <ProjectItem TargetFileName="thumb.png">thumbwithpromotion.png</ProjectItem>
     </Project>
   </TemplateContent>
   <WizardExtension>

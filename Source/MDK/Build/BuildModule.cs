@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Malware.MDKServices;
 using MDK.Services;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -184,6 +185,10 @@ namespace MDK.Build
                 if (!outputInfo.Exists)
                     outputInfo.Create();
                 File.WriteAllText(Path.Combine(outputInfo.FullName, "script.cs"), script.Replace("\r\n", "\n"), Encoding.UTF8);
+
+                var thumbFile = new FileInfo(Path.Combine(Path.GetDirectoryName(project.FilePath) ?? ".", "thumb.png"));
+                if (thumbFile.Exists)
+                    thumbFile.CopyTo(Path.Combine(outputInfo.FullName, "thumb.png"), true);
             }
             catch (Exception e)
             {
