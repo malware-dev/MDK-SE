@@ -11,6 +11,6 @@ A toolkit to help with ingame script (programmable block) development for Keen S
 
 Space Engineers is trademarked to Keen Software House. This toolkit is fan-made, and its developer has no relation to Keen Software House.
 
-See the [MDK/SE Wiki page](https://github.com/malware-dev/MDK-SE/wiki) for information on how to use this extension.
-
-See also [Quick Introduction to Space Engineers Ingame Scripts](https://github.com/malware-dev/MDK-SE/wiki/Quick-Introduction-to-Space-Engineers-Ingame-Scripts). You don't have to use the extension to get something out of the general tutorial.
+[MDK/SE Wiki page](https://github.com/malware-dev/MDK-SE/wiki)  
+[Getting Started](https://github.com/malware-dev/MDK-SE/wiki/Getting-Started)  
+[Quick Introduction to Space Engineers Ingame Scripts](https://github.com/malware-dev/MDK-SE/wiki/Quick-Introduction-to-Space-Engineers-Ingame-Scripts) (You don't have to use the extension to get something out of this guide)  
