@@ -11,7 +11,8 @@ namespace Malware.BuildForPublish
 {
     class Program
     {
-        const string Xmlns = "http://schemas.microsoft.com/developer/vsx-schema/2011";
+        const string VsxXmlns = "http://schemas.microsoft.com/developer/vsx-schema/2011";
+        const string SetXmlns = "http://schemas.microsoft.com/VisualStudio/2004/01/settings";
 
         static void Main(string[] args)
         {
@@ -21,19 +22,50 @@ namespace Malware.BuildForPublish
                 return;
             }
 
+            bool isPrerelease = false;
+            Console.Write("Is this to be a prerelease version? Y/N/ESC>");
+            while (true)
+            {
+                var res = Console.ReadKey(true);
+                if (res.Key == ConsoleKey.Y)
+                {
+                    isPrerelease = true;
+                    break;
+                }
+                if (res.Key == ConsoleKey.N)
+                {
+                    isPrerelease = false;
+                    break;
+                }
+                if (res.Key == ConsoleKey.Escape)
+                {
+                    return;
+                }
+            }
+            Console.WriteLine();
             var msbuildExe = ToolLocationHelper.GetPathToBuildToolsFile("msbuild.exe", ToolLocationHelper.CurrentToolsVersion);
             var solutionPath = Path.GetFullPath(args[0]);
             var manifestPath = Path.Combine(Path.GetDirectoryName(solutionPath), @"MDK\source.extension.vsixmanifest");
+            var appConfigPath = Path.Combine(Path.GetDirectoryName(solutionPath), @"MDK\other.xml");
 
-            UpdateVersion(manifestPath);
+            UpdateManifestVersion(manifestPath);
+            UpdateAppConfigVersion(appConfigPath, isPrerelease);
             Build(msbuildExe, solutionPath);
         }
 
-        static void UpdateVersion(string manifestPath)
+        static void UpdateAppConfigVersion(string appConfigPath, bool isPrerelease)
+        {
+            var document = XDocument.Load(appConfigPath);
+            var element = document.XPathSelectElement("/Other/IsPrerelease");
+            element.Value = isPrerelease.ToString();
+            document.Save(appConfigPath);
+        }
+
+        static void UpdateManifestVersion(string manifestPath)
         {
             var document = XDocument.Load(manifestPath);
             var xmlns = new XmlNamespaceManager(new NameTable());
-            xmlns.AddNamespace("ms", Xmlns);
+            xmlns.AddNamespace("ms", VsxXmlns);
             var identityElement = document.XPathSelectElement("/ms:PackageManifest/ms:Metadata/ms:Identity", xmlns);
             var versionAttribute = identityElement.Attribute("Version");
             var version = new Version((string)versionAttribute);

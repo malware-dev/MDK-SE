@@ -25,6 +25,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <CheckBox Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" VerticalContentAlignment="Center"
@@ -59,16 +60,20 @@
                        Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
                        Visibility="{Binding UseManualOutputPath, Converter={StaticResource converters/inverseBooleanVisibility}}" />
 
-            <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" IsChecked="{Binding NotifyUpdates}" VerticalAlignment="Center" VerticalContentAlignment="Center">
-                <Label>Check for updates</Label></CheckBox>
-            <CheckBox Grid.Column="1" Grid.Row="2" IsChecked="{Binding NotifyPrereleaseUpdates}" VerticalAlignment="Center" VerticalContentAlignment="Center">
+            <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" FontSize="12" Margin="0,8,0,0">Current Version: <TextBlock Text="{Binding Version}" /></TextBlock>
+            <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" IsChecked="{Binding NotifyUpdates}" VerticalAlignment="Center" VerticalContentAlignment="Center">
+                <Label>Check for updates</Label>
+            </CheckBox>
+            <CheckBox Grid.Column="1" Grid.Row="3" IsChecked="{Binding NotifyPrereleaseUpdates}" VerticalAlignment="Center" VerticalContentAlignment="Center" Visibility="{Binding IsPrerelease, Converter={StaticResource converters/inverseBooleanVisibility}}">
                 <Label>Include prerelease versions</Label>
             </CheckBox>
-            <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" IsChecked="{Binding PromoteMDK}" VerticalAlignment="Center" VerticalContentAlignment="Center">
+            <TextBlock FontSize="12" Grid.Column="1" Grid.Row="3" VerticalAlignment="Center" Visibility="{Binding IsPrerelease, Converter={StaticResource converters/booleanVisibility}}">A prerelease version will always check for new prereleases</TextBlock>
+
+            <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" IsChecked="{Binding PromoteMDK}" VerticalAlignment="Center" VerticalContentAlignment="Center">
                 <Label>Promote MDK on the default script thumbnail</Label>
             </CheckBox>
             
-            <views:ButtonBar Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="4" VerticalAlignment="Bottom" />
+            <views:ButtonBar Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="5" VerticalAlignment="Bottom" />
         </Grid>
     </Border>
 </UserControl>

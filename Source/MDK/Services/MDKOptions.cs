@@ -42,6 +42,16 @@ namespace MDK.Services
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
+        /// Determines whether the extension is a prerelease version
+        /// </summary>
+        public bool IsPrerelease => MDKPackage.IsPrerelease;
+
+        /// <summary>
+        /// Gets the current package version
+        /// </summary>
+        public string Version =>  IsPrerelease? $"v{MDKPackage.Version}-pre" : $"v{MDKPackage.Version}";
+
+        /// <summary>
         /// Determines whether <see cref="GameBinPath"/> should be used rather than the automatically retrieved one.
         /// </summary>
         [Category("MDK/SE")]

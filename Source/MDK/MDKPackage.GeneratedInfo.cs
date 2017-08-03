@@ -8,7 +8,22 @@ namespace MDK
 	    /// <summary>
 		/// The current package version
 		/// </summary>
-		public static readonly Version Version = new Version("0.9.19");
+		public static readonly Version Version = new Version("0.9.32");
+
+	    /// <summary>
+		/// Determines whether this version is a prerelease version
+		/// </summary>
+        public const bool IsPrerelease = true;
+
+	    /// <summary>
+		/// Gets the help page navigation URL
+		/// </summary>
+        public const string HelpPageUrl = "https://github.com/malware-dev/MDK-SE/wiki";
+
+	    /// <summary>
+		/// Gets the release page navigation URL
+		/// </summary>
+        public const string ReleasePageUrl = "https://github.com/malware-dev/MDK-SE/releases";
 
         /// <summary>
         /// A list of the game assemblies referenced by script projects

@@ -39,6 +39,11 @@ foreach (var element in projectTemplate.XPathSelectElements("/ms:Project/ms:Item
         utilityFiles.Add($"\"{include.Substring(16).Replace("\\", "\\\\")}\"");
 }
 
+var other = XDocument.Load(Path.Combine(Path.GetDirectoryName(Context.ProjectFilePath), "other.xml"));
+var isPrerelease = string.Equals(other.XPathSelectElement("/Other/IsPrerelease")?.Value ?? "True", "true", StringComparison.CurrentCultureIgnoreCase)? "true" : "false";
+var helpPageUrl = other.XPathSelectElement("/Other/HelpPageUrl")?.Value ?? "";
+var releasePageUrl = other.XPathSelectElement("/Other/ReleasePageUrl")?.Value ?? "";
+
 Context.Output.WriteLine($@"using System;
 using System.Collections.Immutable;
 
@@ -50,6 +55,21 @@ namespace {namespaceName}
 		/// The current package version
 		/// </summary>
 		public static readonly Version Version = new Version(""{version}"");
+
+	    /// <summary>
+		/// Determines whether this version is a prerelease version
+		/// </summary>
+        public const bool IsPrerelease = {isPrerelease};
+
+	    /// <summary>
+		/// Gets the help page navigation URL
+		/// </summary>
+        public const string HelpPageUrl = ""{helpPageUrl}"";
+
+	    /// <summary>
+		/// Gets the release page navigation URL
+		/// </summary>
+        public const string ReleasePageUrl = ""{releasePageUrl}"";
 
         /// <summary>
         /// A list of the game assemblies referenced by script projects

@@ -71,11 +71,6 @@
     <Compile Include="MDKPackage.GeneratedInfo.cs">
       <DependentUpon>MDKPackage.GeneratedInfo.csx</DependentUpon>
     </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
     <Compile Include="Resources\Bitmaps.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -84,6 +79,10 @@
     <Compile Include="Services\IngameScriptWizard.cs" />
     <Compile Include="Views\DialogClosingEventArgs.cs" />
     <Compile Include="Views\DialogViewModel.cs" />
+    <Compile Include="Views\UpdateDetectedDialog.xaml.cs">
+      <DependentUpon>UpdateDetectedDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UpdateDetectedDialogModel.cs" />
     <Compile Include="Views\RefreshWhitelistCacheDialogModel.cs" />
     <Compile Include="Views\RefreshWhitelistCacheDialog.xaml.cs">
       <DependentUpon>RefreshWhitelistCacheDialog.xaml</DependentUpon>
@@ -130,10 +129,6 @@
     <None Include="Key.snk" />
     <None Include="MDKPackage.GeneratedInfo.csx" />
     <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
@@ -149,6 +144,7 @@
     <Resource Include="Resources\backdrop.jpg" />
     <Resource Include="Resources\malware-circular.png" />
     <None Include="Resources\Image1.bmp" />
+    <Content Include="other.xml" />
     <Content Include="Resources\PBIcon.png" />
     <Content Include="Resources\PBIconWithPromotion.png" />
     <Content Include="Resources\RunMDKToolCommand.png" />
@@ -470,6 +466,10 @@
     <Page Include="Views\MDKOptionsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UpdateDetectedDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\RefreshWhitelistCacheDialog.xaml">
       <Generator>MSBuild:Compile</Generator>

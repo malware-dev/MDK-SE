@@ -20,22 +20,8 @@ using Task = System.Threading.Tasks.Task;
 namespace MDK
 {
     /// <summary>
-    /// This is the class that implements the package exposed by this assembly.
+    /// The MDK Visual Studio Extension
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// The minimum requirement for a class to be considered a valid package for Visual Studio
-    /// is to implement the IVsPackage interface and register itself with the shell.
-    /// This package uses the helper classes defined inside the Managed Package Framework (MPF)
-    /// to do it: it derives from the Package class that provides the implementation of the
-    /// IVsPackage interface and uses the registration attributes defined in the framework to
-    /// register itself and its components with the shell. These attributes tell the pkgdef creation
-    /// utility what data to put into .pkgdef file.
-    /// </para>
-    /// <para>
-    /// To get loaded into VS, the package must be referred by &lt;Asset Type="Microsoft.VisualStudio.VsPackage" ...&gt; in .vsixmanifest file.
-    /// </para>
-    /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
     [ProvideMenuResource("Menus.ctmenu", 1)]
@@ -51,6 +37,7 @@ namespace MDK
         public const string PackageGuidString = "7b9c2d3e-b001-4a3e-86a8-00dc6f2af032";
 
         uint _solutionEventsCookie;
+        bool _hasCheckedForUpdates;
 
         /// <summary>
         /// Creates a new instance of <see cref="MDKPackage" />
@@ -64,6 +51,11 @@ namespace MDK
         /// Gets the MDK options
         /// </summary>
         public MDKOptions Options => (MDKOptions)GetDialogPage(typeof(MDKOptions));
+
+        /// <summary>
+        /// The service provider
+        /// </summary>
+        public IServiceProvider ServiceProvider => this;
 
         /// <summary>
         /// The <see cref="ScriptUpgrades"/> service
@@ -95,16 +87,14 @@ namespace MDK
             );
 
             base.Initialize();
-
-            if (Options.NotifyUpdates)
-                KnownUIContexts.ShellInitializedContext.WhenActivated(CheckForUpdates);
         }
 
         async void CheckForUpdates()
         {
             if (!Options.NotifyUpdates)
                 return;
-            var version = await CheckForUpdates(Options.NotifyPrereleaseUpdates);
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            var version = await CheckForUpdates(Options.NotifyPrereleaseUpdates || IsPrerelease);
             if (version != null)
                 OnUpdateDetected(version);
         }
@@ -143,7 +133,11 @@ namespace MDK
         }
 
         void OnUpdateDetected(Version detectedVersion)
-        { }
+        {
+            if (detectedVersion == null)
+                return;
+            UpdateDetectedDialog.ShowDialog(new UpdateDetectedDialogModel(detectedVersion));
+        }
 
         async void OnFirstSolutionLoaded()
         {
@@ -210,7 +204,11 @@ namespace MDK
             if (!result.IsValid)
                 QueryUpgrade(this, result);
 
-            CheckForUpdates();
+            if (!_hasCheckedForUpdates)
+            {
+                _hasCheckedForUpdates = true;
+                CheckForUpdates();
+            }
         }
 
         int IVsSolutionEvents.OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)
