@@ -16,4 +16,4 @@ Since I cannot possibly do everything myself, I will certainly accept pull reque
 3. I recommend not trying to do a pull request unless you already have a bit of experience in coding. Visual Studio is not a forgiving application to extend. This isn't any kind of requirement though, if your addition isn't too large you might get some help finishing.
 4. Remember that I will have to review your work. Anything you can do to help that process will be appreciated.
 5. Expect criticism.
-6. Use common sense.
+6. Read the [Code of Conduct](https://github.com/malware-dev/MDK-SE/blob/master/CODE_OF_CONDUCT.md) and adhere to it.
