@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
@@ -15,6 +14,9 @@ namespace Malware.MDKAnalyzer
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ScriptAnalyzer : DiagnosticAnalyzer
     {
+        internal static readonly DiagnosticDescriptor NoWhitelistCacheRule
+            = new DiagnosticDescriptor("MissingWhitelistRule", "Missing Or Corrupted Whitelist Cache", "The whitelist cache could not be loaded. Please run Tools | MDK | Refresh Whitelist Cache to attempt repair.", "Whitelist", DiagnosticSeverity.Error, true);
+
         internal static readonly DiagnosticDescriptor ProhibitedMemberRule
             = new DiagnosticDescriptor("ProhibitedMemberRule", "Prohibited Type Or Member", "The type or member '{0}' is prohibited in Space Engineers", "Whitelist", DiagnosticSeverity.Error, true);
 
@@ -26,7 +28,7 @@ namespace Malware.MDKAnalyzer
         List<Uri> _ignoredFiles = new List<Uri>();
         Uri _basePath;
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(ProhibitedMemberRule, ProhibitedLanguageElementRule);
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(ProhibitedMemberRule, ProhibitedLanguageElementRule, NoWhitelistCacheRule);
 
         public override void Initialize(AnalysisContext context)
         {
@@ -47,13 +49,25 @@ namespace Malware.MDKAnalyzer
                 _whitelist.Load(content.Lines.Select(l => l.ToString()).ToArray());
             }
             else
+            {
+                context.RegisterSemanticModelAction(Fail);
                 _whitelist.IsEnabled = false;
+            }
 
             context.RegisterSyntaxNodeAction(Analyze,
                 SyntaxKind.AliasQualifiedName,
                 SyntaxKind.QualifiedName,
                 SyntaxKind.GenericName,
                 SyntaxKind.IdentifierName);
+        }
+
+        void Fail(SemanticModelAnalysisContext context)
+        {
+            if (!_whitelist.IsEnabled)
+            {
+                var diagnostic = Diagnostic.Create(NoWhitelistCacheRule, context.SemanticModel.SyntaxTree.GetRoot().GetLocation());
+                context.ReportDiagnostic(diagnostic);
+            }
         }
 
 #pragma warning disable RS1012 // Start action has no registered actions.
