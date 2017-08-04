@@ -18,7 +18,7 @@ rules. This is so I can keep control of the repository, and to help prevent you 
    to use.
 2. Please _ask me_ before starting work on a larger contribution. I have the final say in what I want added. Remember, this is 
    still a project I actually made for my _own_ use. I can tell you if what you want to add will be rejected outright and I really 
-   don't want you to waste your time, it's too valuable for me.
+   don't want you to waste your time, it's too valuable for me. You can either ask via an [Issue](https://github.com/malware-dev/MDK-SE/issues) or you can try reaching me at [Keen's official Discord](https://discord.gg/0hIE7GirODUqhfIg).
 3. I recommend not trying to do a pull request unless you already have a bit of experience in coding. Visual Studio is not a forgiving
    application to extend. This isn't any kind of requirement though, if your addition isn't too large you might get some help finishing.
 4. Remember that I will have to review your work. Anything you can do to help that process will be appreciated.
