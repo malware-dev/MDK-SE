@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
@@ -8,7 +9,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Malware.MDKServices;
-using MDK.Services;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.MSBuild;
@@ -77,6 +77,11 @@ namespace MDK.Build
         /// The total number of steps to reach before the build is complete.
         /// </summary>
         protected int TotalSteps { get; private set; }
+
+        /// <summary>
+        /// Gets the comparer used to determine the order of parts (files) when building.
+        /// </summary>
+        public IComparer<ScriptPart> PartComparer { get; } = new WeightedPartSorter();
 
         /// <summary>
         /// Starts the build.
@@ -228,10 +233,10 @@ namespace MDK.Build
             {
                 var usings = string.Join(Environment.NewLine, content.UsingDirectives.Select(d => d.ToString()));
                 var solution = project.Solution;
-                var programCode = string.Join(Environment.NewLine, content.Parts.OfType<ProgramScriptPart>().SelectMany(p => p.ContentNodes()).Select(n => n.ToString()));
+                var programCode = string.Join(Environment.NewLine, content.Parts.OfType<ProgramScriptPart>().OrderBy(part => part, PartComparer).SelectMany(p => p.ContentNodes()).Select(n => n.ToString()));
                 var programContent = $"public class Program: MyGridProgram {{{Environment.NewLine}{programCode}{Environment.NewLine}}}";
 
-                var extensionContent = string.Join(Environment.NewLine, content.Parts.OfType<ExtensionScriptPart>().SelectMany(p => p.ContentNodes()).Select(n => n.ToString()));
+                var extensionContent = string.Join(Environment.NewLine, content.Parts.OfType<ExtensionScriptPart>().OrderBy(part => part, PartComparer).SelectMany(p => p.ContentNodes()).Select(n => n.ToString()));
 
                 var finalContent = $"{usings}{Environment.NewLine}{programContent}{Environment.NewLine}{extensionContent}";
 

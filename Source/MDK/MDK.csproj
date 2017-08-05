@@ -66,6 +66,7 @@
     <Compile Include="Build\ScriptGenerator.cs" />
     <Compile Include="Build\ScriptPart.cs" />
     <Compile Include="Build\UsingDirectiveComparer.cs" />
+    <Compile Include="Build\WeightedPartSorter.cs" />
     <Compile Include="Commands\CommandGroups.cs" />
     <Compile Include="Commands\CheckForUpdatesCommand.cs" />
     <Compile Include="MDKPackage.GeneratedInfo.cs">

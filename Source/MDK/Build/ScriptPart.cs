@@ -21,6 +21,11 @@ namespace MDK.Build
         }
 
         /// <summary>
+        /// The name of this document.
+        /// </summary>
+        public virtual string Name => Document?.Name;
+
+        /// <summary>
         /// The document this part originated from
         /// </summary>
         public Document Document { get; }
