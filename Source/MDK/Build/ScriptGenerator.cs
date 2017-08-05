@@ -29,16 +29,21 @@ namespace MDK.Build
             trimmer.Visit(root);
 
             string script;
-            var programPartLines = string.Join("\n", trimmer.ProgramNodes).Split(NewLines, StringSplitOptions.None);
+            var programPartLines = string.Join("\n\n", trimmer.ProgramNodes.Select(GenerateFinalCode)).Split(NewLines, StringSplitOptions.None);
             var programPart = DeIndent(programPartLines);
-            var extensionPartLines = string.Join(" ", trimmer.ExtensionNodes).Split(NewLines, StringSplitOptions.None);
+            var extensionPartLines = string.Join(" ", trimmer.ExtensionNodes.Select(GenerateFinalCode)).Split(NewLines, StringSplitOptions.None);
             var extensionPart = DeIndent(extensionPartLines);
             if (extensionPart.EndsWith("}"))
-                script = $"{programPart}}}{extensionPart.Substring(0, extensionPart.Length - 1)}";
+                script = $"{programPart}\n\n}}\n\n{extensionPart.Substring(0, extensionPart.Length - 1)}";
             else
                 script = programPart;
 
             return script;
+        }
+
+        string GenerateFinalCode(SyntaxNode n)
+        {
+            return n.ToFullString().Trim();
         }
 
         string DeIndent(string[] programPartLines)

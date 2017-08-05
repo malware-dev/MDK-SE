@@ -46,6 +46,8 @@ namespace MDK.Build
         /// <returns></returns>
         public static bool IsInterfaceImplementation(ISymbol symbol)
         {
+            if (symbol.ContainingType == null)
+                return false;
             return symbol.ContainingType.AllInterfaces.SelectMany(i => i.GetMembers()).Any(member => symbol.ContainingType.FindImplementationForInterfaceMember(member).Equals(symbol));
         }
 

@@ -233,10 +233,10 @@ namespace MDK.Build
             {
                 var usings = string.Join(Environment.NewLine, content.UsingDirectives.Select(d => d.ToString()));
                 var solution = project.Solution;
-                var programCode = string.Join(Environment.NewLine, content.Parts.OfType<ProgramScriptPart>().OrderBy(part => part, PartComparer).SelectMany(p => p.ContentNodes()).Select(n => n.ToString()));
+                var programCode = string.Join("", content.Parts.OfType<ProgramScriptPart>().OrderBy(part => part, PartComparer).SelectMany(p => p.ContentNodes()).Select(n => n.ToFullString()));
                 var programContent = $"public class Program: MyGridProgram {{{Environment.NewLine}{programCode}{Environment.NewLine}}}";
 
-                var extensionContent = string.Join(Environment.NewLine, content.Parts.OfType<ExtensionScriptPart>().OrderBy(part => part, PartComparer).SelectMany(p => p.ContentNodes()).Select(n => n.ToString()));
+                var extensionContent = string.Join("", content.Parts.OfType<ExtensionScriptPart>().OrderBy(part => part, PartComparer).SelectMany(p => p.ContentNodes()).Select(n => n.ToFullString()));
 
                 var finalContent = $"{usings}{Environment.NewLine}{programContent}{Environment.NewLine}{extensionContent}";
 
