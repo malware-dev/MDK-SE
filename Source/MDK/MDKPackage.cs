@@ -28,7 +28,7 @@ namespace MDK
     [Guid(PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     [ProvideOptionPage(typeof(MDKOptions), "MDK/SE", "Options", 0, 0, true)]
-    [ProvideAutoLoad(UIContextGuids80.SolutionExists)]
+    [ProvideAutoLoad(UIContextGuids80.NoSolution)]
     public sealed partial class MDKPackage : ExtendedPackage, IVsSolutionEvents
     {
         /// <summary>
@@ -38,6 +38,35 @@ namespace MDK
 
         uint _solutionEventsCookie;
         bool _hasCheckedForUpdates;
+        bool _isEnabled;
+
+        /// <summary>
+        /// Fired when the MDK features are enabled
+        /// </summary>
+        public event EventHandler Enabled;
+
+        /// <summary>
+        /// Fired when the MDK features are disabled
+        /// </summary>
+        public event EventHandler Disabled;
+
+        /// <summary>
+        /// Determines whether the MDK features are currently enabled
+        /// </summary>
+        public bool IsEnabled
+        {
+            get => _isEnabled;
+            private set
+            {
+                if (_isEnabled == value)
+                    return;
+                _isEnabled = value;
+                if (_isEnabled)
+                    Enabled?.Invoke(this, EventArgs.Empty);
+                else
+                    Disabled?.Invoke(this, EventArgs.Empty);
+            }
+        }
 
         /// <summary>
         /// Creates a new instance of <see cref="MDKPackage" />
@@ -80,10 +109,11 @@ namespace MDK
             KnownUIContexts.SolutionExistsAndFullyLoadedContext.WhenActivated(OnFirstSolutionLoaded);
 
             AddCommand(
-                new DeployScriptCommand(this),
-                new ScriptOptionsCommand(this),
+                new QuickDeploySolutionCommand(this),
+                new DeployProjectCommand(this),
                 new RefreshWhitelistCacheCommand(this),
-                new CheckForUpdatesCommand(this)
+                new CheckForUpdatesCommand(this),
+                new ProjectOptionsCommand(this)
             );
 
             base.Initialize();
@@ -166,7 +196,10 @@ namespace MDK
                 UtilityAssemblyNames = UtilityAssemblyNames,
                 UtilityFiles = UtilityFiles
             });
-            if (!result.HasScriptProjects || result.IsValid)
+            if (!result.HasScriptProjects)
+                return;
+            IsEnabled = true;
+            if (!result.IsValid)
                 return;
 
             QueryUpgrade(this, result);
@@ -184,6 +217,8 @@ namespace MDK
         {
             if (e.Activated)
                 await AnalyzeSolution();
+            else
+                IsEnabled = false;
         }
 
         async Task AnalyzeSolution()
@@ -199,7 +234,11 @@ namespace MDK
                 UtilityFiles = UtilityFiles
             });
             if (!result.HasScriptProjects)
+            {
+                IsEnabled = false;
                 return;
+            }
+            IsEnabled = true;
 
             if (!result.IsValid)
                 QueryUpgrade(this, result);

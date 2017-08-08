@@ -39,6 +39,11 @@ namespace MDK.VisualStudio
         protected IServiceProvider ServiceProvider => Package;
 
         /// <summary>
+        /// The inner command
+        /// </summary>
+        protected OleMenuCommand OleCommand { get; private set; }
+
+        /// <summary>
         /// Initializes this command.
         /// </summary>
         public virtual void Initialize()
@@ -50,9 +55,15 @@ namespace MDK.VisualStudio
             }
 
             var menuCommandId = new CommandID(GroupId, Id);
-            var menuItem = new MenuCommand((s, e) => OnExecute(), menuCommandId);
-            commandService.AddCommand(menuItem);
+            OleCommand = new OleMenuCommand((s, e) => OnExecute(), menuCommandId);
+            OleCommand.BeforeQueryStatus += (s, e) => OnBeforeQueryStatus();
+            commandService.AddCommand(OleCommand);
         }
+
+        /// <summary>
+        /// Called to change the state of a command
+        /// </summary>
+        protected abstract void OnBeforeQueryStatus();
 
         /// <summary>
         /// Called when a user invokes this command.

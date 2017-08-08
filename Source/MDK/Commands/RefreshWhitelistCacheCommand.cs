@@ -11,7 +11,13 @@ namespace MDK.Commands
 
         public override Guid GroupId { get; } = CommandGroups.MDKGroup;
 
-        public override int Id { get; } = 0x0102;
+        public override int Id { get; } = CommandIds.RefreshWhitelistCache;
+
+        protected override void OnBeforeQueryStatus()
+        {
+            var package = (MDKPackage)Package;
+            OleCommand.Visible = package.IsEnabled;
+        }
 
         protected override void OnExecute()
         {

@@ -29,12 +29,14 @@ namespace MDK.Build
         /// </summary>
         /// <param name="package"></param>
         /// <param name="solutionFileName"></param>
+        /// <param name="selectedProjectFullName"></param>
         /// <param name="progress"></param>
-        public BuildModule(MDKPackage package, [NotNull] string solutionFileName, IProgress<float> progress = null)
+        public BuildModule(MDKPackage package, [NotNull] string solutionFileName, string selectedProjectFullName = null, IProgress<float> progress = null)
         {
             _progress = progress;
             Package = package;
             SolutionFileName = Path.GetFullPath(solutionFileName ?? throw new ArgumentNullException(nameof(solutionFileName)));
+            SelectedProjectFileName = selectedProjectFullName != null ? Path.GetFullPath(selectedProjectFullName) : null;
             SynchronizationContext = SynchronizationContext.Current;
         }
 
@@ -52,6 +54,11 @@ namespace MDK.Build
         /// The file name of the solution to build
         /// </summary>
         public string SolutionFileName { get; }
+
+        /// <summary>
+        /// The file name of the specific project to build, or <c>null</c> if the entire solution should be built
+        /// </summary>
+        public string SelectedProjectFileName { get; }
 
         /// <summary>
         /// The document analysis utility
@@ -86,14 +93,15 @@ namespace MDK.Build
         /// <summary>
         /// Starts the build.
         /// </summary>
-        /// <returns></returns>
-        public Task Run()
+        /// <returns>The number of deployed projects</returns>
+        public Task<int> Run()
         {
             return Task.Run(async () =>
             {
                 var scriptProjects = _scriptProjects ?? await LoadScriptProjects();
-                await Task.WhenAll(scriptProjects.Select(Build)).ConfigureAwait(false);
+                var num = (await Task.WhenAll(scriptProjects.Select(Build)).ConfigureAwait(false)).Sum();
                 _scriptProjects = null;
+                return num;
             });
         }
 
@@ -113,9 +121,18 @@ namespace MDK.Build
             }
         }
 
-        async Task Build(Project project)
+        async Task<int> Build(Project project)
         {
             var config = LoadConfig(project);
+            if (!config.IsValid)
+                return 0;
+
+            if (SelectedProjectFileName != null)
+            {
+                if (!string.Equals(config.FileName, SelectedProjectFileName, StringComparison.CurrentCultureIgnoreCase))
+                    return 0;
+            }
+
             var content = await LoadContent(project, config).ConfigureAwait(false);
             Steps++;
 
@@ -137,6 +154,7 @@ namespace MDK.Build
 
             WriteScript(project, config.OutputPath, script);
             Steps++;
+            return 1;
         }
 
         async Task<(Minifier Minifier, Document Document)> PreMinify(Project project, ProjectScriptInfo config, Document document)

@@ -69,13 +69,12 @@
     <Compile Include="Build\WeightedPartSorter.cs" />
     <Compile Include="Commands\CommandGroups.cs" />
     <Compile Include="Commands\CheckForUpdatesCommand.cs" />
+    <Compile Include="Commands\CommandIds.cs" />
+    <Compile Include="Commands\DeployCommand.cs" />
+    <Compile Include="Commands\DeployProjectCommand.cs" />
+    <Compile Include="Commands\ProjectOptionsCommand.cs" />
     <Compile Include="MDKPackage.GeneratedInfo.cs">
       <DependentUpon>MDKPackage.GeneratedInfo.csx</DependentUpon>
-    </Compile>
-    <Compile Include="Resources\Bitmaps.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Bitmaps.resx</DependentUpon>
     </Compile>
     <Compile Include="Services\IngameScriptWizard.cs" />
     <Compile Include="Views\DialogClosingEventArgs.cs" />
@@ -100,11 +99,10 @@
     <Compile Include="VisualStudio\StatusBarAnimation.cs" />
     <Compile Include="VisualStudio\StatusBarProgressBar.cs" />
     <Compile Include="VisualStudio\Command.cs" />
-    <Compile Include="Commands\ScriptOptionsCommand.cs" />
     <Compile Include="Build\DeclarationFullNameFlags.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Commands\RefreshWhitelistCacheCommand.cs" />
-    <Compile Include="Commands\DeployScriptCommand.cs" />
+    <Compile Include="Commands\QuickDeploySolutionCommand.cs" />
     <Compile Include="MDKPackage.cs" />
     <Compile Include="Build\StringExtensions.cs" />
     <Compile Include="Views\ModelCommand.cs" />
@@ -142,12 +140,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Resource Include="Resources\backdrop.jpg" />
     <Resource Include="Resources\malware-circular.png" />
     <None Include="Resources\Image1.bmp" />
     <Content Include="other.xml" />
-    <Content Include="Resources\PBIcon.png" />
-    <Content Include="Resources\PBIconWithPromotion.png" />
     <Content Include="Resources\RunMDKToolCommand.png" />
     <Content Include="Resources\RunMDKToolCommandPackage.ico" />
   </ItemGroup>
@@ -445,11 +440,6 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\Bitmaps.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Bitmaps.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="VSPackage.resx">
       <MergeWithCTO>true</MergeWithCTO>
       <ManifestResourceName>VSPackage</ManifestResourceName>

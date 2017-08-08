@@ -31,20 +31,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Label Grid.Column="0" Grid.Row="0" Target="{Binding ElementName=ProjectComboBox}" Margin="2">Project</Label>
-        <ComboBox x:Name="ProjectComboBox" Grid.Column="1" Grid.Row="0" IsEditable="False"
-                  ItemsSource="{Binding Projects}" SelectedItem="{Binding ActiveProject}" Margin="2"
-                  VerticalAlignment="Center">
-            <ComboBox.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock x:Name="TextBlock" Text="{Binding Name}" />
-                    <DataTemplate.Triggers>
-                        <DataTrigger Binding="{Binding HasChanges}" Value="true">
-                            <Setter TargetName="TextBlock" Property="FontWeight" Value="Bold" />
-                        </DataTrigger>
-                    </DataTemplate.Triggers>
-                </DataTemplate>
-            </ComboBox.ItemTemplate>
-        </ComboBox>
+        <TextBlock Text="{Binding ActiveProject.Name}" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center"/>
         <Label Grid.Column="0" Grid.Row="1" Target="{Binding ElementName=OutputPathTextBox}" Margin="2">Script Output Path</Label>
         <views:FolderBox Grid.Column="1" Grid.Row="1"
                          Margin="2"

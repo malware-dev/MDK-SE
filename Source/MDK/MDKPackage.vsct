@@ -62,22 +62,41 @@
               <CommandFlag>DefaultInvisible</CommandFlag>
               <CommandFlag>DynamicVisibility</CommandFlag>
           If you do not want an image next to your command, remove the Icon node /> -->
-      <Button guid="guidMDKCmdSet" id="DeployScriptCommandId" priority="0x0100" type="Button">
+      <Button guid="guidMDKCmdSet" id="QuickDeploySolutionCommandId" priority="0x0100" type="Button">
         <Parent guid="guidMDKCmdSet" id="MDKMenuGroup" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <!--<Icon guid="guidImages" id="bmpPic1" />-->
         <Strings>
-          <ButtonText>Deploy Script(s)</ButtonText>
+          <ButtonText>Deploy All MDK Scripts</ButtonText>
         </Strings>
       </Button>
-      <Button guid="guidMDKCmdSet" id="ScriptOptionsCommandId" priority="0x0101" type="Button">
-        <Parent guid="guidMDKCmdSet" id="MDKMenuGroup" />
+      <Button guid="guidMDKCmdSet" id="QuickDeploySolutionCommandId" priority="0x0300" type="Button">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_SOLUTION_BUILD" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <!--<Icon guid="guidImages" id="bmpPic1" />-->
         <Strings>
-          <ButtonText>Script Options</ButtonText>
+          <ButtonText>Deploy All MDK Scripts</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidMDKCmdSet" id="DeployProjectCommandId" priority="0x0300" type="Button">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_BUILD" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <!--<Icon guid="guidImages" id="bmpPic1" />-->
+        <Strings>
+          <ButtonText>Deploy MDK Script</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidMDKCmdSet" id="ProjectOptionsCommandId" priority="0x0101" type="Button">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_PROPERTIES" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <!--<Icon guid="guidImages" id="bmpPic1" />-->
+        <Strings>
+          <ButtonText>MDK Script Options</ButtonText>
         </Strings>
       </Button>
       <Button guid="guidMDKCmdSet" id="RefreshWhitelistCacheCommandId" priority="0x0102" type="Button">
         <Parent guid="guidMDKCmdSet" id="MDKMenuGroup" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <!--<Icon guid="guidImages" id="bmpPic1" />-->
         <Strings>
           <ButtonText>Refresh Whitelist Cache</ButtonText>
@@ -103,12 +122,12 @@
     </Bitmaps>
   </Commands>
 
-  <KeyBindings>
-    <KeyBinding guid="guidMDKCmdSet" id="DeployScriptCommandId"
+  <!--<KeyBindings>
+    <KeyBinding guid="guidMDKCmdSet" id="QuickDeploySolutionCommandId"
                 mod1="CONTROL ALT" key1="S" mod2="CONTROL ALT" key2 ="G" editor="guidVSStd97" />
-    <KeyBinding guid="guidMDKCmdSet" id="ScriptOptionsCommandId"
+    <KeyBinding guid="guidMDKCmdSet" id="SolutionOptionsCommandId"
                 mod1="CONTROL ALT" key1="S" mod2="CONTROL ALT" key2 ="O" editor="guidVSStd97" />
-  </KeyBindings>
+  </KeyBindings>-->
   
   <Symbols>
     <!-- This is the package guid. -->
@@ -118,10 +137,11 @@
     <GuidSymbol name="guidMDKCmdSet" value="{2c5d90b4-d8c7-476a-8877-00f5c0803bdb}">
       <IDSymbol name="MDKSubMenu" value="0x1010" />
       <IDSymbol name="MDKMenuGroup" value="0x1020" />
-      <IDSymbol name="DeployScriptCommandId" value="0x0100" />
-      <IDSymbol name="ScriptOptionsCommandId" value="0x0101" />
+      <IDSymbol name="QuickDeploySolutionCommandId" value="0x0100" />
+      <IDSymbol name="ProjectOptionsCommandId" value="0x0101" />
       <IDSymbol name="RefreshWhitelistCacheCommandId" value="0x0102" />
       <IDSymbol name="CheckForUpdatesCommandId" value="0x0103" />
+      <IDSymbol name="DeployProjectCommandId" value="0x0104" />
     </GuidSymbol>
 
     <GuidSymbol name="guidImages" value="{016ced72-6df6-4278-a645-5d8a568294d5}" >

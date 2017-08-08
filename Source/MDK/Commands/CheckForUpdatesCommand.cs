@@ -11,7 +11,11 @@ namespace MDK.Commands
 
         public override Guid GroupId { get; } = CommandGroups.MDKGroup;
 
-        public override int Id { get; } = 0x103;
+        public override int Id { get; } = CommandIds.CheckForUpdates;
+
+        protected override void OnBeforeQueryStatus()
+        { 
+        }
 
         protected override async void OnExecute()
         {
