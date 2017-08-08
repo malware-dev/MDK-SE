@@ -14,8 +14,13 @@ namespace Malware.MDKAnalyzer
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ScriptAnalyzer : DiagnosticAnalyzer
     {
+        const string DefaultNamespaceName = "IngameScript";
+
         internal static readonly DiagnosticDescriptor NoWhitelistCacheRule
             = new DiagnosticDescriptor("MissingWhitelistRule", "Missing Or Corrupted Whitelist Cache", "The whitelist cache could not be loaded. Please run Tools | MDK | Refresh Whitelist Cache to attempt repair.", "Whitelist", DiagnosticSeverity.Error, true);
+
+        internal static readonly DiagnosticDescriptor NoOptionsRule
+            = new DiagnosticDescriptor("MissingOptionsRule", "Missing Or Corrupted Options", "The MDK.options could not be loaded.", "Whitelist", DiagnosticSeverity.Error, true);
 
         internal static readonly DiagnosticDescriptor ProhibitedMemberRule
             = new DiagnosticDescriptor("ProhibitedMemberRule", "Prohibited Type Or Member", "The type or member '{0}' is prohibited in Space Engineers", "Whitelist", DiagnosticSeverity.Error, true);
@@ -23,12 +28,23 @@ namespace Malware.MDKAnalyzer
         internal static readonly DiagnosticDescriptor ProhibitedLanguageElementRule
             = new DiagnosticDescriptor("ProhibitedLanguageElement", "Prohibited Language Element", "The language element '{0}' is prohibited in Space Engineers", "Whitelist", DiagnosticSeverity.Error, true);
 
+        internal static readonly DiagnosticDescriptor InconsistentNamespaceDeclarationRule
+            = new DiagnosticDescriptor("InconsistentNamespaceDeclaration", "Inconsistent Namespace Declaration", "All ingame script code should be within the {0} namespace in order to avoid problems.", "Whitelist", DiagnosticSeverity.Warning, true);
+
         Whitelist _whitelist = new Whitelist();
         List<Uri> _ignoredFolders = new List<Uri>();
         List<Uri> _ignoredFiles = new List<Uri>();
         Uri _basePath;
+        string _namespaceName;
+        Exception _optionException;
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(ProhibitedMemberRule, ProhibitedLanguageElementRule, NoWhitelistCacheRule);
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } 
+            = ImmutableArray.Create(
+                ProhibitedMemberRule, 
+                ProhibitedLanguageElementRule, 
+                NoWhitelistCacheRule,
+                NoOptionsRule,
+                InconsistentNamespaceDeclarationRule);
 
         public override void Initialize(AnalysisContext context)
         {
@@ -38,8 +54,16 @@ namespace Malware.MDKAnalyzer
         void LoadWhitelist(CompilationStartAnalysisContext context)
         {
             var mdkOptions = context.Options.AdditionalFiles.FirstOrDefault(file => Path.GetFileName(file.Path).Equals("mdk.options", StringComparison.CurrentCultureIgnoreCase));
-            if (mdkOptions != null)
-                LoadOptions(context, mdkOptions);
+            if (mdkOptions == null || !LoadOptions(context, mdkOptions))
+            {
+                context.RegisterSemanticModelAction(c =>
+                {
+                    var diagnostic = Diagnostic.Create(NoOptionsRule, c.SemanticModel.SyntaxTree.GetRoot().GetLocation());
+                    c.ReportDiagnostic(diagnostic);
+                });
+                _whitelist.IsEnabled = false;
+                return;
+            }
 
             var whitelistCache = context.Options.AdditionalFiles.FirstOrDefault(file => Path.GetFileName(file.Path).Equals("whitelist.cache", StringComparison.CurrentCultureIgnoreCase));
             if (whitelistCache != null)
@@ -50,8 +74,13 @@ namespace Malware.MDKAnalyzer
             }
             else
             {
-                context.RegisterSemanticModelAction(Fail);
+                context.RegisterSemanticModelAction(c =>
+                {
+                    var diagnostic = Diagnostic.Create(NoWhitelistCacheRule, c.SemanticModel.SyntaxTree.GetRoot().GetLocation());
+                    c.ReportDiagnostic(diagnostic);
+                });
                 _whitelist.IsEnabled = false;
+                return;
             }
 
             context.RegisterSyntaxNodeAction(Analyze,
@@ -59,50 +88,69 @@ namespace Malware.MDKAnalyzer
                 SyntaxKind.QualifiedName,
                 SyntaxKind.GenericName,
                 SyntaxKind.IdentifierName);
+            context.RegisterSyntaxNodeAction(AnalyzeNamespace,
+                SyntaxKind.ClassDeclaration);
         }
 
-        void Fail(SemanticModelAnalysisContext context)
+        void AnalyzeNamespace(SyntaxNodeAnalysisContext context)
         {
-            if (!_whitelist.IsEnabled)
+            if (IsIgnorableNode(context))
+                return;
+            var classDeclaration = (ClassDeclarationSyntax)context.Node;
+            var namespaceDeclaration = classDeclaration.Parent as NamespaceDeclarationSyntax;
+            var namespaceName = namespaceDeclaration?.Name.ToString();
+            if (!_namespaceName.Equals(namespaceName, StringComparison.Ordinal))
             {
-                var diagnostic = Diagnostic.Create(NoWhitelistCacheRule, context.SemanticModel.SyntaxTree.GetRoot().GetLocation());
+                var diagnostic = Diagnostic.Create(InconsistentNamespaceDeclarationRule, 
+                    namespaceDeclaration?.Name.GetLocation() ?? classDeclaration.Identifier.GetLocation(), _namespaceName);
                 context.ReportDiagnostic(diagnostic);
             }
         }
 
 #pragma warning disable RS1012 // Start action has no registered actions.
-        void LoadOptions(CompilationStartAnalysisContext context, AdditionalText mdkOptions)
+        bool LoadOptions(CompilationStartAnalysisContext context, AdditionalText mdkOptions)
 #pragma warning restore RS1012 // Start action has no registered actions.
         {
-            var content = mdkOptions.GetText(context.CancellationToken);
-            var document = XDocument.Parse(content.ToString());
-            var ignoredFolders = document.Element("mdk")?.Elements("ignore").SelectMany(e => e.Elements("folder"));
-            var ignoredFiles = document.Element("mdk")?.Elements("ignore").SelectMany(e => e.Elements("file")).ToArray();
-            var basePath = Path.GetDirectoryName(mdkOptions.Path).TrimEnd('\\') + "\\..\\";
-            if (!basePath.EndsWith("\\"))
-                basePath += "\\";
-            _basePath = new Uri(basePath);
+            try
+            {
+                var content = mdkOptions.GetText(context.CancellationToken);
+                var document = XDocument.Parse(content.ToString());
+                var ignoredFolders = document.Element("mdk")?.Elements("ignore").SelectMany(e => e.Elements("folder"));
+                var ignoredFiles = document.Element("mdk")?.Elements("ignore").SelectMany(e => e.Elements("file")).ToArray();
+                var basePath = Path.GetDirectoryName(mdkOptions.Path).TrimEnd('\\') + "\\..\\";
+                if (!basePath.EndsWith("\\"))
+                    basePath += "\\";
 
-            _ignoredFolders.Clear();
-            _ignoredFiles.Clear();
-            if (ignoredFolders != null)
-            {
-                foreach (var folderElement in ignoredFolders)
+                _optionException = null;
+                _basePath = new Uri(basePath);
+                _namespaceName = (string)document.Element("mdk")?.Element("namespace") ?? DefaultNamespaceName;
+                _ignoredFolders.Clear();
+                _ignoredFiles.Clear();
+                if (ignoredFolders != null)
                 {
-                    var folder = folderElement.Value;
-                    if (!folder.EndsWith("\\"))
-                        _ignoredFolders.Add(new Uri(_basePath, new Uri(folder + "\\", UriKind.RelativeOrAbsolute)));
-                    else
-                        _ignoredFolders.Add(new Uri(_basePath, new Uri(folder, UriKind.RelativeOrAbsolute)));
+                    foreach (var folderElement in ignoredFolders)
+                    {
+                        var folder = folderElement.Value;
+                        if (!folder.EndsWith("\\"))
+                            _ignoredFolders.Add(new Uri(_basePath, new Uri(folder + "\\", UriKind.RelativeOrAbsolute)));
+                        else
+                            _ignoredFolders.Add(new Uri(_basePath, new Uri(folder, UriKind.RelativeOrAbsolute)));
+                    }
                 }
+                if (ignoredFiles != null)
+                {
+                    foreach (var fileElement in ignoredFiles)
+                    {
+                        var file = fileElement.Value;
+                        _ignoredFiles.Add(new Uri(_basePath, new Uri(file, UriKind.RelativeOrAbsolute)));
+                    }
+                }
+                return true;
             }
-            if (ignoredFiles != null)
+            catch (Exception e)
             {
-                foreach (var fileElement in ignoredFiles)
-                {
-                    var file = fileElement.Value;
-                    _ignoredFiles.Add(new Uri(_basePath, new Uri(file, UriKind.RelativeOrAbsolute)));
-                }
+                _optionException = e;
+                return false;
             }
         }
 

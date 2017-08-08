@@ -10,6 +10,21 @@ namespace Malware.MDKWhitelistExtractor
 {
     public class ExtractorPlugin : IPlugin
     {
+        static void WriteWhitelists(string[] targets)
+        {
+            var types = new List<string>();
+            foreach (var item in MyScriptCompiler.Static.Whitelist.GetWhitelist())
+            {
+                if (!item.Value.HasFlag(MyWhitelistTarget.Ingame))
+                {
+                    continue;
+                }
+                types.Add(item.Key);
+            }
+            foreach (var target in targets)
+                File.WriteAllText(target, string.Join(Environment.NewLine, types));
+        }
+
         public MySandboxGame Game { get; private set; }
 
         public void Dispose()
@@ -30,17 +45,7 @@ namespace Malware.MDKWhitelistExtractor
             var targetsArgument = commandLine[targetsArgumentIndex + 1];
             var targets = targetsArgument.Split(';');
 
-            var types = new List<string>();
-            foreach (var item in MyScriptCompiler.Static.Whitelist.GetWhitelist())
-            {
-                if (!item.Value.HasFlag(MyWhitelistTarget.Ingame))
-                {
-                    continue;
-                }
-                types.Add(item.Key);
-            }
-            foreach (var target in targets)
-                File.WriteAllText(target, string.Join(Environment.NewLine, types));
+            WriteWhitelists(targets);
             Game.Exit();
         }
 
