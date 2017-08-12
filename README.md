@@ -7,7 +7,7 @@ A toolkit to help with ingame script (programmable block) development for Keen S
 
 ### General features
 * Helps you create a fully connected script project in Visual Studio, with all references in place
-* Requires that you have the game installed, but _not_ running
+* Requires that you have the game installed, but does _not_ require you to have it running
 * Class templates for normal utility classes and extension classes
 * Tells you if you're using code that's not allowed in Space Engineers (whitelist checker)
 * Deploys multiple classes into a single PB script, which then is placed in the local Workshop space for easy access in-game - no copy/paste needed
