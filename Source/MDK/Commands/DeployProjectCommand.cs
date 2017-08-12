@@ -35,7 +35,7 @@ namespace MDK.Commands
                 return;
 
 
-            await package.Deploy(selectedProject.FullName);
+            await package.Deploy(selectedProject);
         }
     }
 }

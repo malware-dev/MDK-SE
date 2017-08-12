@@ -1,0 +1,81 @@
+﻿<vs:DialogWindow
+    x:Class="MDK.Views.Wizard.NewScriptWizardDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:views="clr-namespace:MDK.Views"
+    xmlns:vs="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
+    xmlns:local="clr-namespace:MDK.Views.Wizard"
+    mc:Ignorable="d"
+    UseLayoutRounding="True"
+    SizeToContent="Height"
+    WindowStartupLocation="CenterOwner"
+    TextOptions.TextFormattingMode="Display"
+    TextOptions.TextHintingMode="Auto"
+    TextOptions.TextRenderingMode="Auto"
+    Title="Script Options"
+    MinWidth="200"
+    Width="600"
+    MinHeight="200">
+    
+    <Grid x:Name="Host" Margin="16"
+          d:DataContext="{d:DesignInstance local:NewScriptWizardDialogModel}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Label Grid.Column="0" Grid.Row="0" Target="{Binding ElementName=GameAssemblyFolderBox}" Margin="2">Game Binaries Path</Label>
+        <views:FolderBox Grid.Column="1" Grid.Row="0"
+                         x:Name="GameAssemblyFolderBox"
+                         Margin="2"
+                         VerticalAlignment="Center"
+                         SelectedFolder="{Binding GameBinPath}"
+                         ToolTip="The path where the game has installed its binaries (SpaceEngineers\Bin64 folder)"
+                         DialogTitle="Please select the game binary folder" />
+        <Label Grid.Column="0" Grid.Row="1" Target="{Binding ElementName=OutputPathFolderBox}" Margin="2">Script Output Path</Label>
+        <views:FolderBox Grid.Column="1" Grid.Row="1"
+                         x:Name="OutputPathFolderBox"
+                         Margin="2"
+                         VerticalAlignment="Center"
+                         SelectedFolder="{Binding OutputPath}"
+                         ToolTip="The path where the final ingame scripts are generated"
+                         DialogTitle="Please select the script output folder" />
+        <Label Grid.Column="0" Grid.Row="2" Target="{Binding ElementName=MinifyCheckBox}" Margin="2">Minify</Label>
+        <StackPanel Grid.Column="1" Grid.Row="2" >
+
+            <CheckBox x:Name="MinifyCheckBox" 
+                  Margin="2,8,2,2"
+                  HorizontalAlignment="Left"
+                  IsChecked="{Binding Minify}">
+            <TextBlock TextWrapping="Wrap">Deployment will make your code as small as possible at the expense of readability.
+                Use only if you know your code won't fit conventionally.</TextBlock>
+            </CheckBox>
+        </StackPanel>
+
+        <Label Grid.Column="0" Grid.Row="3" Target="{Binding ElementName=PromoteCheckBox}" Margin="2">Thumbnail promotes MDK</Label>
+        <StackPanel Grid.Column="1" Grid.Row="3" >
+
+            <CheckBox x:Name="PromoteCheckBox" 
+                      Margin="2,8,2,2"
+                      HorizontalAlignment="Left"
+                      IsChecked="{Binding PromoteMDK}">
+                <TextBlock TextWrapping="Wrap">If checked, the script thumbnail will include a simple unintrusive promotion of MDK. Otherwise it 
+                    will be the default Space Engineers thumbnail.</TextBlock>
+            </CheckBox>
+        </StackPanel>
+
+
+        <views:ButtonBar Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="4" VerticalAlignment="Bottom">
+            <Button IsDefault="True" MinWidth="96" Margin="2,2,8,2" Command="{Binding SaveAndCloseCommand}">Create New Project</Button>
+            <Button IsCancel="True" MinWidth="96" Margin="0,2,2,2" Command="{Binding CancelCommand}">Cancel</Button>
+        </views:ButtonBar>
+    </Grid>
+</vs:DialogWindow>

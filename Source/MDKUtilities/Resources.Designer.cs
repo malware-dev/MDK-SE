@@ -113,5 +113,14 @@ namespace Malware.MDKUtilities {
                 return ResourceManager.GetString("MDK_Load_PathNotFound", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A deployment is currently in progress. Please try again when the current deployment is complete..
+        /// </summary>
+        internal static string MDKPackage_Deploy_BusyDeploymentInProgress {
+            get {
+                return ResourceManager.GetString("MDKPackage_Deploy_BusyDeploymentInProgress", resourceCulture);
+            }
+        }
     }
 }

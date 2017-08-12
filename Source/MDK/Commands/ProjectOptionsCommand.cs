@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Linq;
 using EnvDTE;
+using MDK.Resources;
 using MDK.Views.Options;
 using MDK.VisualStudio;
 using Microsoft.VisualStudio.Shell;
@@ -38,7 +39,7 @@ namespace MDK.Commands
             var scriptOptions = new ScriptOptionsDialogModel((MDKPackage)Package, Package.DTE, selectedProject);
             if (!scriptOptions.ActiveProject.IsValid)
             {
-                VsShellUtilities.ShowMessageBox(ServiceProvider, "There are no valid MDK projects in this solution.", "No MDK Projects", OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                VsShellUtilities.ShowMessageBox(ServiceProvider, Text.ProjectOptionsCommand_OnExecute_NoMDKProjectsDescription, Text.ProjectOptionsCommand_OnExecute_NoMDKProjects, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
                 return;
             }
             ScriptOptionsDialog.ShowDialog(scriptOptions);

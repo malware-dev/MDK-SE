@@ -10,6 +10,7 @@ using JetBrains.Annotations;
 using Malware.MDKServices;
 using MDK.Build;
 using MDK.Commands;
+using MDK.Resources;
 using MDK.Services;
 using MDK.Views.ProjectIntegrity;
 using MDK.Views.UpdateDetection;
@@ -267,27 +268,27 @@ namespace MDK
         /// <summary>
         /// Deploys the all scripts in the solution or a single script project.
         /// </summary>
-        /// <param name="projectFileName"></param>
+        /// <param name="project">The specific project to build</param>
         /// <returns></returns>
-        public async Task<bool> Deploy(string projectFileName = null)
+        public async Task<bool> Deploy(Project project = null)
         {
             var dte = DTE;
 
             if (IsDeploying)
             {
-                VsShellUtilities.ShowMessageBox(ServiceProvider, "A deployment is currently in progress. Please try again when the current deployment is complete.", "Deploy Rejected", OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                VsShellUtilities.ShowMessageBox(ServiceProvider, Text.MDKPackage_Deploy_Rejected_DeploymentInProgress, Text.MDKPackage_Deploy_DeploymentRejected, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
                 return false;
             }
 
             if (!dte.Solution.IsOpen)
             {
-                VsShellUtilities.ShowMessageBox(ServiceProvider, "No solution is open.", "Deploy Rejected", OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                VsShellUtilities.ShowMessageBox(ServiceProvider, Text.MDKPackage_Deploy_NoSolutionOpen, Text.MDKPackage_Deploy_DeploymentRejected, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
                 return false;
             }
 
             if (dte.Solution.SolutionBuild.BuildState == vsBuildState.vsBuildStateInProgress)
             {
-                VsShellUtilities.ShowMessageBox(ServiceProvider, "A build is currently in progress. Please try again when the current build is complete.", "Deploy Rejected", OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                VsShellUtilities.ShowMessageBox(ServiceProvider, Text.MDKPackage_Deploy_Rejected_BuildInProgress, Text.MDKPackage_Deploy_DeploymentRejected, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
                 return false;
             }
 
@@ -301,7 +302,14 @@ namespace MDK
                 using (new StatusBarAnimation(ServiceProvider, Animation.Build))
                 {
                     dte.Events.BuildEvents.OnBuildDone += BuildEventsOnOnBuildDone;
-                    dte.Solution.SolutionBuild.Build();
+                    if (project != null)
+                    {
+                        dte.Solution.SolutionBuild.BuildProject(dte.Solution.SolutionBuild.ActiveConfiguration.Name, project.FullName);
+                    }
+                    else
+                    {
+                        dte.Solution.SolutionBuild.Build();
+                    }
 
                     failedProjects = await tcs.Task;
                     dte.Events.BuildEvents.OnBuildDone -= BuildEventsOnOnBuildDone;
@@ -309,32 +317,32 @@ namespace MDK
 
                 if (failedProjects > 0)
                 {
-                    VsShellUtilities.ShowMessageBox(ServiceProvider, "Build failed.", "Deploy Rejected", OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                    VsShellUtilities.ShowMessageBox(ServiceProvider, Text.MDKPackage_Deploy_BuildFailed, Text.MDKPackage_Deploy_DeploymentRejected, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
                 }
 
                 string title;
-                if (projectFileName != null)
-                    title = $"Deploying MDK Script {Path.GetFileName(projectFileName)}...";
+                if (project != null)
+                    title = string.Format(Text.MDKPackage_Deploy_DeployingSingleScript, Path.GetFileName(project.FullName));
                 else
-                    title = "Deploying All MDK Scripts...";
+                    title = Text.MDKPackage_Deploy_DeployingAllScripts;
                 int deploymentCount;
                 using (var statusBar = new StatusBarProgressBar(ServiceProvider, title, 100))
                 using (new StatusBarAnimation(ServiceProvider, Animation.Deploy))
                 {
-                    var buildModule = new BuildModule(this, dte.Solution.FileName, projectFileName, statusBar);
+                    var buildModule = new BuildModule(this, dte.Solution.FileName, project?.FullName, statusBar);
                     deploymentCount = await buildModule.Run();
                 }
 
                 if (deploymentCount > 0)
-                    VsShellUtilities.ShowMessageBox(ServiceProvider, "Your script(s) should now be available in the ingame local workshop.", "Deployment Complete", OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                    VsShellUtilities.ShowMessageBox(ServiceProvider, Text.MDKPackage_Deploy_DeploymentCompleteDescription, Text.MDKPackage_Deploy_DeploymentComplete, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
                 else
-                    VsShellUtilities.ShowMessageBox(ServiceProvider, "There were no deployable scripts in this solution.", "Deployment Cancelled", OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                    VsShellUtilities.ShowMessageBox(ServiceProvider, Text.MDKPackage_Deploy_NoMDKProjects, Text.MDKPackage_Deploy_DeploymentCancelled, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
 
                 return true;
             }
             catch (Exception e)
             {
-                ShowError("Deployment Failed", "An unexpected error occurred during the attempt to deploy.", e);
+                ShowError(Text.MDKPackage_Deploy_DeploymentFailed, Text.MDKPackage_Deploy_UnexpectedError, e);
                 return false;
             }
             finally

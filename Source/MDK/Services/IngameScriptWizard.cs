@@ -7,6 +7,8 @@ using System.Runtime.InteropServices;
 using EnvDTE;
 using Malware.MDKServices;
 using Malware.MDKUtilities;
+using MDK.Resources;
+using MDK.Views.Wizard;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TemplateWizard;
@@ -40,34 +42,42 @@ namespace MDK.Services
         {
             var serviceProvider = new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)automationObject);
 
-            if (!TryGetProperties(serviceProvider, out EnvDTE.Properties props))
+            if (!TryGetProperties(serviceProvider, out Properties props))
                 throw new WizardCancelledException();
-
-            if (!TryGetFinalUseManualGameBinPath(serviceProvider, props, out bool useManualGameBinPath))
-                throw new WizardCancelledException();
-            replacementsDictionary["$mdkusemanualgamebinpath$"] = useManualGameBinPath ? "yes" : "no";
 
             if (!TryGetFinalBinPath(serviceProvider, props, out string binPath))
                 throw new WizardCancelledException();
-            replacementsDictionary["$mdkgamebinpath$"] = binPath;
 
             if (!TryGetFinalOutputPath(serviceProvider, props, out string outputPath))
                 throw new WizardCancelledException();
-            replacementsDictionary["$mdkoutputpath$"] = outputPath;
 
-            if (!TryGetFinalInstallPath(serviceProvider, props, out string installPath))
+            if (!TryGetFinalInstallPath(serviceProvider, out string installPath))
                 throw new WizardCancelledException();
-            replacementsDictionary["$mdkinstallpath$"] = installPath;
 
-            if (!TryGetFinalMinify(serviceProvider, props, out bool minify))
+            if (!TryGetFinalMinify(props, out bool minify))
                 throw new WizardCancelledException();
-            replacementsDictionary["$mdkminify$"] = minify ? "yes" : "no";
 
-            replacementsDictionary["$mdkversion$"] = MDKPackage.Version.ToString();
-
-            if (!TryGetFinalPromoteMDK(serviceProvider, props, out bool promoteMDK))
+            if (!TryGetFinalPromoteMDK(props, out bool promoteMDK))
                 _promoteMDK = true;
-            _promoteMDK = promoteMDK;
+
+            var model = new NewScriptWizardDialogModel
+            {
+                GameBinPath = binPath,
+                OutputPath = outputPath,
+                Minify = minify,
+                PromoteMDK = promoteMDK
+            };
+            var result = NewScriptWizardDialog.ShowDialog(model);
+            if (result == false)
+                throw new WizardCancelledException();
+
+            replacementsDictionary["$mdkusemanualgamebinpath$"] = !string.Equals(model.GameBinPath, binPath, StringComparison.CurrentCultureIgnoreCase) ? "yes" : "no";
+            replacementsDictionary["$mdkgamebinpath$"] = model.GameBinPath;
+            replacementsDictionary["$mdkoutputpath$"] = model.OutputPath;
+            replacementsDictionary["$mdkinstallpath$"] = installPath;
+            replacementsDictionary["$mdkminify$"] = model.Minify ? "yes" : "no";
+            replacementsDictionary["$mdkversion$"] = MDKPackage.Version.ToString();
+            _promoteMDK = model.PromoteMDK;
         }
 
         /// <inheritdoc />
@@ -79,13 +89,13 @@ namespace MDK.Services
             // ReSharper disable once SuspiciousTypeConversion.Global
             var serviceProvider = new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)project.DTE);
 
-            if (!TryGetProperties(serviceProvider, out EnvDTE.Properties props))
+            if (!TryGetProperties(serviceProvider, out Properties props))
                 return;
 
             if (!TryGetFinalBinPath(serviceProvider, props, out string binPath))
                 return;
 
-            if (!TryGetFinalInstallPath(serviceProvider, props, out string installPath))
+            if (!TryGetFinalInstallPath(serviceProvider, out string installPath))
                 return;
 
             var scriptUpgrades = new ScriptUpgrades();
@@ -126,7 +136,7 @@ namespace MDK.Services
             return true;
         }
 
-        bool TryGetProperties(IServiceProvider serviceProvider, out EnvDTE.Properties props)
+        bool TryGetProperties(IServiceProvider serviceProvider, out Properties props)
         {
             while (true)
             {
@@ -137,7 +147,7 @@ namespace MDK.Services
                 }
                 catch (COMException)
                 {
-                    var res = VsShellUtilities.ShowMessageBox(serviceProvider, "Cannot find the MDK/SE settings. The install might be corrupted. Please reinstall the extension.", "Cannot Find MDK Settings", OLEMSGICON.OLEMSGICON_CRITICAL, OLEMSGBUTTON.OLEMSGBUTTON_RETRYCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_SECOND);
+                    var res = VsShellUtilities.ShowMessageBox(serviceProvider, Text.IngameScriptWizard_TryGetProperties_MDKSettingsNotFoundDescription, Text.IngameScriptWizard_TryGetProperties_MDKSettingsNotFound, OLEMSGICON.OLEMSGICON_CRITICAL, OLEMSGBUTTON.OLEMSGBUTTON_RETRYCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_SECOND);
                     if (res == 4)
                         continue;
                     props = null;
@@ -147,7 +157,7 @@ namespace MDK.Services
             }
         }
 
-        bool TryGetFinalBinPath(IServiceProvider serviceProvider, EnvDTE.Properties props, out string binPath)
+        bool TryGetFinalBinPath(IServiceProvider serviceProvider, Properties props, out string binPath)
         {
             while (true)
             {
@@ -159,7 +169,7 @@ namespace MDK.Services
                 var binDirectory = new DirectoryInfo(binPath);
                 if (!binDirectory.Exists)
                 {
-                    var res = VsShellUtilities.ShowMessageBox(serviceProvider, "Cannot find the install path of Space Engineers. Please install the game before creating an Ingame Script project.", "Cannot Find Space Engineers", OLEMSGICON.OLEMSGICON_CRITICAL, OLEMSGBUTTON.OLEMSGBUTTON_RETRYCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_SECOND);
+                    var res = VsShellUtilities.ShowMessageBox(serviceProvider, Text.IngameScriptWizard_TryGetFinalBinPath_SEBinPathNotFoundDescription, Text.IngameScriptWizard_TryGetFinalBinPath_SEBinPathNotFound, OLEMSGICON.OLEMSGICON_CRITICAL, OLEMSGBUTTON.OLEMSGBUTTON_RETRYCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_SECOND);
                     if (res == 4)
                         continue;
                     return false;
@@ -170,7 +180,7 @@ namespace MDK.Services
         }
 
 
-        bool TryGetFinalOutputPath(IServiceProvider serviceProvider, EnvDTE.Properties props, out string outputPath)
+        bool TryGetFinalOutputPath(IServiceProvider serviceProvider, Properties props, out string outputPath)
         {
             while (true)
             {
@@ -186,7 +196,7 @@ namespace MDK.Services
                 }
                 catch
                 {
-                    var res = VsShellUtilities.ShowMessageBox(serviceProvider, $"Could not create the desired output path.{Environment.NewLine}{outputDirectory}", "Cannot Create Folder", OLEMSGICON.OLEMSGICON_CRITICAL, OLEMSGBUTTON.OLEMSGBUTTON_RETRYCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_SECOND);
+                    var res = VsShellUtilities.ShowMessageBox(serviceProvider, string.Format(Text.IngameScriptWizard_TryGetFinalOutputPath_CannotCreateOutputPathDescription, outputDirectory), Text.IngameScriptWizard_TryGetFinalOutputPath_CannotCreateOutputPath, OLEMSGICON.OLEMSGICON_CRITICAL, OLEMSGBUTTON.OLEMSGBUTTON_RETRYCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_SECOND);
                     if (res == 4)
                         continue;
                     return false;
@@ -196,7 +206,7 @@ namespace MDK.Services
             }
         }
 
-        bool TryGetFinalInstallPath(IServiceProvider serviceProvider, EnvDTE.Properties props, out string installPath)
+        bool TryGetFinalInstallPath(IServiceProvider serviceProvider, out string installPath)
         {
             while (true)
             {
@@ -204,7 +214,7 @@ namespace MDK.Services
                 var installDirectory = new DirectoryInfo(installPath);
                 if (!installDirectory.Exists)
                 {
-                    var res = VsShellUtilities.ShowMessageBox(serviceProvider, "Cannot find the MDK/SE install path. The install might be corrupted. Please reinstall the extension.", "Cannot Find MDK Utility Path", OLEMSGICON.OLEMSGICON_CRITICAL, OLEMSGBUTTON.OLEMSGBUTTON_RETRYCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_SECOND);
+                    var res = VsShellUtilities.ShowMessageBox(serviceProvider, Text.IngameScriptWizard_TryGetFinalInstallPath_CannotFindMDKPathDescription, Text.IngameScriptWizard_TryGetFinalInstallPath_CannotMDKPath, OLEMSGICON.OLEMSGICON_CRITICAL, OLEMSGBUTTON.OLEMSGBUTTON_RETRYCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_SECOND);
                     if (res == 4)
                         continue;
                     return false;
@@ -214,21 +224,15 @@ namespace MDK.Services
             }
         }
 
-        bool TryGetFinalMinify(IServiceProvider serviceProvider, EnvDTE.Properties props, out bool minify)
+        bool TryGetFinalMinify(Properties props, out bool minify)
         {
             minify = (bool)(props.Item(nameof(MDKOptions.Minify))?.Value ?? false);
             return true;
         }
 
-        bool TryGetFinalPromoteMDK(IServiceProvider serviceProvider, EnvDTE.Properties props, out bool promoteMDK)
+        bool TryGetFinalPromoteMDK(Properties props, out bool promoteMDK)
         {
             promoteMDK = (bool)(props.Item(nameof(MDKOptions.PromoteMDK))?.Value ?? false);
-            return true;
-        }
-
-        bool TryGetFinalUseManualGameBinPath(IServiceProvider serviceProvider, EnvDTE.Properties props, out bool minify)
-        {
-            minify = (bool)(props.Item(nameof(MDKOptions.UseManualGameBinPath))?.Value ?? false);
             return true;
         }
 

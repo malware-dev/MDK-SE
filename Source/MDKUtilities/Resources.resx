@@ -116,4 +116,7 @@
   <data name="MDK_Load_EmptyPath" xml:space="preserve">
     <value>Value cannot be null or empty.</value>
   </data>
+  <data name="MDKPackage_Deploy_BusyDeploymentInProgress" xml:space="preserve">
+    <value>A deployment is currently in progress. Please try again when the current deployment is complete.</value>
+  </data>
 </root>

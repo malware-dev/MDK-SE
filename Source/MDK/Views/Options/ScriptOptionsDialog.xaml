@@ -1,25 +1,27 @@
-﻿<vs:DialogWindow x:Class="MDK.Views.Options.ScriptOptionsDialog"
-                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                 xmlns:views="clr-namespace:MDK.Views"
-                 xmlns:vs="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
-                 xmlns:services="clr-namespace:MDK.Services"
-                 mc:Ignorable="d"
-                 UseLayoutRounding="True"
-                 SizeToContent="Height"
-                 WindowStartupLocation="CenterOwner"
-                 TextOptions.TextFormattingMode="Display"
-                 TextOptions.TextHintingMode="Auto"
-                 TextOptions.TextRenderingMode="Auto"
-                 Title="Script Options"
-                 MinWidth="200"
-                 Width="600"
-                 MinHeight="200"
-                 Height="200">
-    <Grid x:Name="Host" Margin="16" 
-          d:DataContext="{d:DesignInstance views:ScriptOptionsDialogModel}">
+﻿<vs:DialogWindow
+    x:Class="MDK.Views.Options.ScriptOptionsDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:views="clr-namespace:MDK.Views"
+    xmlns:vs="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
+    xmlns:local="clr-namespace:MDK.Views.Options"
+    mc:Ignorable="d"
+    UseLayoutRounding="True"
+    SizeToContent="Height"
+    WindowStartupLocation="CenterOwner"
+    TextOptions.TextFormattingMode="Display"
+    TextOptions.TextHintingMode="Auto"
+    TextOptions.TextRenderingMode="Auto"
+    Title="Script Options"
+    MinWidth="200"
+    Width="600"
+    MinHeight="200"
+    Height="200">
+    
+    <Grid x:Name="Host" Margin="16"
+          d:DataContext="{d:DesignInstance local:ScriptOptionsDialogModel}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
@@ -31,9 +33,10 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Label Grid.Column="0" Grid.Row="0" Target="{Binding ElementName=ProjectComboBox}" Margin="2">Project</Label>
-        <TextBlock Text="{Binding ActiveProject.Name}" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center"/>
-        <Label Grid.Column="0" Grid.Row="1" Target="{Binding ElementName=OutputPathTextBox}" Margin="2">Script Output Path</Label>
+        <TextBlock Text="{Binding ActiveProject.Name}" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" />
+        <Label Grid.Column="0" Grid.Row="1" Target="{Binding ElementName=OutputPathFolderBox}" Margin="2">Script Output Path</Label>
         <views:FolderBox Grid.Column="1" Grid.Row="1"
+                         x:Name="OutputPathFolderBox"
                          Margin="2"
                          VerticalAlignment="Center"
                          SelectedFolder="{Binding ActiveProject.OutputPath}"
