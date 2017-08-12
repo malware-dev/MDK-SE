@@ -1,5 +1,4 @@
 ﻿using System;
-using EnvDTE;
 using JetBrains.Annotations;
 using Malware.MDKServices;
 
@@ -16,17 +15,12 @@ namespace MDK.Views.Options
         /// Creates a new instance of <see cref="ScriptOptionsDialogModel"/>
         /// </summary>
         /// <param name="package"></param>
-        /// <param name="dte"></param>
-        /// <param name="project"></param>
-        public ScriptOptionsDialogModel([NotNull] MDKPackage package, [NotNull] DTE dte, [NotNull] Project project)
+        /// <param name="projectScriptInfo"></param>
+        public ScriptOptionsDialogModel([NotNull] MDKPackage package, [NotNull] ProjectScriptInfo projectScriptInfo)
         {
             if (package == null)
                 throw new ArgumentNullException(nameof(package));
-            if (dte == null)
-                throw new ArgumentNullException(nameof(dte));
-            if (project == null)
-                throw new ArgumentNullException(nameof(project));
-            ActiveProject = ProjectScriptInfo.Load(project.FullName, project.Name);
+            ActiveProject = projectScriptInfo ?? throw new ArgumentNullException(nameof(projectScriptInfo));
         }
 
         /// <summary>

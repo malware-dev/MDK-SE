@@ -94,14 +94,16 @@ namespace MDK.Build
         /// Starts the build.
         /// </summary>
         /// <returns>The number of deployed projects</returns>
-        public Task<int> Run()
+        public Task<ProjectScriptInfo[]> Run()
         {
             return Task.Run(async () =>
             {
                 var scriptProjects = _scriptProjects ?? await LoadScriptProjects();
-                var num = (await Task.WhenAll(scriptProjects.Select(Build)).ConfigureAwait(false)).Sum();
+                var builtScripts = (await Task.WhenAll(scriptProjects.Select(Build)).ConfigureAwait(false))
+                    .Where(item => item != null)
+                    .ToArray();
                 _scriptProjects = null;
-                return num;
+                return builtScripts;
             });
         }
 
@@ -121,16 +123,16 @@ namespace MDK.Build
             }
         }
 
-        async Task<int> Build(Project project)
+        async Task<ProjectScriptInfo> Build(Project project)
         {
             var config = LoadConfig(project);
             if (!config.IsValid)
-                return 0;
+                return null;
 
             if (SelectedProjectFileName != null)
             {
                 if (!string.Equals(config.FileName, SelectedProjectFileName, StringComparison.CurrentCultureIgnoreCase))
-                    return 0;
+                    return null;
             }
 
             var content = await LoadContent(project, config).ConfigureAwait(false);
@@ -154,7 +156,7 @@ namespace MDK.Build
 
             WriteScript(project, config.OutputPath, script);
             Steps++;
-            return 1;
+            return config;
         }
 
         async Task<(Minifier Minifier, Document Document)> PreMinify(Project project, ProjectScriptInfo config, Document document)

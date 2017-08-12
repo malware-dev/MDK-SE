@@ -10,6 +10,8 @@ namespace MDK.Views
     /// </summary>
     public class BooleanVisibilityConverter : IValueConverter
     {
+        ToBooleanConverter _toBooleanConverter = new ToBooleanConverter();
+
         /// <summary>
         /// The value returned when the input is <c>true</c>
         /// </summary>
@@ -23,7 +25,8 @@ namespace MDK.Views
         /// <inheritdoc cref="IValueConverter.Convert"/>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value is bool && (bool)value ? TrueVisibility : FalseVisibility;
+            var boolean = (bool)(_toBooleanConverter.Convert(value, typeof(bool), null, culture) ?? false);
+            return boolean ? TrueVisibility : FalseVisibility;
         }
 
         /// <inheritdoc cref="IValueConverter.ConvertBack"/>

@@ -7,5 +7,6 @@
         public const int RefreshWhitelistCache = 0x0102;
         public const int CheckForUpdates = 0x103;
         public const int DeployProject = 0x0104;
+        public const int BlueprintManager = 0x0105;
     }
 }

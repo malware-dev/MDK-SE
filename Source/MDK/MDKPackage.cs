@@ -12,6 +12,8 @@ using MDK.Build;
 using MDK.Commands;
 using MDK.Resources;
 using MDK.Services;
+using MDK.Views.BlueprintManager;
+using MDK.Views.BugReports;
 using MDK.Views.ProjectIntegrity;
 using MDK.Views.UpdateDetection;
 using MDK.VisualStudio;
@@ -121,7 +123,8 @@ namespace MDK
                 new DeployProjectCommand(this),
                 new RefreshWhitelistCacheCommand(this),
                 new CheckForUpdatesCommand(this),
-                new ProjectOptionsCommand(this)
+                new ProjectOptionsCommand(this),
+                new BlueprintManagerCommand(this)
             );
 
             base.Initialize();
@@ -269,26 +272,30 @@ namespace MDK
         /// Deploys the all scripts in the solution or a single script project.
         /// </summary>
         /// <param name="project">The specific project to build</param>
+        /// <param name="nonBlocking"><c>true</c> if there should be no blocking dialogs shown during deployment. Instead, an <see cref="InvalidOperationException"/> will be thrown for the more grievous errors, while other stoppers merely return false.</param>
         /// <returns></returns>
-        public async Task<bool> Deploy(Project project = null)
+        public async Task<bool> Deploy(Project project = null, bool nonBlocking = false)
         {
             var dte = DTE;
 
             if (IsDeploying)
             {
-                VsShellUtilities.ShowMessageBox(ServiceProvider, Text.MDKPackage_Deploy_Rejected_DeploymentInProgress, Text.MDKPackage_Deploy_DeploymentRejected, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                if (!nonBlocking)
+                    VsShellUtilities.ShowMessageBox(ServiceProvider, Text.MDKPackage_Deploy_Rejected_DeploymentInProgress, Text.MDKPackage_Deploy_DeploymentRejected, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
                 return false;
             }
 
             if (!dte.Solution.IsOpen)
             {
-                VsShellUtilities.ShowMessageBox(ServiceProvider, Text.MDKPackage_Deploy_NoSolutionOpen, Text.MDKPackage_Deploy_DeploymentRejected, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                if (!nonBlocking)
+                    VsShellUtilities.ShowMessageBox(ServiceProvider, Text.MDKPackage_Deploy_NoSolutionOpen, Text.MDKPackage_Deploy_DeploymentRejected, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
                 return false;
             }
 
             if (dte.Solution.SolutionBuild.BuildState == vsBuildState.vsBuildStateInProgress)
             {
-                VsShellUtilities.ShowMessageBox(ServiceProvider, Text.MDKPackage_Deploy_Rejected_BuildInProgress, Text.MDKPackage_Deploy_DeploymentRejected, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                if (!nonBlocking)
+                    VsShellUtilities.ShowMessageBox(ServiceProvider, Text.MDKPackage_Deploy_Rejected_BuildInProgress, Text.MDKPackage_Deploy_DeploymentRejected, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
                 return false;
             }
 
@@ -317,7 +324,8 @@ namespace MDK
 
                 if (failedProjects > 0)
                 {
-                    VsShellUtilities.ShowMessageBox(ServiceProvider, Text.MDKPackage_Deploy_BuildFailed, Text.MDKPackage_Deploy_DeploymentRejected, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                    if (!nonBlocking)
+                        VsShellUtilities.ShowMessageBox(ServiceProvider, Text.MDKPackage_Deploy_BuildFailed, Text.MDKPackage_Deploy_DeploymentRejected, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
                 }
 
                 string title;
@@ -325,24 +333,46 @@ namespace MDK
                     title = string.Format(Text.MDKPackage_Deploy_DeployingSingleScript, Path.GetFileName(project.FullName));
                 else
                     title = Text.MDKPackage_Deploy_DeployingAllScripts;
-                int deploymentCount;
+                ProjectScriptInfo[] deployedScripts;
                 using (var statusBar = new StatusBarProgressBar(ServiceProvider, title, 100))
                 using (new StatusBarAnimation(ServiceProvider, Animation.Deploy))
                 {
                     var buildModule = new BuildModule(this, dte.Solution.FileName, project?.FullName, statusBar);
-                    deploymentCount = await buildModule.Run();
+                    deployedScripts = await buildModule.Run();
                 }
 
-                if (deploymentCount > 0)
-                    VsShellUtilities.ShowMessageBox(ServiceProvider, Text.MDKPackage_Deploy_DeploymentCompleteDescription, Text.MDKPackage_Deploy_DeploymentComplete, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                if (deployedScripts.Length > 0)
+                {
+                    if (!nonBlocking)
+                    {
+                        var distinctPaths = deployedScripts.Select(script => FormattedPath(script.OutputPath)).Distinct().ToArray();
+                        if (distinctPaths.Length == 1)
+                        {
+                            var model = new BlueprintManagerDialogModel(Text.MDKPackage_Deploy_Description,
+                                distinctPaths[0], deployedScripts.Select(s => s.Name));
+                            BlueprintManagerDialog.ShowDialog(model);
+                        }
+                        else
+                        {
+                            VsShellUtilities.ShowMessageBox(ServiceProvider, Text.MDKPackage_Deploy_DeploymentCompleteDescription, Text.MDKPackage_Deploy_DeploymentComplete, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                        }
+                    }
+                }
                 else
-                    VsShellUtilities.ShowMessageBox(ServiceProvider, Text.MDKPackage_Deploy_NoMDKProjects, Text.MDKPackage_Deploy_DeploymentCancelled, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                {
+                    if (!nonBlocking)
+                        VsShellUtilities.ShowMessageBox(ServiceProvider, Text.MDKPackage_Deploy_NoMDKProjects, Text.MDKPackage_Deploy_DeploymentCancelled, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                    return false;
+                }
 
                 return true;
             }
             catch (Exception e)
             {
-                ShowError(Text.MDKPackage_Deploy_DeploymentFailed, Text.MDKPackage_Deploy_UnexpectedError, e);
+                if (!nonBlocking)
+                    ShowError(Text.MDKPackage_Deploy_DeploymentFailed, Text.MDKPackage_Deploy_UnexpectedError, e);
+                else
+                    throw new InvalidOperationException("An unexpected error occurred during deployment.", e);
                 return false;
             }
             finally
@@ -351,9 +381,26 @@ namespace MDK
             }
         }
 
+        string FormattedPath(string scriptOutputPath)
+        {
+            return Path.GetFullPath(scriptOutputPath).TrimEnd('\\').ToUpper();
+        }
+
+        /// <summary>
+        /// Displays an error dialog
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="description"></param>
+        /// <param name="exception"></param>
         public void ShowError(string title, string description, Exception exception)
         {
-            throw new NotImplementedException();
+            var errorDialogModel = new ErrorDialogModel
+            {
+                Title = title,
+                Description = description,
+                Log = exception.ToString()
+            };
+            ErrorDialog.ShowDialog(errorDialogModel);
         }
 
         #region Unused callbacks

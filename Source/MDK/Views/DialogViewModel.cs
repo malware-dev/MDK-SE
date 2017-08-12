@@ -1,15 +1,12 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using JetBrains.Annotations;
 
 namespace MDK.Views
 {
     /// <summary>
     /// A base class for dialog view models
     /// </summary>
-    public abstract class DialogViewModel : INotifyPropertyChanged
+    public abstract class DialogViewModel : Model
     {
         /// <summary>
         /// Creates a new instance of <see cref="DialogViewModel"/>
@@ -19,9 +16,6 @@ namespace MDK.Views
             SaveAndCloseCommand = new ModelCommand(SaveAndClose);
             CancelCommand = new ModelCommand(Cancel);
         }
-
-        /// <inheritdoc />
-        public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
         /// Fired when this model is closing. Any views using this model should close as well.
@@ -37,16 +31,6 @@ namespace MDK.Views
         /// A command for canceling the dialog's operation and then closing.
         /// </summary>
         public ICommand CancelCommand { get; }
-
-        /// <summary>
-        /// Called whenever a trackable property changes.
-        /// </summary>
-        /// <param name="propertyName">The name of the property which have changed, or <c>null</c> to indicate a global change.</param>
-        [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
 
         /// <summary>
         /// Upgrades the projects and closes.

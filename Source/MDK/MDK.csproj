@@ -67,10 +67,12 @@
     <Compile Include="Build\ScriptPart.cs" />
     <Compile Include="Build\UsingDirectiveComparer.cs" />
     <Compile Include="Build\WeightedPartSorter.cs" />
+    <Compile Include="Commands\BlueprintManagerCommand.cs" />
     <Compile Include="Commands\CommandGroups.cs" />
     <Compile Include="Commands\CheckForUpdatesCommand.cs" />
     <Compile Include="Commands\CommandIds.cs" />
     <Compile Include="Commands\DeployProjectCommand.cs" />
+    <Compile Include="Commands\ProjectDependentCommand.cs" />
     <Compile Include="Commands\ProjectOptionsCommand.cs" />
     <Compile Include="MDKPackage.GeneratedInfo.cs">
       <DependentUpon>MDKPackage.GeneratedInfo.csx</DependentUpon>
@@ -81,8 +83,22 @@
       <DependentUpon>Text.resx</DependentUpon>
     </Compile>
     <Compile Include="Services\IngameScriptWizard.cs" />
+    <Compile Include="Views\BlueprintManager\BlueprintManagerDialog.xaml.cs">
+      <DependentUpon>BlueprintManagerDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\BlueprintManager\BlueprintManagerModel.cs" />
+    <Compile Include="Views\BlueprintManager\BlueprintModel.cs" />
+    <Compile Include="Views\BlueprintManager\DeleteBlueprintEventArgs.cs" />
+    <Compile Include="Views\BugReports\ErrorDialog.xaml.cs">
+      <DependentUpon>ErrorDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\BugReports\ErrorDialogModel.cs" />
+    <Compile Include="Views\MessageEventArgs.cs" />
+    <Compile Include="Views\MessageEventType.cs" />
+    <Compile Include="Views\ToBooleanConverter.cs" />
     <Compile Include="Views\DialogClosingEventArgs.cs" />
     <Compile Include="Views\DialogViewModel.cs" />
+    <Compile Include="Views\Model.cs" />
     <Compile Include="Views\UpdateDetection\UpdateDetectedDialog.xaml.cs">
       <DependentUpon>UpdateDetectedDialog.xaml</DependentUpon>
     </Compile>
@@ -458,6 +474,14 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Views\BlueprintManager\BlueprintManagerDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\BugReports\ErrorDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\ButtonBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

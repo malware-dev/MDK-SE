@@ -25,6 +25,11 @@ namespace MDK
 		/// </summary>
         public const string ReleasePageUrl = "https://github.com/malware-dev/MDK-SE/releases";
 
+	    /// <summary>
+		/// Gets the issues page navigation URL
+		/// </summary>
+        public const string IssuesPageUrl = "https://github.com/malware-dev/MDK-SE/issues";
+
         /// <summary>
         /// A list of the game assemblies referenced by script projects
         /// </summary>

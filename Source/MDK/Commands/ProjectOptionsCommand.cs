@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Linq;
 using EnvDTE;
+using Malware.MDKServices;
 using MDK.Resources;
 using MDK.Views.Options;
 using MDK.VisualStudio;
@@ -11,7 +12,7 @@ using Command = MDK.VisualStudio.Command;
 
 namespace MDK.Commands
 {
-    sealed class ProjectOptionsCommand : Command
+    sealed class ProjectOptionsCommand : ProjectDependentCommand
     {
         public ProjectOptionsCommand(ExtendedPackage package) : base(package)
         { }
@@ -20,28 +21,14 @@ namespace MDK.Commands
 
         public override int Id { get; } = CommandIds.ProjectOptions;
 
-        protected override void OnBeforeQueryStatus()
-        {
-            var package = (MDKPackage)Package;
-            OleCommand.Visible = package.IsEnabled;
-        }
-
         protected override void OnExecute()
         {
-            var dte2 = (EnvDTE80.DTE2)Package.DTE;
-            var selectedProject = ((IEnumerable)dte2.ToolWindows.SolutionExplorer.SelectedItems)
-                .OfType<UIHierarchyItem>()
-                .Select(item => item.Object)
-                .OfType<Project>()
-                .FirstOrDefault();
-            if (selectedProject == null)
-                return;
-            var scriptOptions = new ScriptOptionsDialogModel((MDKPackage)Package, Package.DTE, selectedProject);
-            if (!scriptOptions.ActiveProject.IsValid)
+            if (!TryGetValidProject(out ProjectScriptInfo projectInfo))
             {
                 VsShellUtilities.ShowMessageBox(ServiceProvider, Text.ProjectOptionsCommand_OnExecute_NoMDKProjectsDescription, Text.ProjectOptionsCommand_OnExecute_NoMDKProjects, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
                 return;
             }
+            var scriptOptions = new ScriptOptionsDialogModel((MDKPackage)Package, projectInfo);
             ScriptOptionsDialog.ShowDialog(scriptOptions);
         }
     }

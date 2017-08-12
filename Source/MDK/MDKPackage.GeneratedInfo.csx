@@ -43,6 +43,7 @@ var other = XDocument.Load(Path.Combine(Path.GetDirectoryName(Context.ProjectFil
 var isPrerelease = string.Equals(other.XPathSelectElement("/Other/IsPrerelease")?.Value ?? "True", "true", StringComparison.CurrentCultureIgnoreCase)? "true" : "false";
 var helpPageUrl = other.XPathSelectElement("/Other/HelpPageUrl")?.Value ?? "";
 var releasePageUrl = other.XPathSelectElement("/Other/ReleasePageUrl")?.Value ?? "";
+var issuesPageUrl = other.XPathSelectElement("/Other/IssuesPageUrl")?.Value ?? "";
 
 Context.Output.WriteLine($@"using System;
 using System.Collections.Immutable;
@@ -70,6 +71,11 @@ namespace {namespaceName}
 		/// Gets the release page navigation URL
 		/// </summary>
         public const string ReleasePageUrl = ""{releasePageUrl}"";
+
+	    /// <summary>
+		/// Gets the issues page navigation URL
+		/// </summary>
+        public const string IssuesPageUrl = ""{issuesPageUrl}"";
 
         /// <summary>
         /// A list of the game assemblies referenced by script projects

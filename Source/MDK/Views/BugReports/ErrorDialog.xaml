@@ -1,0 +1,44 @@
+﻿<vs:DialogWindow
+    x:Class="MDK.Views.BugReports.ErrorDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:views="clr-namespace:MDK.Views"
+    xmlns:vs="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
+    xmlns:local="clr-namespace:MDK.Views.BugReports"
+    xmlns:mdk="clr-namespace:MDK"
+    mc:Ignorable="d"
+    UseLayoutRounding="True"
+    WindowStartupLocation="CenterOwner"
+    TextOptions.TextFormattingMode="Display"
+    TextOptions.TextHintingMode="Auto"
+    TextOptions.TextRenderingMode="Auto"
+    Title="Oh Noez..."
+    MinWidth="200"
+    Width="600"
+    Height="400"
+    MinHeight="200">
+    
+    <Grid x:Name="Host" Margin="16"
+          d:DataContext="{d:DesignInstance local:ErrorDialogModel}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <TextBlock Margin="0,0,0,8" TextWrapping="Wrap" Text="{Binding Description}"/>
+        <TextBlock Grid.Row="1" Margin="0,0,0,8" TextWrapping="Wrap">Ok, that didn't turn out well. Apparently something didn't work as planned. It would be very 
+            appreciated if you could copy the log below into an 
+            <Hyperlink TextDecorations="{x:Null}" NavigateUri="{Binding Source={x:Static mdk:MDKPackage.HelpPageUrl}, Mode=OneWay}" RequestNavigate="OnHyperlinkClicked">
+            issue registered here.
+            </Hyperlink>
+            Thank you in advance!
+        </TextBlock>
+        <TextBox Grid.Row="2" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" IsReadOnlyCaretVisible="True" IsReadOnly="True" Text="{Binding Log}" />
+        <views:ButtonBar Grid.Row="3" VerticalAlignment="Bottom">
+            <Button IsCancel="True" MinWidth="96" Margin="0,2,2,2" Command="{Binding CancelCommand}">Close</Button>
+        </views:ButtonBar>
+    </Grid>
+</vs:DialogWindow>

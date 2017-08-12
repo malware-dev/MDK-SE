@@ -3,5 +3,6 @@
   <IsPrerelease>True</IsPrerelease>
   <HelpPageUrl>https://github.com/malware-dev/MDK-SE/wiki</HelpPageUrl>
   <ReleasePageUrl>https://github.com/malware-dev/MDK-SE/releases</ReleasePageUrl>
+  <IssuesPageUrl>https://github.com/malware-dev/MDK-SE/issues</IssuesPageUrl>
   <ApiPageUrl>https://github.com/malware-dev/MDK-SE/wiki/api</ApiPageUrl>
 </Other>

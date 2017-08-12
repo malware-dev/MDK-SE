@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Collections;
-using System.Linq;
 using EnvDTE;
+using MDK.Resources;
 using MDK.VisualStudio;
-using Command = MDK.VisualStudio.Command;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace MDK.Commands
 {
-    sealed class DeployProjectCommand : Command
+    sealed class DeployProjectCommand : ProjectDependentCommand
     {
         public DeployProjectCommand(ExtendedPackage package) : base(package)
         { }
@@ -16,26 +16,15 @@ namespace MDK.Commands
 
         public override int Id { get; } = CommandIds.DeployProject;
 
-        protected override void OnBeforeQueryStatus()
-        {
-            var package = (MDKPackage)Package;
-            OleCommand.Visible = package.IsEnabled;
-        }
-
         protected override async void OnExecute()
         {
-            var package = (MDKPackage)Package;
-            var dte2 = (EnvDTE80.DTE2)package.DTE;
-            var selectedProject = ((IEnumerable)dte2.ToolWindows.SolutionExplorer.SelectedItems)
-                .OfType<UIHierarchyItem>()
-                .Select(item => item.Object)
-                .OfType<Project>()
-                .FirstOrDefault();
-            if (selectedProject == null)
+            if (!TryGetValidProject(out Project project, out _))
+            {
+                VsShellUtilities.ShowMessageBox(ServiceProvider, Text.ProjectOptionsCommand_OnExecute_NoMDKProjectsDescription, Text.ProjectOptionsCommand_OnExecute_NoMDKProjects, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
                 return;
-
-
-            await package.Deploy(selectedProject);
+            }
+            var package = (MDKPackage)Package;
+            await package.Deploy(project);
         }
     }
 }

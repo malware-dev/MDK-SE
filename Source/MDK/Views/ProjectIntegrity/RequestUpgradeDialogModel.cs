@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using JetBrains.Annotations;
 using Malware.MDKServices;
+using MDK.Resources;
 
 namespace MDK.Views.ProjectIntegrity
 {
@@ -44,7 +45,14 @@ namespace MDK.Views.ProjectIntegrity
         /// </summary>
         protected override bool OnSave()
         {
-            Package.ScriptUpgrades.Upgrade(AnalysisResults);
+            try
+            {
+                Package.ScriptUpgrades.Upgrade(AnalysisResults);
+            }
+            catch (Exception e)
+            {
+                Package.ShowError(Text.RequestUpgradeDialogModel_OnSave_Error, Text.RequestUpgradeDialogModel_OnSave_Error_Description, e);
+            }
             return true;
         }
     }
