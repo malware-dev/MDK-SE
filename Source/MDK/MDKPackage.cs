@@ -124,7 +124,8 @@ namespace MDK
                 new RefreshWhitelistCacheCommand(this),
                 new CheckForUpdatesCommand(this),
                 new ProjectOptionsCommand(this),
-                new BlueprintManagerCommand(this)
+                new BlueprintManagerCommand(this),
+                new GlobalBlueprintManagerCommand(this)
             );
 
             base.Initialize();

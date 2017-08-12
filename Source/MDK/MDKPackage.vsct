@@ -70,12 +70,43 @@
           <ButtonText>Deploy All MDK Scripts</ButtonText>
         </Strings>
       </Button>
+      <Button guid="guidMDKCmdSet" id="GlobalBlueprintManagerCommandId" priority="0x0101" type="Button">
+        <Parent guid="guidMDKCmdSet" id="MDKMenuGroup" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <!--<Icon guid="guidImages" id="bmpPic1" />-->
+        <Strings>
+          <ButtonText>Blueprint Manager</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidMDKCmdSet" id="RefreshWhitelistCacheCommandId" priority="0x0102" type="Button">
+        <Parent guid="guidMDKCmdSet" id="MDKMenuGroup" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <!--<Icon guid="guidImages" id="bmpPic1" />-->
+        <Strings>
+          <ButtonText>Refresh Whitelist Cache</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidMDKCmdSet" id="CheckForUpdatesCommandId" priority="0x0103" type="Button">
+        <Parent guid="guidMDKCmdSet" id="MDKMenuGroup" />
+        <!--<Icon guid="guidImages" id="bmpPic1" />-->
+        <Strings>
+          <ButtonText>Check for Updates</ButtonText>
+        </Strings>
+      </Button>
       <Button guid="guidMDKCmdSet" id="QuickDeploySolutionCommandId" priority="0x0300" type="Button">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_SOLUTION_BUILD" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <!--<Icon guid="guidImages" id="bmpPic1" />-->
         <Strings>
           <ButtonText>Deploy All MDK Scripts</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidMDKCmdSet" id="GlobalBlueprintManagerCommandId" priority="0x0400" type="Button">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_SOLUTION_PROPERTIES" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <!--<Icon guid="guidImages" id="bmpPic1" />-->
+        <Strings>
+          <ButtonText>Blueprint Manager</ButtonText>
         </Strings>
       </Button>
       <Button guid="guidMDKCmdSet" id="DeployProjectCommandId" priority="0x0300" type="Button">
@@ -100,21 +131,6 @@
         <!--<Icon guid="guidImages" id="bmpPic1" />-->
         <Strings>
           <ButtonText>MDK Script Options</ButtonText>
-        </Strings>
-      </Button>
-      <Button guid="guidMDKCmdSet" id="RefreshWhitelistCacheCommandId" priority="0x0102" type="Button">
-        <Parent guid="guidMDKCmdSet" id="MDKMenuGroup" />
-        <CommandFlag>DynamicVisibility</CommandFlag>
-        <!--<Icon guid="guidImages" id="bmpPic1" />-->
-        <Strings>
-          <ButtonText>Refresh Whitelist Cache</ButtonText>
-        </Strings>
-      </Button>
-      <Button guid="guidMDKCmdSet" id="CheckForUpdatesCommandId" priority="0x0103" type="Button">
-        <Parent guid="guidMDKCmdSet" id="MDKMenuGroup" />
-        <!--<Icon guid="guidImages" id="bmpPic1" />-->
-        <Strings>
-          <ButtonText>Check for Updates</ButtonText>
         </Strings>
       </Button>
     </Buttons>
@@ -151,6 +167,7 @@
       <IDSymbol name="CheckForUpdatesCommandId" value="0x0103" />
       <IDSymbol name="DeployProjectCommandId" value="0x0104" />
       <IDSymbol name="BlueprintManagerCommandId" value="0x0105" />
+      <IDSymbol name="GlobalBlueprintManagerCommandId" value="0x0106" />
     </GuidSymbol>
 
     <GuidSymbol name="guidImages" value="{016ced72-6df6-4278-a645-5d8a568294d5}" >

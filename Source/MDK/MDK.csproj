@@ -67,6 +67,7 @@
     <Compile Include="Build\ScriptPart.cs" />
     <Compile Include="Build\UsingDirectiveComparer.cs" />
     <Compile Include="Build\WeightedPartSorter.cs" />
+    <Compile Include="Commands\GlobalBlueprintManagerCommand.cs" />
     <Compile Include="Commands\BlueprintManagerCommand.cs" />
     <Compile Include="Commands\CommandGroups.cs" />
     <Compile Include="Commands\CheckForUpdatesCommand.cs" />
@@ -159,6 +160,7 @@
   <ItemGroup>
     <VSCTCompile Include="MDKPackage.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
+      <SubType>Designer</SubType>
     </VSCTCompile>
     <Content Include="MIT License.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

@@ -8,7 +8,7 @@ namespace MDK
 	    /// <summary>
 		/// The current package version
 		/// </summary>
-		public static readonly Version Version = new Version("0.9.34");
+		public static readonly Version Version = new Version("0.9.36");
 
 	    /// <summary>
 		/// Determines whether this version is a prerelease version
