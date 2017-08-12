@@ -1,7 +1,7 @@
 ﻿using System.Windows.Controls;
 using MDK.Services;
 
-namespace MDK.Views
+namespace MDK.Views.Options
 {
     /// <summary>
     /// Interaction logic for MDKOptionsWindow.xaml

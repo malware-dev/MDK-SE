@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Linq;
 using EnvDTE;
-using MDK.Views;
+using MDK.Views.Options;
 using MDK.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -28,7 +28,7 @@ namespace MDK.Commands
         protected override void OnExecute()
         {
             var dte2 = (EnvDTE80.DTE2)Package.DTE;
-            var selectedProject =  ((IEnumerable)dte2.ToolWindows.SolutionExplorer.SelectedItems)
+            var selectedProject = ((IEnumerable)dte2.ToolWindows.SolutionExplorer.SelectedItems)
                 .OfType<UIHierarchyItem>()
                 .Select(item => item.Object)
                 .OfType<Project>()

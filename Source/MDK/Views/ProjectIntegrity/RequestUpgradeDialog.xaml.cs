@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.PlatformUI;
 
-namespace MDK.Views
+namespace MDK.Views.ProjectIntegrity
 {
     /// <summary>
     /// Interaction logic for RequestUpgradeDialog.xaml

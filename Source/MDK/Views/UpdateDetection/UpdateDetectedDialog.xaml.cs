@@ -1,33 +1,33 @@
 ﻿using Microsoft.VisualStudio.PlatformUI;
 
-namespace MDK.Views
+namespace MDK.Views.UpdateDetection
 {
     /// <summary>
-    /// Interaction logic for ScriptOptionsDialog.xaml
+    /// Interaction logic for RequestUpgradeDialog.xaml
     /// </summary>
-    public partial class ScriptOptionsDialog : DialogWindow
+    public partial class UpdateDetectedDialog : DialogWindow
     {
         /// <summary>
         /// Shows this dialog with the provided view model.
         /// </summary>
         /// <param name="viewModel"></param>
         /// <returns></returns>
-        public static bool? ShowDialog(ScriptOptionsDialogModel viewModel)
+        public static bool? ShowDialog(UpdateDetectedDialogModel viewModel)
         {
-            var dialog = new ScriptOptionsDialog();
+            var dialog = new UpdateDetectedDialog();
             dialog.SetModel(viewModel);
             return dialog.ShowModal();
         }
 
         /// <summary>
-        /// Creates a new instance of the <see cref="RequestUpgradeDialog"/>
+        /// Creates a new instance of the <see cref="ProjectIntegrity.RequestUpgradeDialog"/>
         /// </summary>
-        public ScriptOptionsDialog()
+        public UpdateDetectedDialog()
         {
             InitializeComponent();
         }
 
-        void SetModel(ScriptOptionsDialogModel viewModel)
+        void SetModel(UpdateDetectedDialogModel viewModel)
         {
             Host.DataContext = viewModel;
             viewModel.Closing += OnModelClosing;
@@ -35,7 +35,7 @@ namespace MDK.Views
 
         void OnModelClosing(object sender, DialogClosingEventArgs e)
         {
-            ((ScriptOptionsDialogModel)Host.DataContext).Closing += OnModelClosing;
+            ((UpdateDetectedDialogModel)Host.DataContext).Closing += OnModelClosing;
             DialogResult = e.State;
             Close();
         }

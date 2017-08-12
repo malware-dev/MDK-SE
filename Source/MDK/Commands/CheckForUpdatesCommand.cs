@@ -1,6 +1,8 @@
 ﻿using System;
 using MDK.Views;
+using MDK.Views.UpdateDetection;
 using MDK.VisualStudio;
+using UpdateDetectedDialog = MDK.Views.UpdateDetection.UpdateDetectedDialog;
 
 namespace MDK.Commands
 {

@@ -8,9 +8,11 @@ using System.Threading.Tasks;
 using EnvDTE;
 using JetBrains.Annotations;
 using Malware.MDKServices;
+using MDK.Build;
 using MDK.Commands;
 using MDK.Services;
-using MDK.Views;
+using MDK.Views.ProjectIntegrity;
+using MDK.Views.UpdateDetection;
 using MDK.VisualStudio;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
@@ -41,6 +43,14 @@ namespace MDK
         bool _isEnabled;
 
         /// <summary>
+        /// Creates a new instance of <see cref="MDKPackage" />
+        /// </summary>
+        public MDKPackage()
+        {
+            ScriptUpgrades = new ScriptUpgrades();
+        }
+
+        /// <summary>
         /// Fired when the MDK features are enabled
         /// </summary>
         public event EventHandler Enabled;
@@ -49,6 +59,11 @@ namespace MDK
         /// Fired when the MDK features are disabled
         /// </summary>
         public event EventHandler Disabled;
+
+        /// <summary>
+        /// Determines whether the package is currently busy deploying scripts.
+        /// </summary>
+        public bool IsDeploying { get; private set; }
 
         /// <summary>
         /// Determines whether the MDK features are currently enabled
@@ -66,14 +81,6 @@ namespace MDK
                 else
                     Disabled?.Invoke(this, EventArgs.Empty);
             }
-        }
-
-        /// <summary>
-        /// Creates a new instance of <see cref="MDKPackage" />
-        /// </summary>
-        public MDKPackage()
-        {
-            ScriptUpgrades = new ScriptUpgrades();
         }
 
         /// <summary>
@@ -250,6 +257,99 @@ namespace MDK
             }
         }
 
+        int IVsSolutionEvents.OnAfterLoadProject(IVsHierarchy pStubHierarchy, IVsHierarchy pRealHierarchy)
+        {
+            pRealHierarchy.GetProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_ExtObject, out object objProj);
+            OnProjectLoaded((Project)objProj);
+            return VSConstants.S_OK;
+        }
+
+        /// <summary>
+        /// Deploys the all scripts in the solution or a single script project.
+        /// </summary>
+        /// <param name="projectFileName"></param>
+        /// <returns></returns>
+        public async Task<bool> Deploy(string projectFileName = null)
+        {
+            var dte = DTE;
+
+            if (IsDeploying)
+            {
+                VsShellUtilities.ShowMessageBox(ServiceProvider, "A deployment is currently in progress. Please try again when the current deployment is complete.", "Deploy Rejected", OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                return false;
+            }
+
+            if (!dte.Solution.IsOpen)
+            {
+                VsShellUtilities.ShowMessageBox(ServiceProvider, "No solution is open.", "Deploy Rejected", OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                return false;
+            }
+
+            if (dte.Solution.SolutionBuild.BuildState == vsBuildState.vsBuildStateInProgress)
+            {
+                VsShellUtilities.ShowMessageBox(ServiceProvider, "A build is currently in progress. Please try again when the current build is complete.", "Deploy Rejected", OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                return false;
+            }
+
+            IsDeploying = true;
+            try
+            {
+                var tcs = new TaskCompletionSource<int>();
+                void BuildEventsOnOnBuildDone(vsBuildScope scope, vsBuildAction action) => tcs.SetResult(dte.Solution.SolutionBuild.LastBuildInfo);
+
+                int failedProjects;
+                using (new StatusBarAnimation(ServiceProvider, Animation.Build))
+                {
+                    dte.Events.BuildEvents.OnBuildDone += BuildEventsOnOnBuildDone;
+                    dte.Solution.SolutionBuild.Build();
+
+                    failedProjects = await tcs.Task;
+                    dte.Events.BuildEvents.OnBuildDone -= BuildEventsOnOnBuildDone;
+                }
+
+                if (failedProjects > 0)
+                {
+                    VsShellUtilities.ShowMessageBox(ServiceProvider, "Build failed.", "Deploy Rejected", OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                }
+
+                string title;
+                if (projectFileName != null)
+                    title = $"Deploying MDK Script {Path.GetFileName(projectFileName)}...";
+                else
+                    title = "Deploying All MDK Scripts...";
+                int deploymentCount;
+                using (var statusBar = new StatusBarProgressBar(ServiceProvider, title, 100))
+                using (new StatusBarAnimation(ServiceProvider, Animation.Deploy))
+                {
+                    var buildModule = new BuildModule(this, dte.Solution.FileName, projectFileName, statusBar);
+                    deploymentCount = await buildModule.Run();
+                }
+
+                if (deploymentCount > 0)
+                    VsShellUtilities.ShowMessageBox(ServiceProvider, "Your script(s) should now be available in the ingame local workshop.", "Deployment Complete", OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                else
+                    VsShellUtilities.ShowMessageBox(ServiceProvider, "There were no deployable scripts in this solution.", "Deployment Cancelled", OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                ShowError("Deployment Failed", "An unexpected error occurred during the attempt to deploy.", e);
+                return false;
+            }
+            finally
+            {
+                IsDeploying = false;
+            }
+        }
+
+        public void ShowError(string title, string description, Exception exception)
+        {
+            throw new NotImplementedException();
+        }
+
+        #region Unused callbacks
+
         int IVsSolutionEvents.OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)
         {
             return VSConstants.S_OK;
@@ -262,13 +362,6 @@ namespace MDK
 
         int IVsSolutionEvents.OnBeforeCloseProject(IVsHierarchy pHierarchy, int fRemoved)
         {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents.OnAfterLoadProject(IVsHierarchy pStubHierarchy, IVsHierarchy pRealHierarchy)
-        {
-            pRealHierarchy.GetProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_ExtObject, out object objProj);
-            OnProjectLoaded((Project)objProj);
             return VSConstants.S_OK;
         }
 
@@ -301,5 +394,7 @@ namespace MDK
         {
             return VSConstants.S_OK;
         }
+
+        #endregion Unused callbacks
     }
 }

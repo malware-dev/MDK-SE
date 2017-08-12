@@ -1,18 +1,31 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Linq;
-using System.Threading.Tasks;
 using EnvDTE;
+using MDK.VisualStudio;
+using Command = MDK.VisualStudio.Command;
 
 namespace MDK.Commands
 {
-    sealed class DeployProjectCommand : DeployCommand
+    sealed class DeployProjectCommand : Command
     {
-        public DeployProjectCommand(MDKPackage package) : base(package, CommandIds.DeployProject)
+        public DeployProjectCommand(ExtendedPackage package) : base(package)
         { }
 
-        protected override async Task OnExecute(MDKPackage package, DTE dte)
+        public override Guid GroupId { get; } = CommandGroups.MDKGroup;
+
+        public override int Id { get; } = CommandIds.DeployProject;
+
+        protected override void OnBeforeQueryStatus()
         {
-            var dte2 = (EnvDTE80.DTE2)dte;
+            var package = (MDKPackage)Package;
+            OleCommand.Visible = package.IsEnabled;
+        }
+
+        protected override async void OnExecute()
+        {
+            var package = (MDKPackage)Package;
+            var dte2 = (EnvDTE80.DTE2)package.DTE;
             var selectedProject = ((IEnumerable)dte2.ToolWindows.SolutionExplorer.SelectedItems)
                 .OfType<UIHierarchyItem>()
                 .Select(item => item.Object)
@@ -21,7 +34,8 @@ namespace MDK.Commands
             if (selectedProject == null)
                 return;
 
-            await Deploy(selectedProject.FullName);
+
+            await package.Deploy(selectedProject.FullName);
         }
     }
 }

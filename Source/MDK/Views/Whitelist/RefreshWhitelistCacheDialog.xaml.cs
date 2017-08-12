@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.PlatformUI;
 
-namespace MDK.Views
+namespace MDK.Views.Whitelist
 {
     /// <summary>
     /// Interaction logic for RequestUpgradeDialog.xaml
@@ -20,7 +20,7 @@ namespace MDK.Views
         }
 
         /// <summary>
-        /// Creates a new instance of the <see cref="RequestUpgradeDialog"/>
+        /// Creates a new instance of the <see cref="ProjectIntegrity.RequestUpgradeDialog"/>
         /// </summary>
         public RefreshWhitelistCacheDialog()
         {

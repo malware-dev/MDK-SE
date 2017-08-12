@@ -1,9 +1,10 @@
 ﻿using System;
+using MDK.Views.Options;
 
-namespace MDK.Views
+namespace MDK.Views.UpdateDetection
 {
     /// <summary>
-    /// The view model for <see cref="ScriptOptionsDialog"/>
+    /// The view model for <see cref="Options.ScriptOptionsDialog"/>
     /// </summary>
     public class UpdateDetectedDialogModel : DialogViewModel
     {

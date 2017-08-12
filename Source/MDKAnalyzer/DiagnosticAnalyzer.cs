@@ -97,6 +97,9 @@ namespace Malware.MDKAnalyzer
             if (IsIgnorableNode(context))
                 return;
             var classDeclaration = (ClassDeclarationSyntax)context.Node;
+            if (classDeclaration.Parent is TypeDeclarationSyntax)
+                return;
+
             var namespaceDeclaration = classDeclaration.Parent as NamespaceDeclarationSyntax;
             var namespaceName = namespaceDeclaration?.Name.ToString();
             if (!_namespaceName.Equals(namespaceName, StringComparison.Ordinal))

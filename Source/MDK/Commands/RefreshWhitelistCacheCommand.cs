@@ -1,5 +1,5 @@
 ﻿using System;
-using MDK.Views;
+using MDK.Views.Whitelist;
 using MDK.VisualStudio;
 
 namespace MDK.Commands

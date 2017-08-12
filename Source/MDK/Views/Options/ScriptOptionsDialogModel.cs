@@ -3,7 +3,7 @@ using EnvDTE;
 using JetBrains.Annotations;
 using Malware.MDKServices;
 
-namespace MDK.Views
+namespace MDK.Views.Options
 {
     /// <summary>
     /// The view model for <see cref="ScriptOptionsDialog"/>

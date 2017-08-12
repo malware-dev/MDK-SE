@@ -6,6 +6,7 @@ using System.Windows;
 using Malware.MDKUtilities;
 using MDK.Views;
 using Microsoft.VisualStudio.Shell;
+using MDKOptionsControl = MDK.Views.Options.MDKOptionsControl;
 
 namespace MDK.Services
 {

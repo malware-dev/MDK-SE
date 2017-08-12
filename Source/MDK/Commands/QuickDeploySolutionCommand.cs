@@ -1,16 +1,27 @@
-﻿using System.Threading.Tasks;
-using EnvDTE;
+﻿using System;
+using MDK.VisualStudio;
 
 namespace MDK.Commands
 {
-    sealed class QuickDeploySolutionCommand : DeployCommand
+    sealed class QuickDeploySolutionCommand : Command
     {
-        public QuickDeploySolutionCommand(MDKPackage package) : base(package, CommandIds.QuickDeploySolution)
+        public QuickDeploySolutionCommand(ExtendedPackage package) : base(package)
         { }
 
-        protected override async Task OnExecute(MDKPackage package, DTE dte)
+        public override Guid GroupId { get; } = CommandGroups.MDKGroup;
+
+        public override int Id { get; } = CommandIds.QuickDeploySolution;
+
+        protected override void OnBeforeQueryStatus()
         {
-            await Deploy();
+            var package = (MDKPackage)Package;
+            OleCommand.Visible = package.IsEnabled;
+        }
+
+        protected override async void OnExecute()
+        {
+            var package = (MDKPackage)Package;
+            await package.Deploy();
         }
     }
 }

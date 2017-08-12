@@ -70,7 +70,6 @@
     <Compile Include="Commands\CommandGroups.cs" />
     <Compile Include="Commands\CheckForUpdatesCommand.cs" />
     <Compile Include="Commands\CommandIds.cs" />
-    <Compile Include="Commands\DeployCommand.cs" />
     <Compile Include="Commands\DeployProjectCommand.cs" />
     <Compile Include="Commands\ProjectOptionsCommand.cs" />
     <Compile Include="MDKPackage.GeneratedInfo.cs">
@@ -79,19 +78,19 @@
     <Compile Include="Services\IngameScriptWizard.cs" />
     <Compile Include="Views\DialogClosingEventArgs.cs" />
     <Compile Include="Views\DialogViewModel.cs" />
-    <Compile Include="Views\UpdateDetectedDialog.xaml.cs">
+    <Compile Include="Views\UpdateDetection\UpdateDetectedDialog.xaml.cs">
       <DependentUpon>UpdateDetectedDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\UpdateDetectedDialogModel.cs" />
-    <Compile Include="Views\RefreshWhitelistCacheDialogModel.cs" />
-    <Compile Include="Views\RefreshWhitelistCacheDialog.xaml.cs">
+    <Compile Include="Views\UpdateDetection\UpdateDetectedDialogModel.cs" />
+    <Compile Include="Views\Whitelist\RefreshWhitelistCacheDialogModel.cs" />
+    <Compile Include="Views\Whitelist\RefreshWhitelistCacheDialog.xaml.cs">
       <DependentUpon>RefreshWhitelistCacheDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\RequestUpgradeDialogModel.cs" />
+    <Compile Include="Views\ProjectIntegrity\RequestUpgradeDialogModel.cs" />
     <Compile Include="Views\ButtonBar.xaml.cs">
       <DependentUpon>ButtonBar.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\RequestUpgradeDialog.xaml.cs">
+    <Compile Include="Views\ProjectIntegrity\RequestUpgradeDialog.xaml.cs">
       <DependentUpon>RequestUpgradeDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="VisualStudio\Animation.cs" />
@@ -106,7 +105,7 @@
     <Compile Include="MDKPackage.cs" />
     <Compile Include="Build\StringExtensions.cs" />
     <Compile Include="Views\ModelCommand.cs" />
-    <Compile Include="Views\ScriptOptionsDialogModel.cs" />
+    <Compile Include="Views\Options\ScriptOptionsDialogModel.cs" />
     <Compile Include="Views\BooleanVisibilityConverter.cs" />
     <Compile Include="Views\FolderBox.xaml.cs">
       <DependentUpon>FolderBox.xaml</DependentUpon>
@@ -114,11 +113,11 @@
     <Compile Include="Services\MDKOptions.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Views\MDKOptionsControl.xaml.cs">
+    <Compile Include="Views\Options\MDKOptionsControl.xaml.cs">
       <DependentUpon>MDKOptionsControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Services\WhitelistCache.cs" />
-    <Compile Include="Views\ScriptOptionsDialog.xaml.cs">
+    <Compile Include="Views\Options\ScriptOptionsDialog.xaml.cs">
       <DependentUpon>ScriptOptionsDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="VisualStudio\StatusBarUtility.cs" />
@@ -454,23 +453,23 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\MDKOptionsControl.xaml">
+    <Page Include="Views\Options\MDKOptionsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\UpdateDetectedDialog.xaml">
+    <Page Include="Views\UpdateDetection\UpdateDetectedDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\RefreshWhitelistCacheDialog.xaml">
+    <Page Include="Views\Whitelist\RefreshWhitelistCacheDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\RequestUpgradeDialog.xaml">
+    <Page Include="Views\ProjectIntegrity\RequestUpgradeDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\ScriptOptionsDialog.xaml">
+    <Page Include="Views\Options\ScriptOptionsDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
