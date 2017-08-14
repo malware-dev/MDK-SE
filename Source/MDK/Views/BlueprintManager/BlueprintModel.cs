@@ -25,11 +25,13 @@ namespace MDK.Views.BlueprintManager
         /// <summary>
         /// Creates a new instance of the blueprint model
         /// </summary>
+        /// <param name="manager"></param>
         /// <param name="thumbnail"></param>
         /// <param name="directory"></param>
         /// <param name="isSignificant"></param>
-        public BlueprintModel(ImageSource thumbnail, [NotNull] DirectoryInfo directory, bool isSignificant)
+        public BlueprintModel([NotNull] BlueprintManagerDialogModel manager, ImageSource thumbnail, [NotNull] DirectoryInfo directory, bool isSignificant)
         {
+            Manager = manager ?? throw new ArgumentNullException(nameof(manager));
             Thumbnail = thumbnail;
             _directory = directory ?? throw new ArgumentNullException(nameof(directory));
             Name = _directory.Name;
@@ -40,9 +42,14 @@ namespace MDK.Views.BlueprintManager
         public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
 
         /// <summary>
+        /// Gets the blueprint manager model this blueprint belongs to
+        /// </summary>
+        public BlueprintManagerDialogModel Manager { get; }
+
+        /// <summary>
         /// An optional thumbnail
         /// </summary>
-        public ImageSource Thumbnail { get; private set; }
+        public ImageSource Thumbnail { get; }
 
         /// <summary>
         /// The name of this thumbnail
@@ -182,7 +189,7 @@ namespace MDK.Views.BlueprintManager
             }
             catch (Exception e)
             {
-                throw;
+                Manager.SendMessage(Text.BlueprintModel_Delete_Error, string.Format(Text.BlueprintModel_Error_Description, Name, e.Message), MessageEventType.Error);
             }
         }
     }

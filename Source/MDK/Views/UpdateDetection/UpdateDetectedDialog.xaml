@@ -15,7 +15,7 @@
     TextOptions.TextFormattingMode="Display"
     TextOptions.TextHintingMode="Auto"
     TextOptions.TextRenderingMode="Auto"
-    Title="New MDK Version Available">
+    Title="Check for MDK Updates">
     
     <vs:DialogWindow.Resources>
         <views:BooleanVisibilityConverter x:Key="converters/booleanVisibility" TrueVisibility="Visible"
@@ -47,7 +47,7 @@
 
         <TextBlock Grid.Row="1" Margin="0,16,0,0" FontSize="12"
                    Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" TextWrapping="Wrap">
-            Go to Tools | Options | MDK | SE to set your options for update checks, including whether prerelease versions should be reported.
+            Go to Tools | Options | MDK/SE to set your options for update checks, including whether prerelease versions should be reported.
         </TextBlock>
         <views:ButtonBar Grid.Row="2">
             <Button IsDefault="True" Command="{Binding SaveAndCloseCommand}">Open the download page</Button>

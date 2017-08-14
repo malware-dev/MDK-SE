@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -33,17 +34,34 @@ namespace MDK.Views.BlueprintManager
         {
             InitializeComponent();
             blueprintsListBox.Items.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
+            Loaded += OnLoaded;
+        }
+
+        void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
+        {
+            SelectFirstSignificant();
+            blueprintsListBox.Focus();
         }
 
         void SetModel(BlueprintManagerDialogModel viewModel)
         {
             Host.DataContext = viewModel;
             viewModel.DeletingBlueprint += OnDeletingBlueprint;
-            viewModel.MessageRequested += ViewModelOnMessageRequested;
+            viewModel.MessageRequested += OnMessageRequested;
             viewModel.Closing += OnModelClosing;
         }
 
-        void ViewModelOnMessageRequested(object sender, MessageEventArgs e)
+        void SelectFirstSignificant()
+        {
+            var firstSignificantModel = blueprintsListBox.Items.Cast<BlueprintModel>().FirstOrDefault(blueprint => blueprint.IsSignificant) ?? blueprintsListBox.Items.Cast<BlueprintModel>().FirstOrDefault();
+            if (firstSignificantModel != null)
+            {
+                blueprintsListBox.ScrollIntoView(firstSignificantModel);
+                blueprintsListBox.SelectedItem = firstSignificantModel;
+            }
+        }
+
+        void OnMessageRequested(object sender, MessageEventArgs e)
         {
             MessageBoxImage image;
             MessageBoxButton buttons;
@@ -83,7 +101,10 @@ namespace MDK.Views.BlueprintManager
 
         void OnModelClosing(object sender, DialogClosingEventArgs e)
         {
-            ((BlueprintManagerDialogModel)Host.DataContext).Closing += OnModelClosing;
+            var viewModel = (BlueprintManagerDialogModel)Host.DataContext;
+            viewModel.DeletingBlueprint -= OnDeletingBlueprint;
+            viewModel.MessageRequested -= OnMessageRequested;
+            viewModel.Closing += OnModelClosing;
             DialogResult = e.State;
             Close();
         }

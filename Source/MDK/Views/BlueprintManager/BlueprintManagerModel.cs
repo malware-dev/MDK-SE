@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using MDK.Resources;
 
@@ -14,7 +13,6 @@ namespace MDK.Views.BlueprintManager
     public class BlueprintManagerDialogModel : DialogViewModel
     {
         string _blueprintPath;
-        int _busyHandle;
         BlueprintModel _selectedBlueprint;
         HashSet<string> _significantBlueprints;
         string _customDescription;
@@ -52,6 +50,11 @@ namespace MDK.Views.BlueprintManager
         /// Called before deleting a blueprint to allow UI confirmation
         /// </summary>
         public event EventHandler<DeleteBlueprintEventArgs> DeletingBlueprint;
+
+        /// <summary>
+        /// Called when all blueprints have been loaded
+        /// </summary>
+        public event EventHandler BlueprintsLoaded;
 
         /// <summary>
         /// A list of all available blueprints
@@ -117,11 +120,6 @@ namespace MDK.Views.BlueprintManager
             }
         }
 
-        /// <summary>
-        /// Determines whether this model is currently busy working.
-        /// </summary>
-        public bool IsBusy => _busyHandle > 0;
-
         void Rename()
         {
             var item = SelectedBlueprint;
@@ -152,20 +150,6 @@ namespace MDK.Views.BlueprintManager
             }
         }
 
-        void BeginWorking()
-        {
-            _busyHandle++;
-            if (_busyHandle == 1)
-                OnPropertyChanged(nameof(IsBusy));
-        }
-
-        void EndWorking()
-        {
-            _busyHandle--;
-            if (_busyHandle == 0)
-                OnPropertyChanged(nameof(IsBusy));
-        }
-
         void LoadBlueprints()
         {
             Blueprints.Clear();
@@ -190,10 +174,11 @@ namespace MDK.Views.BlueprintManager
                         icon.EndInit();
                     }
 
-                    var model = new BlueprintModel(icon, folder, _significantBlueprints?.Contains(folder.Name) ?? false);
+                    var model = new BlueprintModel(this, icon, folder, _significantBlueprints?.Contains(folder.Name) ?? false);
                     Blueprints.Add(model);
                 }
             }
+            OnBlueprintsLoaded();
         }
 
         /// <inheritdoc />
@@ -203,11 +188,27 @@ namespace MDK.Views.BlueprintManager
             return true;
         }
 
-        bool SendMessage(string title, string description, MessageEventType type, bool defaultResult = true)
+        /// <summary>
+        /// Sends a message through the user interface to the end-user.
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="description"></param>
+        /// <param name="type"></param>
+        /// <param name="defaultResult"></param>
+        /// <returns></returns>
+        public bool SendMessage(string title, string description, MessageEventType type, bool defaultResult = true)
         {
             var args = new MessageEventArgs(title, description, type, !defaultResult);
             MessageRequested?.Invoke(this, args);
             return !args.Cancel;
+        }
+
+        /// <summary>
+        /// Fires the <see cref="BlueprintsLoaded"/> event.
+        /// </summary>
+        protected virtual void OnBlueprintsLoaded()
+        {
+            BlueprintsLoaded?.Invoke(this, EventArgs.Empty);
         }
     }
 }

@@ -313,6 +313,7 @@ namespace MDK
                 {
                     if (!nonBlocking)
                         VsShellUtilities.ShowMessageBox(ServiceProvider, Text.MDKPackage_Deploy_BuildFailed, Text.MDKPackage_Deploy_DeploymentRejected, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                    return false;
                 }
 
                 string title;

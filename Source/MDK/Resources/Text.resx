@@ -219,4 +219,12 @@
   <data name="RequestUpgradeDialogModel_OnSave_Error_Description" xml:space="preserve">
     <value>An unexpected error occurred during the attempt to upgrade the project(s).</value>
   </data>
+  <data name="BlueprintModel_Delete_Error" xml:space="preserve">
+    <value>Couldn't Delete Blueprint</value>
+  </data>
+  <data name="BlueprintModel_Error_Description" xml:space="preserve">
+    <value>The blueprint {0} could not be deleted:
+
+{1}</value>
+  </data>
 </root>

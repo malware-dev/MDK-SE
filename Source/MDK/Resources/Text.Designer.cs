@@ -117,6 +117,26 @@ namespace MDK.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Couldn&apos;t Delete Blueprint.
+        /// </summary>
+        internal static string BlueprintModel_Delete_Error {
+            get {
+                return ResourceManager.GetString("BlueprintModel_Delete_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The blueprint {0} could not be deleted:
+        ///
+        ///{1}.
+        /// </summary>
+        internal static string BlueprintModel_Error_Description {
+            get {
+                return ResourceManager.GetString("BlueprintModel_Error_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Name cannot be empty or contain any of the following characters: {0}.
         /// </summary>
         internal static string BlueprintModel_GetErrors_InvalidName {
