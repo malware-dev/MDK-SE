@@ -44,6 +44,7 @@ namespace MDK
         uint _solutionEventsCookie;
         bool _hasCheckedForUpdates;
         bool _isEnabled;
+        bool _hasSolution;
 
         /// <summary>
         /// Creates a new instance of <see cref="MDKPackage" />
@@ -116,8 +117,6 @@ namespace MDK
             // here will cause a threading exception.
             GetDialogPage(typeof(MDKOptions));
 
-            KnownUIContexts.SolutionExistsAndFullyLoadedContext.WhenActivated(OnFirstSolutionLoaded);
-
             AddCommand(
                 new QuickDeploySolutionCommand(this),
                 new DeployProjectCommand(this),
@@ -127,6 +126,8 @@ namespace MDK
                 new BlueprintManagerCommand(this),
                 new GlobalBlueprintManagerCommand(this)
             );
+
+            KnownUIContexts.ShellInitializedContext.WhenActivated(OnShellActivated);
 
             base.Initialize();
         }
@@ -181,13 +182,6 @@ namespace MDK
             UpdateDetectedDialog.ShowDialog(new UpdateDetectedDialogModel(detectedVersion));
         }
 
-        async void OnFirstSolutionLoaded()
-        {
-            await AnalyzeSolution();
-            KnownUIContexts.ShellInitializedContext.WhenActivated(OnShellActivated);
-            KnownUIContexts.SolutionExistsAndFullyLoadedContext.UIContextChanged += SolutionExistsAndFullyLoadedContextOnUIContextChanged;
-        }
-
         void OnShellActivated()
         {
             var solutionCtl = (IVsSolution)GetGlobalService(typeof(SVsSolution));
@@ -196,7 +190,7 @@ namespace MDK
 
         async void OnProjectLoaded(Project project)
         {
-            if (ScriptUpgrades.IsBusy)
+            if (ScriptUpgrades.IsBusy || !_hasSolution)
                 return;
             var result = await ScriptUpgrades.AnalyzeAsync(project, new ScriptUpgradeAnalysisOptions
             {
@@ -211,7 +205,7 @@ namespace MDK
             if (!result.HasScriptProjects)
                 return;
             IsEnabled = true;
-            if (!result.IsValid)
+            if (result.IsValid)
                 return;
 
             QueryUpgrade(this, result);
@@ -225,17 +219,10 @@ namespace MDK
             RequestUpgradeDialog.ShowDialog(model);
         }
 
-        async void SolutionExistsAndFullyLoadedContextOnUIContextChanged(object sender, UIContextChangedEventArgs e)
+        async void OnSolutionLoaded(Solution solution)
         {
-            if (e.Activated)
-                await AnalyzeSolution();
-            else
-                IsEnabled = false;
-        }
-
-        async Task AnalyzeSolution()
-        {
-            var result = await ScriptUpgrades.AnalyzeAsync(DTE.Solution, new ScriptUpgradeAnalysisOptions
+            _hasSolution = true;
+            var result = await ScriptUpgrades.AnalyzeAsync(solution, new ScriptUpgradeAnalysisOptions
             {
                 DefaultGameBinPath = Options.GetActualGameBinPath(),
                 InstallPath = InstallPath.FullName,
@@ -262,11 +249,10 @@ namespace MDK
             }
         }
 
-        int IVsSolutionEvents.OnAfterLoadProject(IVsHierarchy pStubHierarchy, IVsHierarchy pRealHierarchy)
+        void OnSolutionClosed()
         {
-            pRealHierarchy.GetProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_ExtObject, out object objProj);
-            OnProjectLoaded((Project)objProj);
-            return VSConstants.S_OK;
+            _hasSolution = false;
+            IsEnabled = false;
         }
 
         /// <summary>
@@ -404,10 +390,24 @@ namespace MDK
             ErrorDialog.ShowDialog(errorDialogModel);
         }
 
-        #region Unused callbacks
+        #region IVsSolutionEvents
 
         int IVsSolutionEvents.OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)
         {
+            pHierarchy.GetProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_ExtObject, out object objProj);
+            OnProjectLoaded((Project)objProj);
+            return VSConstants.S_OK;
+        }
+
+        int IVsSolutionEvents.OnAfterOpenSolution(object pUnkReserved, int fNewSolution)
+        {
+            OnSolutionLoaded(DTE.Solution);
+            return VSConstants.S_OK;
+        }
+
+        int IVsSolutionEvents.OnAfterCloseSolution(object pUnkReserved)
+        {
+            OnSolutionClosed();
             return VSConstants.S_OK;
         }
 
@@ -431,10 +431,11 @@ namespace MDK
             return VSConstants.S_OK;
         }
 
-        int IVsSolutionEvents.OnAfterOpenSolution(object pUnkReserved, int fNewSolution)
+        int IVsSolutionEvents.OnAfterLoadProject(IVsHierarchy pStubHierarchy, IVsHierarchy pRealHierarchy)
         {
             return VSConstants.S_OK;
         }
+
 
         int IVsSolutionEvents.OnQueryCloseSolution(object pUnkReserved, ref int pfCancel)
         {
@@ -446,11 +447,6 @@ namespace MDK
             return VSConstants.S_OK;
         }
 
-        int IVsSolutionEvents.OnAfterCloseSolution(object pUnkReserved)
-        {
-            return VSConstants.S_OK;
-        }
-
-        #endregion Unused callbacks
+        #endregion IVsSolutionEvents
     }
 }
