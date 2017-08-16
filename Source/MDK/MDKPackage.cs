@@ -192,16 +192,26 @@ namespace MDK
         {
             if (ScriptUpgrades.IsBusy || !_hasSolution)
                 return;
-            var result = await ScriptUpgrades.AnalyzeAsync(project, new ScriptUpgradeAnalysisOptions
+            ScriptSolutionAnalysisResult result;
+            try
             {
-                DefaultGameBinPath = Options.GetActualGameBinPath(),
-                InstallPath = InstallPath.FullName,
-                TargetVersion = Version,
-                GameAssemblyNames = GameAssemblyNames,
-                GameFiles = GameFiles,
-                UtilityAssemblyNames = UtilityAssemblyNames,
-                UtilityFiles = UtilityFiles
-            });
+                result = await ScriptUpgrades.AnalyzeAsync(project, new ScriptUpgradeAnalysisOptions
+                {
+                    DefaultGameBinPath = Options.GetActualGameBinPath(),
+                    InstallPath = InstallPath.FullName,
+                    TargetVersion = Version,
+                    GameAssemblyNames = GameAssemblyNames,
+                    GameFiles = GameFiles,
+                    UtilityAssemblyNames = UtilityAssemblyNames,
+                    UtilityFiles = UtilityFiles
+                });
+            }
+            catch (Exception e)
+            {
+                ShowError(Text.MDKPackage_OnProjectLoaded_ErrorAnalyzingProject, string.Format(Text.MDKPackage_OnProjectLoaded_ErrorAnalyzingProject_Description, project?.Name), e);
+                IsEnabled = false;
+                return;
+            }
             if (!result.HasScriptProjects)
                 return;
             IsEnabled = true;
@@ -222,16 +232,26 @@ namespace MDK
         async void OnSolutionLoaded(Solution solution)
         {
             _hasSolution = true;
-            var result = await ScriptUpgrades.AnalyzeAsync(solution, new ScriptUpgradeAnalysisOptions
+            ScriptSolutionAnalysisResult result;
+            try
             {
-                DefaultGameBinPath = Options.GetActualGameBinPath(),
-                InstallPath = InstallPath.FullName,
-                TargetVersion = Version,
-                GameAssemblyNames = GameAssemblyNames,
-                GameFiles = GameFiles,
-                UtilityAssemblyNames = UtilityAssemblyNames,
-                UtilityFiles = UtilityFiles
-            });
+                result = await ScriptUpgrades.AnalyzeAsync(solution, new ScriptUpgradeAnalysisOptions
+                {
+                    DefaultGameBinPath = Options.GetActualGameBinPath(),
+                    InstallPath = InstallPath.FullName,
+                    TargetVersion = Version,
+                    GameAssemblyNames = GameAssemblyNames,
+                    GameFiles = GameFiles,
+                    UtilityAssemblyNames = UtilityAssemblyNames,
+                    UtilityFiles = UtilityFiles
+                });
+            }
+            catch (Exception e)
+            {
+                ShowError(Text.MDKPackage_OnSolutionLoaded_ErrorAnalyzingSolution, Text.MDKPackage_OnSolutionLoaded_ErrorAnalyzingSolution_Description, e);
+                IsEnabled = false;
+                return;
+            }
             if (!result.HasScriptProjects)
             {
                 IsEnabled = false;
@@ -395,6 +415,8 @@ namespace MDK
 
         int IVsSolutionEvents.OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)
         {
+            if (fAdded == 1) // Project is being added during load
+                return VSConstants.S_OK; 
             pHierarchy.GetProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_ExtObject, out object objProj);
             OnProjectLoaded((Project)objProj);
             return VSConstants.S_OK;

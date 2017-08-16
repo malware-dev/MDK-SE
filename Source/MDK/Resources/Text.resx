@@ -227,4 +227,16 @@
 
 {1}</value>
   </data>
+  <data name="MDKPackage_OnProjectLoaded_ErrorAnalyzingProject" xml:space="preserve">
+    <value>Error Analyzing Project</value>
+  </data>
+  <data name="MDKPackage_OnProjectLoaded_ErrorAnalyzingProject_Description" xml:space="preserve">
+    <value>An unexpected error occurred during the attempt to analyze the project {0}. MDK has been disabled to prevent further crashes.</value>
+  </data>
+  <data name="MDKPackage_OnSolutionLoaded_ErrorAnalyzingSolution" xml:space="preserve">
+    <value>Error Analyzing Solution</value>
+  </data>
+  <data name="MDKPackage_OnSolutionLoaded_ErrorAnalyzingSolution_Description" xml:space="preserve">
+    <value>An unexpected error occurred during the attempt to analyze the solution. MDK has been disabled to prevent further crashes.</value>
+  </data>
 </root>

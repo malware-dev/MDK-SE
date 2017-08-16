@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using JetBrains.Annotations;
@@ -22,7 +23,10 @@ namespace MDK.Views.ProjectIntegrity
             Package = package ?? throw new ArgumentNullException(nameof(package));
 
             AnalysisResults = analysisResults ?? throw new ArgumentNullException(nameof(analysisResults));
-            Projects = new ReadOnlyCollection<ProjectScriptInfo>(analysisResults.BadProjects.Select(p => p.ProjectInfo).ToArray());
+            if (analysisResults.BadProjects.IsDefaultOrEmpty)
+                Projects = new ReadOnlyCollection<ProjectScriptInfo>(new List<ProjectScriptInfo>());
+            else
+                Projects = new ReadOnlyCollection<ProjectScriptInfo>(analysisResults.BadProjects.Select(p => p.ProjectInfo).ToArray());
         }
 
         /// <summary>

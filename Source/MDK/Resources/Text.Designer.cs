@@ -345,6 +345,42 @@ namespace MDK.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error Analyzing Project.
+        /// </summary>
+        internal static string MDKPackage_OnProjectLoaded_ErrorAnalyzingProject {
+            get {
+                return ResourceManager.GetString("MDKPackage_OnProjectLoaded_ErrorAnalyzingProject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An unexpected error occurred during the attempt to analyze the project {0}. MDK has been disabled to prevent further crashes..
+        /// </summary>
+        internal static string MDKPackage_OnProjectLoaded_ErrorAnalyzingProject_Description {
+            get {
+                return ResourceManager.GetString("MDKPackage_OnProjectLoaded_ErrorAnalyzingProject_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error Analyzing Solution.
+        /// </summary>
+        internal static string MDKPackage_OnSolutionLoaded_ErrorAnalyzingSolution {
+            get {
+                return ResourceManager.GetString("MDKPackage_OnSolutionLoaded_ErrorAnalyzingSolution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An unexpected error occurred during the attempt to analyze the solution. MDK has been disabled to prevent further crashes..
+        /// </summary>
+        internal static string MDKPackage_OnSolutionLoaded_ErrorAnalyzingSolution_Description {
+            get {
+                return ResourceManager.GetString("MDKPackage_OnSolutionLoaded_ErrorAnalyzingSolution_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No MDK Projects.
         /// </summary>
         internal static string ProjectOptionsCommand_OnExecute_NoMDKProjects {
