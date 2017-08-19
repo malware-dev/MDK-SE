@@ -258,12 +258,18 @@ namespace MDK.Build
             {
                 var usings = string.Join(Environment.NewLine, content.UsingDirectives.Select(d => d.ToString()));
                 var solution = project.Solution;
-                var programCode = string.Join("", content.Parts.OfType<ProgramScriptPart>().OrderBy(part => part, PartComparer).SelectMany(p => p.ContentNodes()).Select(n => n.ToFullString()));
-                var programContent = $"public class Program: MyGridProgram {{{Environment.NewLine}{programCode}{Environment.NewLine}}}";
 
-                var extensionContent = string.Join("", content.Parts.OfType<ExtensionScriptPart>().OrderBy(part => part, PartComparer).SelectMany(p => p.ContentNodes()).Select(n => n.ToFullString()));
+                var buffer = new StringBuilder();
+                buffer.Append("public class Program: MyGridProgram {");
+                buffer.Append(string.Join("", content.Parts.OfType<ProgramScriptPart>().OrderBy(part => part, PartComparer).Select(p => p.GenerateContent())));
+                buffer.Append("}");
+                var programContent = buffer.ToString();
 
-                var finalContent = $"{usings}{Environment.NewLine}{programContent}{Environment.NewLine}{extensionContent}";
+                buffer.Clear();
+                buffer.Append(string.Join("", content.Parts.OfType<ExtensionScriptPart>().OrderBy(part => part, PartComparer).Select(p => p.GenerateContent())));
+                var extensionContent = buffer.ToString();
+                
+                var finalContent = $"{usings}\n{programContent}\n{extensionContent}";
 
                 var compilationProject = solution.AddProject("__ScriptCompilationProject", "__ScriptCompilationProject.dll", LanguageNames.CSharp)
                     .WithCompilationOptions(project.CompilationOptions)

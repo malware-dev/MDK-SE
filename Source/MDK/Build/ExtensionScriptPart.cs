@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 
 namespace MDK.Build
@@ -17,9 +16,9 @@ namespace MDK.Build
         { }
 
         /// <inheritdoc />
-        public override IEnumerable<SyntaxNode> ContentNodes()
+        public override string GenerateContent()
         {
-            yield return PartRoot;
+            return PartRoot.ToFullString();
         }
     }
 }

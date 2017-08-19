@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MDK.Build
 {
@@ -24,37 +23,73 @@ namespace MDK.Build
         /// <returns></returns>
         public async Task<string> Generate(Document document)
         {
-            var root = await document.GetSyntaxRootAsync().ConfigureAwait(false);
-            var trimmer = new SyntaxTrimmer();
-            trimmer.Visit(root);
+            var analyzer = new DocumentAnalyzer();
+            var result = await analyzer.Analyze(document);
+            var buffer = new StringBuilder();
 
-            string script;
-            var programPartLines = string.Join("\n\n", trimmer.ProgramNodes.Select(GenerateFinalCode)).Split(NewLines, StringSplitOptions.None);
-            var programPart = DeIndent(programPartLines);
-            var extensionPartLines = string.Join(" ", trimmer.ExtensionNodes.Select(GenerateFinalCode)).Split(NewLines, StringSplitOptions.None);
-            var extensionPart = DeIndent(extensionPartLines);
-            if (extensionPart.EndsWith("}"))
-                script = $"{programPart}\n\n}}\n\n{extensionPart.Substring(0, extensionPart.Length - 1)}";
-            else
-                script = programPart;
+            var programContent =
+                DeIndent(
+                    string.Join("\n", result.Parts.OfType<ProgramScriptPart>().Select(p => p.GenerateContent()))
+                        .Split(NewLines, StringSplitOptions.None)
+                ).Trim();
+            buffer.Append(programContent);
+            buffer.Append("\n");
 
-            return script;
+            var extensionContent =
+                DeIndent(
+                    string.Join("\n", result.Parts.OfType<ExtensionScriptPart>().Select(p => p.GenerateContent()))
+                        .Split(NewLines, StringSplitOptions.None)
+                ).Trim();
+
+            if (!string.IsNullOrWhiteSpace(extensionContent))
+            {
+                // Extension classes are made possible by forcefully ending Space Engineer's wrapping Program class
+                // and removing the final ending brace of the last extension class to let Space Engineers close it 
+                // for itself.
+
+                // Close off the Program class
+                buffer.Append("}\n");
+                buffer.Append(extensionContent);
+                // Remove the ending brace of the last extension class
+                var index = FindEndBrace(buffer);
+                if (index >= 0)
+                    buffer.Length = index;
+            }
+
+            return buffer.ToString();
         }
 
-        string GenerateFinalCode(SyntaxNode n)
+        int FindEndBrace(StringBuilder buffer)
         {
-            return n.ToFullString().Trim();
+            for (var i = buffer.Length - 1; i >= 0; i--)
+            {
+                var ch = buffer[i];
+                if (char.IsWhiteSpace(ch) || ch != '}')
+                    continue;
+                return i;
+            }
+            return -1;
         }
 
         string DeIndent(string[] programPartLines)
         {
+            var lines = programPartLines.ToList();
+            // Remove trailing empty lines
+            while (lines.Count > 0 && string.IsNullOrWhiteSpace(lines[lines.Count - 1]))
+                lines.RemoveAt(lines.Count - 1);
+
+            // Remove leading empty lines
+            while (lines.Count > 0 && string.IsNullOrWhiteSpace(lines[0]))
+                lines.RemoveAt(0);
+
+            // Detect indentation
             var indent = int.MaxValue;
-            for (var i = 0; i < programPartLines.Length; i++)
+            for (var i = 0; i < lines.Count; i++)
             {
-                var line = programPartLines[i];
+                var line = lines[i];
                 if (string.IsNullOrWhiteSpace(line))
                 {
-                    programPartLines[i] = "";
+                    lines[i] = "";
                     continue;
                 }
 
@@ -68,11 +103,13 @@ namespace MDK.Build
             }
             if (indent == int.MaxValue)
             {
-                return string.Join("\r\n", programPartLines);
+                return string.Join("\r\n", lines);
             }
-            for (var i = 0; i < programPartLines.Length; i++)
+
+            // Remove indentation
+            for (var i = 0; i < lines.Count; i++)
             {
-                var line = programPartLines[i];
+                var line = lines[i];
                 if (line.Length == 0)
                     continue;
                 var tabs = 0;
@@ -89,101 +126,22 @@ namespace MDK.Build
                     }
                     else
                     {
-                        programPartLines[i] = line.TrimStart();
+                        lines[i] = line.TrimStart();
                         break;
                     }
                     if (tabs >= indent)
                     {
-                        programPartLines[i] = line.Substring(j + 1);
+                        lines[i] = line.Substring(j + 1);
                         break;
                     }
                 }
             }
-            return string.Join("\r\n", programPartLines);
+            return string.Join("\r\n", lines);
         }
 
         int TabLengthOfValue(string value)
         {
             return value.Select(c => c == '\t' ? 4 : 1).Sum();
-        }
-
-        class SyntaxTrimmer : CSharpSyntaxWalker
-        {
-            List<SyntaxNode> _programNodes = new List<SyntaxNode>();
-            List<SyntaxNode> _extensionNodes = new List<SyntaxNode>();
-            List<SyntaxNode> _rootNodes;
-
-            public SyntaxTrimmer()
-            {
-                _rootNodes = _extensionNodes;
-            }
-
-            public IEnumerable<SyntaxNode> ProgramNodes => _programNodes;
-            public IEnumerable<SyntaxNode> ExtensionNodes => _extensionNodes;
-
-            public override void VisitClassDeclaration(ClassDeclarationSyntax node)
-            {
-                if (node.GetFullName(DeclarationFullNameFlags.WithoutNamespaceName) == "Program")
-                {
-                    _rootNodes = _programNodes;
-                    try
-                    {
-                        base.VisitClassDeclaration(node);
-                    }
-                    finally
-                    {
-                        _rootNodes = _extensionNodes;
-                    }
-                    return;
-                }
-                _rootNodes.Add(node);
-            }
-
-            public override void VisitStructDeclaration(StructDeclarationSyntax node)
-            {
-                _rootNodes.Add(node);
-            }
-
-
-            public override void VisitPropertyDeclaration(PropertyDeclarationSyntax node)
-            {
-                _rootNodes.Add(node);
-            }
-
-            public override void VisitEventFieldDeclaration(EventFieldDeclarationSyntax node)
-            {
-                _rootNodes.Add(node);
-            }
-
-            public override void VisitEventDeclaration(EventDeclarationSyntax node)
-            {
-                _rootNodes.Add(node);
-            }
-
-            public override void VisitFieldDeclaration(FieldDeclarationSyntax node)
-            {
-                _rootNodes.Add(node);
-            }
-
-            public override void VisitDelegateDeclaration(DelegateDeclarationSyntax node)
-            {
-                _rootNodes.Add(node);
-            }
-
-            public override void VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
-            {
-                _rootNodes.Add(node);
-            }
-
-            public override void VisitEnumDeclaration(EnumDeclarationSyntax node)
-            {
-                _rootNodes.Add(node);
-            }
-
-            public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
-            {
-                _rootNodes.Add(node);
-            }
         }
     }
 }

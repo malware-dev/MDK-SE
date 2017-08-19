@@ -1,6 +1,10 @@
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MDK.Build
 {
@@ -14,12 +18,22 @@ namespace MDK.Build
         /// </summary>
         /// <param name="document"></param>
         /// <param name="partRoot"></param>
-        public ProgramScriptPart(Document document, SyntaxNode partRoot) : base(document, partRoot)
+        public ProgramScriptPart(Document document, ClassDeclarationSyntax partRoot) : base(document, partRoot)
         { }
 
         /// <inheritdoc />
-        public override IEnumerable<SyntaxNode> ContentNodes()
+        public override string GenerateContent()
         {
+            var classDeclaration = (ClassDeclarationSyntax)PartRoot;
+            var buffer = new StringBuilder();
+            // Write opening brace trailing trivia
+            if (classDeclaration.OpenBraceToken.HasTrailingTrivia)
+            {
+                foreach (var trivia in classDeclaration.OpenBraceToken.TrailingTrivia)
+                    buffer.Append(trivia.ToFullString());
+            }
+
+            // Write general content
             foreach (var node in PartRoot.ChildNodes())
             {
                 switch (node.Kind())
@@ -39,10 +53,20 @@ namespace MDK.Build
                     case SyntaxKind.PropertyDeclaration:
                     case SyntaxKind.EventDeclaration:
                     case SyntaxKind.IndexerDeclaration:
-                        yield return node;
+                        buffer.Append(node.ToFullString());
                         break;
                 }
             }
+
+            // Write closing brace opening trivia
+            // Write opening brace trailing trivia
+            if (classDeclaration.CloseBraceToken.HasLeadingTrivia)
+            {
+                foreach (var trivia in classDeclaration.CloseBraceToken.LeadingTrivia)
+                    buffer.Append(trivia.ToFullString());
+            }
+
+            return buffer.ToString();
         }
     }
 }

@@ -36,9 +36,9 @@ namespace MDK.Build
         public SyntaxNode PartRoot { get; }
 
         /// <summary>
-        /// Syntax nodes that makes up this part
+        /// Generates the script content that makes up this part
         /// </summary>
         /// <returns></returns>
-        public abstract IEnumerable<SyntaxNode> ContentNodes();
+        public abstract string GenerateContent();
     }
 }
