@@ -236,21 +236,6 @@ namespace MDK.Build
             public override SyntaxTrivia VisitTrivia(SyntaxTrivia trivia)
             {
                 return default(SyntaxTrivia);
-                //switch (trivia.Kind())
-                //{
-                //    case SyntaxKind.direc
-                //    case SyntaxKind.RegionDirectiveTrivia:
-                //    case SyntaxKind.EndRegionDirectiveTrivia:
-                //    case SyntaxKind.SingleLineCommentTrivia:
-                //    case SyntaxKind.SingleLineDocumentationCommentTrivia:
-                //    case SyntaxKind.MultiLineCommentTrivia:
-                //    case SyntaxKind.MultiLineDocumentationCommentTrivia:
-                //    case SyntaxKind.WhitespaceTrivia:
-                //    case SyntaxKind.EndOfLineTrivia:
-                //        return default(SyntaxTrivia);
-                //    default:
-                //        return base.VisitTrivia(trivia);
-                //}
             }
         }
 

@@ -43,7 +43,9 @@ namespace Malware.BuildForPublish
                 }
             }
             Console.WriteLine();
-            var msbuildExe = ToolLocationHelper.GetPathToBuildToolsFile("msbuild.exe", ToolLocationHelper.CurrentToolsVersion);
+            //var msbuildExe = ToolLocationHelper.GetPathToBuildToolsFile("msbuild.exe", ToolLocationHelper.CurrentToolsVersion);
+            // Ugh. So a Visual Studio update made the call above stop working, even after updating the nuget package. Thanks, MS.
+            var msbuildExe = @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\MSBuild.exe"; 
             var solutionPath = Path.GetFullPath(args[0]);
             var manifestPath = Path.Combine(Path.GetDirectoryName(solutionPath), @"MDK\source.extension.vsixmanifest");
             var appConfigPath = Path.Combine(Path.GetDirectoryName(solutionPath), @"MDK\other.xml");
