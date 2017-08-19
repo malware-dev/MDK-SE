@@ -19,7 +19,7 @@ namespace MDK.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Text {
@@ -142,6 +142,87 @@ namespace MDK.Resources {
         internal static string BlueprintModel_GetErrors_InvalidName {
             get {
                 return ResourceManager.GetString("BlueprintModel_GetErrors_InvalidName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error generating the combined script for {0}.
+        /// </summary>
+        internal static string BuildModule_CreateProgramDocument_Error {
+            get {
+                return ResourceManager.GetString("BuildModule_CreateProgramDocument_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error generating script for {0}.
+        /// </summary>
+        internal static string BuildModule_GenerateScript_ErrorGeneratingScript {
+            get {
+                return ResourceManager.GetString("BuildModule_GenerateScript_ErrorGeneratingScript", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error loading configuration for {0}.
+        /// </summary>
+        internal static string BuildModule_LoadConfig_Error {
+            get {
+                return ResourceManager.GetString("BuildModule_LoadConfig_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error loading the content for {0}.
+        /// </summary>
+        internal static string BuildModule_LoadContent_Error {
+            get {
+                return ResourceManager.GetString("BuildModule_LoadContent_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error loading script projects from {0}.
+        /// </summary>
+        internal static string BuildModule_LoadScriptProjects_Error {
+            get {
+                return ResourceManager.GetString("BuildModule_LoadScriptProjects_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error minifying {0} (stage 2).
+        /// </summary>
+        internal static string BuildModule_PostMinify_Error {
+            get {
+                return ResourceManager.GetString("BuildModule_PostMinify_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error minifying {0} (stage 1).
+        /// </summary>
+        internal static string BuildModule_PreMinify_Error {
+            get {
+                return ResourceManager.GetString("BuildModule_PreMinify_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error writing final script for {0}.
+        /// </summary>
+        internal static string BuildModule_WriteScript_Error {
+            get {
+                return ResourceManager.GetString("BuildModule_WriteScript_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MDK was not allowed to write the final script for {0}: Unauthorized access.
+        /// </summary>
+        internal static string BuildModule_WriteScript_UnauthorizedAccess {
+            get {
+                return ResourceManager.GetString("BuildModule_WriteScript_UnauthorizedAccess", resourceCulture);
             }
         }
         

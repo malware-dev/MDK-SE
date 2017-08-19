@@ -239,4 +239,31 @@
   <data name="MDKPackage_OnSolutionLoaded_ErrorAnalyzingSolution_Description" xml:space="preserve">
     <value>An unexpected error occurred during the attempt to analyze the solution. MDK has been disabled to prevent further crashes.</value>
   </data>
+  <data name="BuildModule_LoadScriptProjects_Error" xml:space="preserve">
+    <value>Error loading script projects from {0}</value>
+  </data>
+  <data name="BuildModule_PreMinify_Error" xml:space="preserve">
+    <value>Error minifying {0} (stage 1)</value>
+  </data>
+  <data name="BuildModule_PostMinify_Error" xml:space="preserve">
+    <value>Error minifying {0} (stage 2)</value>
+  </data>
+  <data name="BuildModule_GenerateScript_ErrorGeneratingScript" xml:space="preserve">
+    <value>Error generating script for {0}</value>
+  </data>
+  <data name="BuildModule_WriteScript_UnauthorizedAccess" xml:space="preserve">
+    <value>MDK was not allowed to write the final script for {0}: Unauthorized access</value>
+  </data>
+  <data name="BuildModule_WriteScript_Error" xml:space="preserve">
+    <value>Error writing final script for {0}</value>
+  </data>
+  <data name="BuildModule_LoadConfig_Error" xml:space="preserve">
+    <value>Error loading configuration for {0}</value>
+  </data>
+  <data name="BuildModule_CreateProgramDocument_Error" xml:space="preserve">
+    <value>Error generating the combined script for {0}</value>
+  </data>
+  <data name="BuildModule_LoadContent_Error" xml:space="preserve">
+    <value>Error loading the content for {0}</value>
+  </data>
 </root>

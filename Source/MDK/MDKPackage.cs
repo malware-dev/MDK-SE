@@ -323,24 +323,18 @@ namespace MDK
             IsDeploying = true;
             try
             {
-                var tcs = new TaskCompletionSource<int>();
-                void BuildEventsOnOnBuildDone(vsBuildScope scope, vsBuildAction action) => tcs.SetResult(dte.Solution.SolutionBuild.LastBuildInfo);
-
                 int failedProjects;
                 using (new StatusBarAnimation(ServiceProvider, Animation.Build))
                 {
-                    dte.Events.BuildEvents.OnBuildDone += BuildEventsOnOnBuildDone;
                     if (project != null)
                     {
-                        dte.Solution.SolutionBuild.BuildProject(dte.Solution.SolutionBuild.ActiveConfiguration.Name, project.FullName);
+                        dte.Solution.SolutionBuild.BuildProject(dte.Solution.SolutionBuild.ActiveConfiguration.Name, project.FullName, true);
                     }
                     else
                     {
-                        dte.Solution.SolutionBuild.Build();
+                        dte.Solution.SolutionBuild.Build(true);
                     }
-
-                    failedProjects = await tcs.Task;
-                    dte.Events.BuildEvents.OnBuildDone -= BuildEventsOnOnBuildDone;
+                    failedProjects = dte.Solution.SolutionBuild.LastBuildInfo;
                 }
 
                 if (failedProjects > 0)
@@ -388,6 +382,14 @@ namespace MDK
                 }
 
                 return true;
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                if (!nonBlocking)
+                    VsShellUtilities.ShowMessageBox(ServiceProvider, e.Message, Text.MDKPackage_Deploy_DeploymentCancelled, OLEMSGICON.OLEMSGICON_CRITICAL, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                else
+                    throw;
+                return false;
             }
             catch (Exception e)
             {

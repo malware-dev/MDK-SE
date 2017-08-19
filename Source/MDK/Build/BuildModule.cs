@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Malware.MDKServices;
+using MDK.Resources;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.MSBuild;
@@ -119,7 +120,7 @@ namespace MDK.Build
             }
             catch (Exception e)
             {
-                throw new BuildException($"Error loading script projects from {SolutionFileName}", e);
+                throw new BuildException(string.Format(Text.BuildModule_LoadScriptProjects_Error, SolutionFileName), e);
             }
         }
 
@@ -170,7 +171,7 @@ namespace MDK.Build
             }
             catch (Exception e)
             {
-                throw new BuildException($"Error minifying {project.FilePath} (stage 1)", e);
+                throw new BuildException(string.Format(Text.BuildModule_PreMinify_Error, project.FilePath), e);
             }
         }
 
@@ -184,7 +185,7 @@ namespace MDK.Build
             }
             catch (Exception e)
             {
-                throw new BuildException($"Error minifying {project.FilePath} (stage 1)", e);
+                throw new BuildException(string.Format(Text.BuildModule_PostMinify_Error, project.FilePath), e);
             }
         }
 
@@ -198,7 +199,7 @@ namespace MDK.Build
             }
             catch (Exception e)
             {
-                throw new BuildException($"Error minifying {project.FilePath} (stage 1)", e);
+                throw new BuildException(string.Format(Text.BuildModule_GenerateScript_ErrorGeneratingScript, project.FilePath), e);
             }
         }
 
@@ -215,9 +216,13 @@ namespace MDK.Build
                 if (thumbFile.Exists)
                     thumbFile.CopyTo(Path.Combine(outputInfo.FullName, "thumb.png"), true);
             }
+            catch (UnauthorizedAccessException e)
+            {
+                throw new UnauthorizedAccessException(string.Format(Text.BuildModule_WriteScript_UnauthorizedAccess, project.FilePath), e);
+            }
             catch (Exception e)
             {
-                throw new BuildException($"Error writing final script for {project.FilePath}", e);
+                throw new BuildException(string.Format(Text.BuildModule_WriteScript_Error, project.FilePath), e);
             }
         }
 
@@ -229,7 +234,7 @@ namespace MDK.Build
             }
             catch (Exception e)
             {
-                throw new BuildException($"Error loading configuration for {project.FilePath}", e);
+                throw new BuildException(string.Format(Text.BuildModule_LoadConfig_Error, project.FilePath), e);
             }
         }
 
@@ -268,7 +273,7 @@ namespace MDK.Build
             }
             catch (Exception e)
             {
-                throw new BuildException($"Error generating the combined script for {project.FilePath}", e);
+                throw new BuildException(string.Format(Text.BuildModule_CreateProgramDocument_Error, project.FilePath), e);
             }
         }
 
@@ -309,7 +314,7 @@ namespace MDK.Build
             }
             catch (Exception e)
             {
-                throw new BuildException($"Error loading the content for {project.FilePath}", e);
+                throw new BuildException(string.Format(Text.BuildModule_LoadContent_Error, project.FilePath), e);
             }
         }
 
