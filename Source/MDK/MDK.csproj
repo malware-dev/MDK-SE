@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\Microsoft.VSSDK.BuildTools.15.1.192\build\Microsoft.VSSDK.BuildTools.props" Condition="Exists('..\packages\Microsoft.VSSDK.BuildTools.15.1.192\build\Microsoft.VSSDK.BuildTools.props')" />
   <PropertyGroup>
     <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
@@ -121,6 +120,10 @@
     <Compile Include="Views\Wizard\NewScriptWizardDialogModel.cs" />
     <Compile Include="VisualStudio\Animation.cs" />
     <Compile Include="VisualStudio\ExtendedPackage.cs" />
+    <Compile Include="VisualStudio\ProjectEventArgs.cs" />
+    <Compile Include="VisualStudio\ProjectLoadedEventArgs.cs" />
+    <Compile Include="VisualStudio\SolutionManager.cs" />
+    <Compile Include="VisualStudio\SolutionStatus.cs" />
     <Compile Include="VisualStudio\StatusBarAnimation.cs" />
     <Compile Include="VisualStudio\StatusBarProgressBar.cs" />
     <Compile Include="VisualStudio\Command.cs" />
@@ -343,7 +346,6 @@
     </Reference>
     <Reference Include="Ookii.Dialogs.Wpf, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0c15020868fd6249, processorArchitecture=MSIL">
       <HintPath>..\packages\Ookii.Dialogs.1.0\lib\net35\Ookii.Dialogs.Wpf.dll</HintPath>
-      <ForceIncludeInVSIX>true</ForceIncludeInVSIX>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -533,16 +535,13 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.VisualStudio.SDK.EmbedInteropTypes.15.0.9\build\Microsoft.VisualStudio.SDK.EmbedInteropTypes.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.VisualStudio.SDK.EmbedInteropTypes.15.0.9\build\Microsoft.VisualStudio.SDK.EmbedInteropTypes.targets'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.VSSDK.BuildTools.15.1.192\build\Microsoft.VSSDK.BuildTools.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.VSSDK.BuildTools.15.1.192\build\Microsoft.VSSDK.BuildTools.props'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.VSSDK.BuildTools.15.1.192\build\Microsoft.VSSDK.BuildTools.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.VSSDK.BuildTools.15.1.192\build\Microsoft.VSSDK.BuildTools.targets'))" />
     <Error Condition="!Exists('..\packages\Scripty.MsBuild.0.7.4\build\Scripty.MsBuild.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Scripty.MsBuild.0.7.4\build\Scripty.MsBuild.targets'))" />
   </Target>
   <Import Project="..\SteamAndSE\SteamAndSE.projitems" Label="Shared" />
-  <Import Project="..\packages\Microsoft.VSSDK.BuildTools.15.1.192\build\Microsoft.VSSDK.BuildTools.targets" Condition="Exists('..\packages\Microsoft.VSSDK.BuildTools.15.1.192\build\Microsoft.VSSDK.BuildTools.targets')" />
-  <Import Project="..\packages\Scripty.MsBuild.0.7.4\build\Scripty.MsBuild.targets" Condition="Exists('..\packages\Scripty.MsBuild.0.7.4\build\Scripty.MsBuild.targets')" />
   <PropertyGroup>
     <PostBuildEvent>"$(ProjectDir)deploy.bat" $(ConfigurationName) "$(ProjectDir)..\..\Bin" "$(TargetDir)$(TargetName).vsix"</PostBuildEvent>
   </PropertyGroup>
+  <Import Project="..\packages\Scripty.MsBuild.0.7.4\build\Scripty.MsBuild.targets" Condition="Exists('..\packages\Scripty.MsBuild.0.7.4\build\Scripty.MsBuild.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

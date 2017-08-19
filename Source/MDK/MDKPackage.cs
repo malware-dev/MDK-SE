@@ -17,10 +17,8 @@ using MDK.Views.BugReports;
 using MDK.Views.ProjectIntegrity;
 using MDK.Views.UpdateDetection;
 using MDK.VisualStudio;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using Task = System.Threading.Tasks.Task;
 
 namespace MDK
 {
@@ -34,17 +32,16 @@ namespace MDK
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     [ProvideOptionPage(typeof(MDKOptions), "MDK/SE", "Options", 0, 0, true)]
     [ProvideAutoLoad(UIContextGuids80.NoSolution)]
-    public sealed partial class MDKPackage : ExtendedPackage, IVsSolutionEvents
+    public sealed partial class MDKPackage : ExtendedPackage
     {
         /// <summary>
         /// RunMDKToolCommandPackage GUID string.
         /// </summary>
         public const string PackageGuidString = "7b9c2d3e-b001-4a3e-86a8-00dc6f2af032";
 
-        uint _solutionEventsCookie;
         bool _hasCheckedForUpdates;
         bool _isEnabled;
-        bool _hasSolution;
+        SolutionManager _solutionManager;
 
         /// <summary>
         /// Creates a new instance of <see cref="MDKPackage" />
@@ -52,6 +49,14 @@ namespace MDK
         public MDKPackage()
         {
             ScriptUpgrades = new ScriptUpgrades();
+        }
+
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
+        {
+            _solutionManager?.Dispose();
+            _solutionManager = null;
+            base.Dispose(disposing);
         }
 
         /// <summary>
@@ -184,14 +189,30 @@ namespace MDK
 
         void OnShellActivated()
         {
-            var solutionCtl = (IVsSolution)GetGlobalService(typeof(SVsSolution));
-            solutionCtl.AdviseSolutionEvents(this, out _solutionEventsCookie);
+            _solutionManager = new SolutionManager(this);
+            _solutionManager.ProjectLoaded += OnProjectLoaded;
+            _solutionManager.SolutionLoaded += OnSolutionLoaded;
+            _solutionManager.SolutionClosed += OnSolutionClosed; 
+        }
+
+        private void OnSolutionClosed(object sender, EventArgs e)
+        {
+            IsEnabled = false;
+        }
+
+        private void OnSolutionLoaded(object sender, EventArgs e)
+        {
+            OnSolutionLoaded(DTE.Solution);
+        }
+
+        private void OnProjectLoaded(object sender, ProjectLoadedEventArgs e)
+        {
+            if (e.IsStandalone)
+                OnProjectLoaded(e.Project);
         }
 
         async void OnProjectLoaded(Project project)
         {
-            if (ScriptUpgrades.IsBusy || !_hasSolution)
-                return;
             ScriptSolutionAnalysisResult result;
             try
             {
@@ -231,7 +252,6 @@ namespace MDK
 
         async void OnSolutionLoaded(Solution solution)
         {
-            _hasSolution = true;
             ScriptSolutionAnalysisResult result;
             try
             {
@@ -267,12 +287,6 @@ namespace MDK
                 _hasCheckedForUpdates = true;
                 CheckForUpdates();
             }
-        }
-
-        void OnSolutionClosed()
-        {
-            _hasSolution = false;
-            IsEnabled = false;
         }
 
         /// <summary>
@@ -410,66 +424,5 @@ namespace MDK
             };
             ErrorDialog.ShowDialog(errorDialogModel);
         }
-
-        #region IVsSolutionEvents
-
-        int IVsSolutionEvents.OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)
-        {
-            if (fAdded == 1) // Project is being added during load
-                return VSConstants.S_OK; 
-            pHierarchy.GetProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_ExtObject, out object objProj);
-            OnProjectLoaded((Project)objProj);
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents.OnAfterOpenSolution(object pUnkReserved, int fNewSolution)
-        {
-            OnSolutionLoaded(DTE.Solution);
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents.OnAfterCloseSolution(object pUnkReserved)
-        {
-            OnSolutionClosed();
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents.OnQueryCloseProject(IVsHierarchy pHierarchy, int fRemoving, ref int pfCancel)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents.OnBeforeCloseProject(IVsHierarchy pHierarchy, int fRemoved)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents.OnQueryUnloadProject(IVsHierarchy pRealHierarchy, ref int pfCancel)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents.OnBeforeUnloadProject(IVsHierarchy pRealHierarchy, IVsHierarchy pStubHierarchy)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents.OnAfterLoadProject(IVsHierarchy pStubHierarchy, IVsHierarchy pRealHierarchy)
-        {
-            return VSConstants.S_OK;
-        }
-
-
-        int IVsSolutionEvents.OnQueryCloseSolution(object pUnkReserved, ref int pfCancel)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents.OnBeforeCloseSolution(object pUnkReserved)
-        {
-            return VSConstants.S_OK;
-        }
-
-        #endregion IVsSolutionEvents
     }
 }
