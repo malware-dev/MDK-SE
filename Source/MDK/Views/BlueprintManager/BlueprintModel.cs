@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Media;
@@ -132,6 +133,8 @@ namespace MDK.Views.BlueprintManager
         /// <inheritdoc cref="IEditableObject.BeginEdit"/>
         public void BeginEdit()
         {
+            if (IsBeingEdited)
+                return;
             _renameError = null;
             IsBeingEdited = true;
         }
@@ -191,6 +194,23 @@ namespace MDK.Views.BlueprintManager
             {
                 Manager.SendMessage(Text.BlueprintModel_Delete_Error, string.Format(Text.BlueprintModel_Error_Description, Name, e.Message), MessageEventType.Error);
             }
+        }
+
+        /// <summary>
+        /// Opens the target folder of this blueprint
+        /// </summary>
+        public void OpenFolder()
+        {
+            if (IsBeingEdited)
+                CancelEdit();
+            var process = new Process
+            {
+                StartInfo =
+                {
+                    FileName = _directory.FullName
+                }
+            };
+            process.Start();
         }
     }
 }

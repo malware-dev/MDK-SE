@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Windows.Media.Imaging;
 using MDK.Resources;
@@ -24,6 +25,7 @@ namespace MDK.Views.BlueprintManager
         {
             DeleteCommand = new ModelCommand(Delete, false);
             RenameCommand = new ModelCommand(Rename, false);
+            OpenFolderCommand = new ModelCommand(OpenFolder, false);
         }
 
         /// <summary>
@@ -75,6 +77,7 @@ namespace MDK.Views.BlueprintManager
                 var hasSelection = _selectedBlueprint != null;
                 RenameCommand.IsEnabled = hasSelection;
                 DeleteCommand.IsEnabled = hasSelection;
+                OpenFolderCommand.IsEnabled = hasSelection;
                 OnPropertyChanged();
             }
         }
@@ -88,6 +91,11 @@ namespace MDK.Views.BlueprintManager
         /// A command to delete the currently selected blueprint
         /// </summary>
         public ModelCommand DeleteCommand { get; }
+
+        /// <summary>
+        /// A command to open the target folder of a selected blueprint
+        /// </summary>
+        public ModelCommand OpenFolderCommand { get; set; }
 
         /// <summary>
         /// A custom description to show at the top of the dialog.
@@ -118,6 +126,12 @@ namespace MDK.Views.BlueprintManager
                 LoadBlueprints();
                 OnPropertyChanged();
             }
+        }
+
+        void OpenFolder()
+        {
+            var item = SelectedBlueprint;
+            item?.OpenFolder();
         }
 
         void Rename()

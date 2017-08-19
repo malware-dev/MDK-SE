@@ -70,8 +70,9 @@
         </ListBox>
         
         <StackPanel Grid.Column="1" Grid.Row="1" Margin="8,0,0,0" Width="96">
-            <Button Margin="0,0,0,8" Command="{Binding RenameCommand}">Rename</Button>
-            <Button Margin="0,0,0,8" Command="{Binding DeleteCommand}">Delete</Button>
+            <Button Margin="0,0,0,8" Command="{Binding RenameCommand}">_Rename</Button>
+            <Button Margin="0,0,0,8" Command="{Binding DeleteCommand}">_Delete</Button>
+            <Button Margin="0,0,0,8" Command="{Binding OpenFolderCommand}">_Open Folder</Button>
         </StackPanel>
 
         <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" TextWrapping="Wrap" Margin="0,8,0,8">
