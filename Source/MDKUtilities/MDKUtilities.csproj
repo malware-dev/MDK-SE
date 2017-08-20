@@ -2,6 +2,9 @@
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
+    <SEBinPath>$(registry:HKEY_CURRENT_USER\Software\Malware\MDK@SEBinPath)</SEBinPath>
+  </PropertyGroup>
+  <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{5C6B59B5-82CB-4886-94A7-AD610F75B1A6}</ProjectGuid>
@@ -32,7 +35,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Sandbox.Common">
-      <HintPath>E:\Steam\SteamApps\common\SpaceEngineers\Bin64\Sandbox.Common.dll</HintPath>
+      <HintPath>$(SEBinPath)\Sandbox.Common.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
