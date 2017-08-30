@@ -121,6 +121,7 @@
     <Compile Include="VisualStudio\Animation.cs" />
     <Compile Include="VisualStudio\ExtendedPackage.cs" />
     <Compile Include="VisualStudio\ProjectEventArgs.cs" />
+    <Compile Include="VisualStudio\ProjectExtensions.cs" />
     <Compile Include="VisualStudio\ProjectLoadedEventArgs.cs" />
     <Compile Include="VisualStudio\SolutionManager.cs" />
     <Compile Include="VisualStudio\SolutionStatus.cs" />

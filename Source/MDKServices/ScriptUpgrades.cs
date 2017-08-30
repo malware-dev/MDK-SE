@@ -137,6 +137,7 @@ namespace Malware.MDKServices
         {
             if (!project.IsLoaded())
                 return ScriptProjectAnalysisResult.NonScriptProjectResult;
+            project.Save();
             var projectInfo = ProjectScriptInfo.Load(project.FullName, project.Name);
             if (!projectInfo.IsValid)
                 return ScriptProjectAnalysisResult.NonScriptProjectResult;
@@ -153,7 +154,7 @@ namespace Malware.MDKServices
             AnalyzeReferences(options, document, xmlns, projectDir, expectedGamePath, expectedInstallPath, badReferences);
             AnalyzeFiles(options, document, xmlns, projectDir, expectedGamePath, expectedInstallPath, badReferences);
 
-            return new ScriptProjectAnalysisResult(projectInfo, document, badReferences.ToImmutable());
+            return new ScriptProjectAnalysisResult(project, projectInfo, document, badReferences.ToImmutable());
         }
 
         void AnalyzeFiles(ScriptUpgradeAnalysisOptions options, XDocument document, XmlNamespaceManager xmlns, DirectoryInfo projectDir, string expectedGamePath, string expectedInstallPath, ImmutableArray<BadReference>.Builder badReferences)
@@ -208,7 +209,11 @@ namespace Malware.MDKServices
         public void Upgrade(ScriptSolutionAnalysisResult analysisResults)
         {
             foreach (var project in analysisResults.BadProjects)
+            {
+                var handle = project.Project.Unload();
                 Upgrade(project);
+                handle.Reload();
+            }
         }
 
         /// <summary>
