@@ -17,6 +17,7 @@ using MDK.Views.BugReports;
 using MDK.Views.ProjectIntegrity;
 using MDK.Views.UpdateDetection;
 using MDK.VisualStudio;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -31,7 +32,8 @@ namespace MDK
     [Guid(PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     [ProvideOptionPage(typeof(MDKOptions), "MDK/SE", "Options", 0, 0, true)]
-    [ProvideAutoLoad(UIContextGuids80.NoSolution)]
+//    [ProvideAutoLoad(UIContextGuids80.NoSolution)]
+    [ProvideAutoLoad(VSConstants.UICONTEXT.ShellInitialized_string)]
     public sealed partial class MDKPackage : ExtendedPackage
     {
         /// <summary>
