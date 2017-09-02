@@ -1,11 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
-using Microsoft.Build.Utilities;
 
 namespace Malware.BuildForPublish
 {
@@ -21,49 +20,62 @@ namespace Malware.BuildForPublish
                 Console.WriteLine("No solution specified");
                 return;
             }
-
-            bool isPrerelease = false;
-            Console.Write("Is this to be a prerelease version? Y/N/ESC>");
-            while (true)
-            {
-                var res = Console.ReadKey(true);
-                if (res.Key == ConsoleKey.Y)
-                {
-                    isPrerelease = true;
-                    break;
-                }
-                if (res.Key == ConsoleKey.N)
-                {
-                    isPrerelease = false;
-                    break;
-                }
-                if (res.Key == ConsoleKey.Escape)
-                {
-                    return;
-                }
-            }
+            
+            var releaseType = GetReleaseType();
+            if (releaseType == ReleaseType.None)
+                return;
             Console.WriteLine();
-            //var msbuildExe = ToolLocationHelper.GetPathToBuildToolsFile("msbuild.exe", ToolLocationHelper.CurrentToolsVersion);
             // Ugh. So a Visual Studio update made the call above stop working, even after updating the nuget package. Thanks, MS.
             var msbuildExe = @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\MSBuild.exe"; 
             var solutionPath = Path.GetFullPath(args[0]);
             var manifestPath = Path.Combine(Path.GetDirectoryName(solutionPath), @"MDK\source.extension.vsixmanifest");
             var appConfigPath = Path.Combine(Path.GetDirectoryName(solutionPath), @"MDK\other.xml");
 
-            UpdateManifestVersion(manifestPath);
-            UpdateAppConfigVersion(appConfigPath, isPrerelease);
+            if (releaseType != ReleaseType.SameVersion)
+            {
+                UpdateManifestVersion(manifestPath, releaseType);
+                UpdateAppConfigVersion(appConfigPath, releaseType);
+            }
             Build(msbuildExe, solutionPath);
         }
 
-        static void UpdateAppConfigVersion(string appConfigPath, bool isPrerelease)
+        static ReleaseType GetReleaseType()
+        {
+            Console.WriteLine("Release type:");
+            Console.WriteLine("P: Prerelease");
+            Console.WriteLine("B: Bugfix Release");
+            Console.WriteLine("F: Feature Release");
+            Console.WriteLine("0: Same Version");
+            Console.WriteLine("X: Cancel");
+            while (true)
+            {
+                Console.Write("> ");
+                var r = Console.ReadLine();
+                switch (r?.ToUpper().Trim())
+                {
+                    case "P":
+                        return ReleaseType.Prerelease;
+                    case "B":
+                        return ReleaseType.BugfixRelease;
+                    case "F":
+                        return ReleaseType.FeatureRelease;
+                    case "0":
+                        return ReleaseType.SameVersion;
+                    case "X":
+                        return ReleaseType.None;
+                }
+            }
+        }
+
+        static void UpdateAppConfigVersion(string appConfigPath, ReleaseType releaseType)
         {
             var document = XDocument.Load(appConfigPath);
             var element = document.XPathSelectElement("/Other/IsPrerelease");
-            element.Value = isPrerelease.ToString();
+            element.Value = releaseType == ReleaseType.Prerelease ? bool.TrueString : bool.FalseString;
             document.Save(appConfigPath);
         }
 
-        static void UpdateManifestVersion(string manifestPath)
+        static void UpdateManifestVersion(string manifestPath, ReleaseType releaseType)
         {
             var document = XDocument.Load(manifestPath);
             var xmlns = new XmlNamespaceManager(new NameTable());
@@ -71,13 +83,36 @@ namespace Malware.BuildForPublish
             var identityElement = document.XPathSelectElement("/ms:PackageManifest/ms:Metadata/ms:Identity", xmlns);
             var versionAttribute = identityElement.Attribute("Version");
             var version = new Version((string)versionAttribute);
-            var newVersion = new Version(version.Major, version.Minor, version.Build + 1);
+            Version newVersion;
+            switch (releaseType)
+            {
+                case ReleaseType.Prerelease:
+                    newVersion = new Version(version.Major, version.Minor, version.Build + 1);
+                    break;
+                case ReleaseType.BugfixRelease:
+                    newVersion = new Version(version.Major, version.Minor, version.Build + 1);
+                    break;
+                case ReleaseType.FeatureRelease:
+                    newVersion = new Version(version.Major, version.Minor + 1, version.Build);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(releaseType), releaseType, null);
+            }
             versionAttribute.Value = newVersion.ToString();
             document.Save(manifestPath);
         }
 
         static void Build(string msbuildExe, string solutionPath)
         {
+            //var pc = new ProjectCollection();
+            //var properties = new Dictionary<string, string>
+            //{
+            //    ["Configuration"] = "Release",
+            //    ["Platform"] = "Any CPU"
+            //};
+            //var buildRequest = new BuildRequestData(solutionPath, properties, "14.0", new[] { "Build" }, null);
+            //var buildResult = BuildManager.DefaultBuildManager.Build(new BuildParameters(pc), buildRequest);
+
             var process = new Process
             {
                 StartInfo =
@@ -95,6 +130,15 @@ namespace Malware.BuildForPublish
                 Console.WriteLine("Press Any Key...");
                 Console.ReadKey();
             }
+        }
+
+        enum ReleaseType
+        {
+            None,
+            Prerelease,
+            BugfixRelease,
+            FeatureRelease,
+            SameVersion
         }
     }
 }

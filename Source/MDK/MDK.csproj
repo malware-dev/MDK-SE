@@ -540,7 +540,7 @@
   </Target>
   <Import Project="..\SteamAndSE\SteamAndSE.projitems" Label="Shared" />
   <PropertyGroup>
-    <PostBuildEvent>"$(ProjectDir)deploy.bat" $(ConfigurationName) "$(ProjectDir)..\..\Bin" "$(TargetDir)$(TargetName).vsix"</PostBuildEvent>
+    <PostBuildEvent>"$(ProjectDir)deploy.bat" $(ConfigurationName) "$(ProjectDir)..\..\Release" "$(TargetDir)$(TargetName).vsix"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\Scripty.MsBuild.0.7.4\build\Scripty.MsBuild.targets" Condition="Exists('..\packages\Scripty.MsBuild.0.7.4\build\Scripty.MsBuild.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
