@@ -243,7 +243,21 @@ namespace Malware.MDKServices
         {
             RepairBadReferences(projectResult);
             RepairWhitelist(projectResult);
+            RepairOptions(projectResult);
             projectResult.ProjectDocument.Save(projectResult.ProjectInfo.FileName, SaveOptions.OmitDuplicateNamespaces);
+        }
+
+        void RepairOptions(ScriptProjectAnalysisResult projectResult)
+        {
+            var projectFileInfo = new FileInfo(projectResult.ProjectInfo.FileName);
+            var targetOptionsFileInfo = new FileInfo(Path.Combine(projectFileInfo.Directory.FullName, TargetOptionsSubPath));
+            var document = XDocument.Load(targetOptionsFileInfo.FullName);
+            var attribute = document.Element("mdk")?.Attribute("version");
+            if (attribute != null)
+            {
+                attribute.Value = ProjectScriptInfo.TargetPackageVersion.ToString();
+                document.Save(targetOptionsFileInfo.FullName, SaveOptions.OmitDuplicateNamespaces);
+            }
         }
 
         void RepairWhitelist(ScriptProjectAnalysisResult projectResult)
@@ -267,7 +281,9 @@ namespace Malware.MDKServices
                 var badElements = projectElement
                     .Elements($"{{{Xmlns}}}ItemGroup")
                     .Elements()
-                    .Where(e => string.Equals((string)e.Attribute("Include"), TargetWhitelistSubPath, StringComparison.CurrentCultureIgnoreCase))
+                    .Where(e => 
+                        string.Equals((string)e.Attribute("Include"), TargetWhitelistSubPath, StringComparison.CurrentCultureIgnoreCase)
+                        || string.Equals((string)e.Element($"{{{Xmlns}}}Link"), TargetWhitelistSubPath, StringComparison.CurrentCultureIgnoreCase))
                     .ToArray();
                 foreach (var element in badElements)
                     element.Remove();
