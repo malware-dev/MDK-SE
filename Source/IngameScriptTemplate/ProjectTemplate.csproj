@@ -103,9 +103,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Readme.cs" />
     <AdditionalFiles Include="thumb.png" />
-    <AdditionalFiles Include="$mdkinstallpath$\Analyzers\whitelist.cache">
-      <Link>MDK\whitelist.cache</Link>
-    </AdditionalFiles>
+    <AdditionalFiles Include="MDK\whitelist.cache" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">

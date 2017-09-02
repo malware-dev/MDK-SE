@@ -266,4 +266,12 @@
   <data name="BuildModule_LoadContent_Error" xml:space="preserve">
     <value>Error loading the content for {0}</value>
   </data>
+  <data name="IngameScriptWizard_ProjectItemFinishedGenerating_CannotWriteWhitelistCache" xml:space="preserve">
+    <value>Cannot Write Whitelist Cache</value>
+  </data>
+  <data name="IngameScriptWizard_ProjectItemFinishedGenerating_CannotWriteWhitelistCacheDescription" xml:space="preserve">
+    <value>An error occurred while trying to write the whitelist cache.
+
+{0}</value>
+  </data>
 </root>

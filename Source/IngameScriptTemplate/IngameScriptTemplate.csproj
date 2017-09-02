@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="MDK\MDK.options" />
+    <None Include="MDK\whitelist.cache" />
     <None Include="Program.cs" />
     <None Include="MDK\Bootstrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

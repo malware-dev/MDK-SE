@@ -227,6 +227,27 @@ namespace MDK.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot Write Whitelist Cache.
+        /// </summary>
+        internal static string IngameScriptWizard_ProjectItemFinishedGenerating_CannotWriteWhitelistCache {
+            get {
+                return ResourceManager.GetString("IngameScriptWizard_ProjectItemFinishedGenerating_CannotWriteWhitelistCache", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error occurred while trying to write the whitelist cache.
+        ///
+        ///{0}.
+        /// </summary>
+        internal static string IngameScriptWizard_ProjectItemFinishedGenerating_CannotWriteWhitelistCacheDescription {
+            get {
+                return ResourceManager.GetString("IngameScriptWizard_ProjectItemFinishedGenerating_CannotWriteWhitelistCacheDescrip" +
+                        "tion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot Find Space Engineers.
         /// </summary>
         internal static string IngameScriptWizard_TryGetFinalBinPath_SEBinPathNotFound {

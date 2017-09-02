@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using EnvDTE;
-using Malware.MDKServices;
 using Malware.MDKUtilities;
 using MDK.Resources;
 using MDK.Views.Wizard;
@@ -23,6 +20,9 @@ namespace MDK.Services
     [ProgId("MDK.Services.IngameScriptWizard")]
     public class IngameScriptWizard : IWizard
     {
+        const string SourceWhitelistSubPath = @"Analyzers\whitelist.cache";
+        const string TargetWhitelistSubPath = @"MDK\whitelist.cache";
+
         SpaceEngineers _spaceEngineers;
         bool _promoteMDK = true;
 
@@ -33,9 +33,6 @@ namespace MDK.Services
         {
             _spaceEngineers = new SpaceEngineers();
         }
-
-        /// <inheritdoc />
-        public event PropertyChangedEventHandler PropertyChanged;
 
         /// <inheritdoc />
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
@@ -80,44 +77,47 @@ namespace MDK.Services
             _promoteMDK = model.PromoteMDK;
         }
 
+        void IWizard.ProjectItemFinishedGenerating(ProjectItem projectItem)
+        {
+        }
+
         /// <inheritdoc />
         public void ProjectFinishedGenerating(Project project)
         {
-            // Visual Studio sometimes generates invalid paths. This is an attempt to work around that problem.
-            // If we detect any failure, we simply ignore it - the probability is negligible, and the
-            // result is merely an inconvenience.
-            // ReSharper disable once SuspiciousTypeConversion.Global
             var serviceProvider = new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)project.DTE);
 
-            if (!TryGetProperties(serviceProvider, out Properties props))
-                return;
-
-            if (!TryGetFinalBinPath(serviceProvider, props, out string binPath))
-                return;
-
             if (!TryGetFinalInstallPath(serviceProvider, out string installPath))
-                return;
+                throw new WizardCancelledException();
 
-            var scriptUpgrades = new ScriptUpgrades();
-            var result = scriptUpgrades.Analyze(project, new ScriptUpgradeAnalysisOptions
+            var sourceWhitelistFile = Path.Combine(installPath, SourceWhitelistSubPath);
+            if (!File.Exists(sourceWhitelistFile))
             {
-                DefaultGameBinPath = binPath,
-                InstallPath = installPath,
-                TargetVersion = MDKPackage.Version,
-                GameAssemblyNames = MDKPackage.GameAssemblyNames,
-                GameFiles = MDKPackage.GameFiles,
-                UtilityAssemblyNames = MDKPackage.UtilityAssemblyNames,
-                UtilityFiles = MDKPackage.UtilityFiles
-            });
-            if (result.IsValid)
-                return;
-            scriptUpgrades.Upgrade(result);
+                VsShellUtilities.ShowMessageBox(serviceProvider, Text.IngameScriptWizard_TryGetFinalInstallPath_CannotFindMDKPathDescription, Text.IngameScriptWizard_TryGetFinalInstallPath_CannotMDKPath, OLEMSGICON.OLEMSGICON_CRITICAL, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                throw new WizardCancelledException();
+            }
+
+            while (true)
+            {
+                try
+                {
+                    var projectFileInfo = new FileInfo(project.FullName);
+                    var targetWhitelistFileInfo = new FileInfo(Path.Combine(projectFileInfo.Directory.FullName, TargetWhitelistSubPath));
+                    if (!targetWhitelistFileInfo.Directory.Exists)
+                        targetWhitelistFileInfo.Directory.Create();
+                    File.Copy(sourceWhitelistFile, targetWhitelistFileInfo.FullName, true);
+                    break;
+                }
+                catch (Exception e)
+                {
+                    var res = VsShellUtilities.ShowMessageBox(serviceProvider, string.Format(Text.IngameScriptWizard_ProjectItemFinishedGenerating_CannotWriteWhitelistCacheDescription, e.Message), Text.IngameScriptWizard_ProjectItemFinishedGenerating_CannotWriteWhitelistCache, OLEMSGICON.OLEMSGICON_CRITICAL, OLEMSGBUTTON.OLEMSGBUTTON_RETRYCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_SECOND);
+                    if (res == 4)
+                        continue;
+                    throw new WizardCancelledException();
+                }
+            }
         }
 
         void IWizard.BeforeOpeningFile(ProjectItem projectItem)
-        { }
-
-        void IWizard.ProjectItemFinishedGenerating(ProjectItem projectItem)
         { }
 
         void IWizard.RunFinished()
@@ -234,15 +234,6 @@ namespace MDK.Services
         {
             promoteMDK = (bool)(props.Item(nameof(MDKOptions.PromoteMDK))?.Value ?? false);
             return true;
-        }
-
-        /// <summary>
-        /// Called when a trackable property changes
-        /// </summary>
-        /// <param name="propertyName">The name of the property, or <c>null</c> to indicate a global change</param>
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

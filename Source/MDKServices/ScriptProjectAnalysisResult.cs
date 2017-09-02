@@ -11,7 +11,7 @@ namespace Malware.MDKServices
         /// <summary>
         /// Represents the results of an analysis which was ignored and should be disregarded.
         /// </summary>
-        public static readonly ScriptProjectAnalysisResult NonScriptProjectResult = new ScriptProjectAnalysisResult(null, null, null, ImmutableArray<BadReference>.Empty);
+        public static readonly ScriptProjectAnalysisResult NonScriptProjectResult = new ScriptProjectAnalysisResult(null, null, null, default(WhitelistReference), ImmutableArray<BadReference>.Empty);
 
         /// <summary>
         /// Creates a new instance of <see cref="ScriptProjectAnalysisResult"/>
@@ -19,15 +19,17 @@ namespace Malware.MDKServices
         /// <param name="project"></param>
         /// <param name="projectInfo">Basic information about the analyzed project</param>
         /// <param name="projectDocument">The source XML document of the project file</param>
+        /// <param name="whitelist">Whitelist verification results</param>
         /// <param name="badReferences">A list of bad file- or assembly references</param>
-        public ScriptProjectAnalysisResult(EnvDTE.Project project, ProjectScriptInfo projectInfo, XDocument projectDocument, ImmutableArray<BadReference> badReferences)
+        public ScriptProjectAnalysisResult(EnvDTE.Project project, ProjectScriptInfo projectInfo, XDocument projectDocument, WhitelistReference whitelist, ImmutableArray<BadReference> badReferences)
         {
             Project = project;
             ProjectInfo = projectInfo;
             ProjectDocument = projectDocument;
             BadReferences = badReferences;
+            Whitelist = whitelist;
             IsScriptProject = projectInfo != null;
-            IsValid = BadReferences.Length == 0;
+            IsValid = BadReferences.Length == 0 && whitelist.IsValid;
         }
 
         /// <summary>
@@ -54,6 +56,11 @@ namespace Malware.MDKServices
         /// Returns a list of bad file- or assembly references.
         /// </summary>
         public ImmutableArray<BadReference> BadReferences { get; }
+
+        /// <summary>
+        /// Whitelist verification result
+        /// </summary>
+        public WhitelistReference Whitelist { get; }
 
         /// <summary>
         /// Determines whether the analyzed project is fully valid and do not require any updates.

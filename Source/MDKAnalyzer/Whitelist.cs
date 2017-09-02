@@ -1,6 +1,5 @@
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 
 namespace Malware.MDKAnalyzer
@@ -15,8 +14,14 @@ namespace Malware.MDKAnalyzer
         public void Load(string[] symbolKeys)
         {
             _symbolKeys.Clear();
-            foreach (var symbolKey in symbolKeys)
+            foreach (var symbolKey in symbolKeys.Select(key => key.Trim()))
+            {
+                // Ignore comments and empty lines
+                if (string.IsNullOrEmpty(symbolKey) || symbolKey.StartsWith("//"))
+                    continue;
+
                 _symbolKeys.Add(symbolKey);
+            }
         }
 
         public bool IsEmpty()

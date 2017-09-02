@@ -37,7 +37,6 @@ namespace Malware.MDKAnalyzer
         List<Uri> _ignoredFiles = new List<Uri>();
         Uri _basePath;
         string _namespaceName;
-        Exception _optionException;
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } 
             = ImmutableArray.Create(
@@ -125,7 +124,6 @@ namespace Malware.MDKAnalyzer
                 if (!basePath.EndsWith("\\"))
                     basePath += "\\";
 
-                _optionException = null;
                 _basePath = new Uri(basePath);
                 _namespaceName = (string)document.Element("mdk")?.Element("namespace") ?? DefaultNamespaceName;
                 _ignoredFolders.Clear();
@@ -151,9 +149,8 @@ namespace Malware.MDKAnalyzer
                 }
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                _optionException = e;
                 return false;
             }
         }
@@ -163,6 +160,13 @@ namespace Malware.MDKAnalyzer
             var node = context.Node;
             if (IsIgnorableNode(context))
                 return;
+
+            if (!_whitelist.IsEnabled)
+            {
+                var diagnostic = Diagnostic.Create(NoOptionsRule, context.SemanticModel.SyntaxTree.GetRoot().GetLocation());
+                context.ReportDiagnostic(diagnostic);
+                return;
+            }
 
             // The exception finally clause cannot be allowed ingame because it can be used
             // to circumvent the instruction counter exception and crash the game

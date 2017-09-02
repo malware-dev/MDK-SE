@@ -72,8 +72,7 @@ namespace MDK
         /// </summary>
         public static readonly ImmutableArray<string> UtilityFiles = new string[] 
         {
-            "\\Analyzers\\MDKAnalyzer.dll",
-            "\\Analyzers\\whitelist.cache"
+            "\\Analyzers\\MDKAnalyzer.dll"
         }.ToImmutableArray();
 	}
 }

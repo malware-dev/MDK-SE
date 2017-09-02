@@ -51,7 +51,7 @@ namespace MDK.Views.ProjectIntegrity
         {
             try
             {
-                Package.ScriptUpgrades.Upgrade(AnalysisResults);
+                Package.ScriptUpgrades.Repair(AnalysisResults);
             }
             catch (Exception e)
             {

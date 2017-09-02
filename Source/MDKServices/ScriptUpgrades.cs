@@ -17,6 +17,9 @@ namespace Malware.MDKServices
     public class ScriptUpgrades
     {
         const string Xmlns = "http://schemas.microsoft.com/developer/msbuild/2003";
+        const string SourceWhitelistSubPath = @"Analyzers\whitelist.cache";
+        const string TargetWhitelistSubPath = @"MDK\whitelist.cache";
+        const string TargetOptionsSubPath = @"MDK\MDK.options";
 
         /// <summary>
         /// Makes sure the provided path is correctly related to the base directory and not the current environment directory.
@@ -146,15 +149,31 @@ namespace Malware.MDKServices
 
             var badReferences = ImmutableArray.CreateBuilder<BadReference>();
             var projectFile = new FileInfo(projectInfo.FileName);
-            var projectDir = projectFile.Directory ?? throw new InvalidOperationException($"Unexpected error: Could not determine the directory of the project {projectInfo.FileName}");
+            var projectDir = projectFile.Directory;
             var document = XDocument.Load(projectInfo.FileName);
             var xmlns = new XmlNamespaceManager(new NameTable());
             xmlns.AddNamespace("ms", Xmlns);
 
             AnalyzeReferences(options, document, xmlns, projectDir, expectedGamePath, expectedInstallPath, badReferences);
             AnalyzeFiles(options, document, xmlns, projectDir, expectedGamePath, expectedInstallPath, badReferences);
+            var whitelist = VerifyWhitelist(document, projectDir, expectedInstallPath);
 
-            return new ScriptProjectAnalysisResult(project, projectInfo, document, badReferences.ToImmutable());
+            return new ScriptProjectAnalysisResult(project, projectInfo, document, whitelist, badReferences.ToImmutable());
+        }
+
+        WhitelistReference VerifyWhitelist(XDocument document, DirectoryInfo projectDir, string expectedInstallPath)
+        {
+            var hasWhitelistElement = document
+                                          .Element($"{{{Xmlns}}}Project")?
+                                          .Elements($"{{{Xmlns}}}ItemGroup")
+                                          .Elements($"{{{Xmlns}}}AdditionalFiles")
+                                          .Any(e => string.Equals((string)e.Attribute("Include"), TargetWhitelistSubPath, StringComparison.CurrentCultureIgnoreCase))
+                                      ?? false;
+
+            var sourceWhitelistFileInfo = new FileInfo(Path.Combine(expectedInstallPath, SourceWhitelistSubPath));
+            var targetWhitelistFileInfo = new FileInfo(Path.Combine(projectDir.FullName, TargetWhitelistSubPath));
+
+            return new WhitelistReference(hasWhitelistElement, targetWhitelistFileInfo.Exists && sourceWhitelistFileInfo.Exists && sourceWhitelistFileInfo.LastWriteTime >= targetWhitelistFileInfo.LastWriteTime, sourceWhitelistFileInfo.FullName, targetWhitelistFileInfo.FullName);
         }
 
         void AnalyzeFiles(ScriptUpgradeAnalysisOptions options, XDocument document, XmlNamespaceManager xmlns, DirectoryInfo projectDir, string expectedGamePath, string expectedInstallPath, ImmutableArray<BadReference>.Builder badReferences)
@@ -203,24 +222,74 @@ namespace Malware.MDKServices
         }
 
         /// <summary>
-        /// Upgrades the provided projects.
+        /// Repairs the provided projects.
         /// </summary>
         /// <param name="analysisResults"></param>
-        public void Upgrade(ScriptSolutionAnalysisResult analysisResults)
+        public void Repair(ScriptSolutionAnalysisResult analysisResults)
         {
             foreach (var project in analysisResults.BadProjects)
             {
                 var handle = project.Project.Unload();
-                Upgrade(project);
+                Repair(project);
                 handle.Reload();
             }
         }
 
         /// <summary>
-        /// Upgrades the provided project to the current package version.
+        /// Repairs the provided project.
         /// </summary>
         /// <param name="projectResult"></param>
-        void Upgrade(ScriptProjectAnalysisResult projectResult)
+        void Repair(ScriptProjectAnalysisResult projectResult)
+        {
+            RepairBadReferences(projectResult);
+            RepairWhitelist(projectResult);
+            projectResult.ProjectDocument.Save(projectResult.ProjectInfo.FileName, SaveOptions.OmitDuplicateNamespaces);
+        }
+
+        void RepairWhitelist(ScriptProjectAnalysisResult projectResult)
+        {
+            var whitelist = projectResult.Whitelist;
+            if (!whitelist.HasValidWhitelistFile)
+            {
+                var projectFileInfo = new FileInfo(projectResult.ProjectInfo.FileName);
+                var targetWhitelistFileInfo = new FileInfo(Path.Combine(projectFileInfo.Directory.FullName, TargetWhitelistSubPath));
+                if (!targetWhitelistFileInfo.Directory.Exists)
+                    targetWhitelistFileInfo.Directory.Create();
+                File.Copy(whitelist.SourceWhitelistFilePath, targetWhitelistFileInfo.FullName, true);
+            }
+
+            if (!whitelist.HasValidWhitelistElement)
+            {
+                var projectElement = projectResult.ProjectDocument
+                    .Element($"{{{Xmlns}}}Project");
+                if (projectElement == null)
+                    throw new InvalidOperationException("Bad MDK project");
+                var badElements = projectElement
+                    .Elements($"{{{Xmlns}}}ItemGroup")
+                    .Elements()
+                    .Where(e => string.Equals((string)e.Attribute("Include"), TargetWhitelistSubPath, StringComparison.CurrentCultureIgnoreCase))
+                    .ToArray();
+                foreach (var element in badElements)
+                    element.Remove();
+
+                var targetGroup = projectElement
+                    .Elements($"{{{Xmlns}}}ItemGroup")
+                    .Elements()
+                    .FirstOrDefault(e => string.Equals((string)e.Attribute("Include"), TargetOptionsSubPath, StringComparison.CurrentCultureIgnoreCase))
+                    ?.Parent;
+                if (targetGroup == null)
+                {
+                    targetGroup = new XElement(XName.Get("ItemGroup", Xmlns));
+                    projectElement.Add(targetGroup);
+                }
+
+                var itemElement = new XElement(XName.Get("AdditionalFiles", Xmlns),
+                    new XAttribute("Include", TargetWhitelistSubPath));
+                targetGroup.Add(itemElement);
+            }
+        }
+
+        static void RepairBadReferences(ScriptProjectAnalysisResult projectResult)
         {
             foreach (var badReference in projectResult.BadReferences)
             {
@@ -236,7 +305,6 @@ namespace Malware.MDKServices
                         throw new ArgumentOutOfRangeException();
                 }
             }
-            projectResult.ProjectDocument.Save(projectResult.ProjectInfo.FileName, SaveOptions.OmitDuplicateNamespaces);
         }
     }
 }
