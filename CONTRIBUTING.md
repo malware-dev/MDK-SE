@@ -11,7 +11,7 @@ spare-time project, and I'm fully employed, I can use all the help I can get.
 3. Give _productive_ feedback. Read the [Code of Conduct](https://github.com/malware-dev/MDK-SE/blob/master/CODE_OF_CONDUCT.md) and adhere to it. Remember I'm not selling you anything, I don't owe you anything. Whether you use my product is completely up to you. Meaning; if you're rude your post will quite simply be ignored.
 
 ## Pull Requests
-Since I cannot possibly do everything myself, I will certainly accept pull requests - but I must ask that you follow a few ground rules. This is so I can keep control of the repository, and to help prevent you wasting your time on work that I will reject.
+Since I cannot possibly do everything myself, I will certainly accept pull requests - but I must ask that you follow a few ground rules. This is so I can keep control of the repository, and to help prevent you wasting your time on work that I will reject. [See this video](https://youtu.be/J_bLNULs7Ck) for a description on how to set up Visual Studio for contribution.
 
 1. **Remember that many users will be inexperienced both with IDEs and coding**. It's very important that your feature is easy to use.  
 
