@@ -173,7 +173,7 @@ namespace Malware.MDKServices
             var sourceWhitelistFileInfo = new FileInfo(Path.Combine(expectedInstallPath, SourceWhitelistSubPath));
             var targetWhitelistFileInfo = new FileInfo(Path.Combine(projectDir.FullName, TargetWhitelistSubPath));
 
-            return new WhitelistReference(hasWhitelistElement, targetWhitelistFileInfo.Exists && sourceWhitelistFileInfo.Exists && sourceWhitelistFileInfo.LastWriteTime >= targetWhitelistFileInfo.LastWriteTime, sourceWhitelistFileInfo.FullName, targetWhitelistFileInfo.FullName);
+            return new WhitelistReference(hasWhitelistElement, targetWhitelistFileInfo.Exists && sourceWhitelistFileInfo.Exists && sourceWhitelistFileInfo.LastWriteTime <= targetWhitelistFileInfo.LastWriteTime, sourceWhitelistFileInfo.FullName, targetWhitelistFileInfo.FullName);
         }
 
         void AnalyzeFiles(ScriptUpgradeAnalysisOptions options, XDocument document, XmlNamespaceManager xmlns, DirectoryInfo projectDir, string expectedGamePath, string expectedInstallPath, ImmutableArray<BadReference>.Builder badReferences)
