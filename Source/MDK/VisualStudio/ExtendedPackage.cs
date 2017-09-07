@@ -67,6 +67,8 @@ namespace MDK.VisualStudio
                 throw new InvalidOperationException("Could not retrieve the Visual Studio output window");
             var generalPaneGuid = VSConstants.GUID_OutWindowGeneralPane;
             outWindow.GetPane(ref generalPaneGuid, out IVsOutputWindowPane generalPane);
+            if (generalPane == null)
+                return;
             generalPane.OutputString($"{category}:{exception}");
             generalPane.Activate();
         }
