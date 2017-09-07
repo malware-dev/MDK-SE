@@ -274,4 +274,10 @@
 
 {0}</value>
   </data>
+  <data name="NewScriptWizardDialogModel_GameBinPath_GameBinariesRequired" xml:space="preserve">
+    <value>The game binaries are required to create and deploy an MDK project.</value>
+  </data>
+  <data name="NewScriptWizardDialogModel_OutputPath_OutputPathRequired" xml:space="preserve">
+    <value>The output path is required to create an MDK project.</value>
+  </data>
 </root>

@@ -62,11 +62,10 @@ namespace MDK.VisualStudio
         /// <param name="exception"></param>
         public void LogPackageError(string category, Exception exception)
         {
-            var outWindow = GetService(typeof(SVsOutputWindow)) as IVsOutputWindow;
-            if (outWindow == null)
+            if (!(GetService(typeof(SVsOutputWindow)) is IVsOutputWindow outWindow))
                 throw new InvalidOperationException("Could not retrieve the Visual Studio output window");
             var generalPaneGuid = VSConstants.GUID_OutWindowGeneralPane;
-            outWindow.GetPane(ref generalPaneGuid, out IVsOutputWindowPane generalPane);
+            outWindow.GetPane(ref generalPaneGuid, out var generalPane);
             if (generalPane == null)
                 return;
             generalPane.OutputString($"{category}:{exception}");

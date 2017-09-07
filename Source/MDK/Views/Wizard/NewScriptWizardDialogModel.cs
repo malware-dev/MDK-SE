@@ -1,4 +1,7 @@
-﻿namespace MDK.Views.Wizard
+﻿using System;
+using MDK.Resources;
+
+namespace MDK.Views.Wizard
 {
     /// <summary>
     /// The view model for <see cref="NewScriptWizardDialog"/>
@@ -11,6 +14,15 @@
         bool _promoteMDK;
 
         /// <summary>
+        /// Creates a new instance of <see cref="NewScriptWizardDialogModel"/>
+        /// </summary>
+        public NewScriptWizardDialogModel()
+        {
+            GameBinPath = null;
+            OutputPath = null;
+        }
+
+        /// <summary>
         /// The path to Space Engineer's Bin64 folder
         /// </summary>
         public string GameBinPath
@@ -18,9 +30,16 @@
             get => _gameBinPath;
             set
             {
+                value = value?.Trim().TrimEnd('\\');
+                ClearErrors(nameof(GameBinPath));
+                if (string.IsNullOrEmpty(value))
+                {
+                    AddError(nameof(GameBinPath), Text.NewScriptWizardDialogModel_GameBinPath_GameBinariesRequired);
+                    return;
+                }
                 if (value == _gameBinPath)
                     return;
-                _gameBinPath = value?.TrimEnd('\\');
+                _gameBinPath = value.TrimEnd('\\');
                 OnPropertyChanged();
             }
         }
@@ -33,9 +52,16 @@
             get => _outputPath;
             set
             {
+                value = value?.Trim().TrimEnd('\\');
+                ClearErrors(nameof(OutputPath));
+                if (string.IsNullOrEmpty(value))
+                {
+                    AddError(nameof(OutputPath), Text.NewScriptWizardDialogModel_OutputPath_OutputPathRequired);
+                    return;
+                }
                 if (value == _outputPath)
                     return;
-                _outputPath = value?.TrimEnd('\\');
+                _outputPath = value.TrimEnd('\\');
                 OnPropertyChanged();
             }
         }
@@ -71,9 +97,10 @@
         }
 
         /// <inheritdoc />
-        /// <returns></returns>
         protected override bool OnSave()
         {
+            if (!IsValid)
+                return false;
             return true;
         }
     }

@@ -31,8 +31,7 @@ namespace Malware.MDKAnalyzer
 
         public bool IsWhitelisted(ISymbol symbol)
         {
-            var typeSymbol = symbol as INamedTypeSymbol;
-            if (typeSymbol != null)
+            if (symbol is INamedTypeSymbol typeSymbol)
             {
                 return IsWhitelisted(typeSymbol) != TypeKeyQuantity.None;
             }

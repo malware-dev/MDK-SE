@@ -483,6 +483,24 @@ namespace MDK.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The game binaries are required to create and deploy an MDK project..
+        /// </summary>
+        internal static string NewScriptWizardDialogModel_GameBinPath_GameBinariesRequired {
+            get {
+                return ResourceManager.GetString("NewScriptWizardDialogModel_GameBinPath_GameBinariesRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The output path is required to create an MDK project..
+        /// </summary>
+        internal static string NewScriptWizardDialogModel_OutputPath_OutputPathRequired {
+            get {
+                return ResourceManager.GetString("NewScriptWizardDialogModel_OutputPath_OutputPathRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No MDK Projects.
         /// </summary>
         internal static string ProjectOptionsCommand_OnExecute_NoMDKProjects {

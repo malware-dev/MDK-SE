@@ -35,21 +35,38 @@
         <Label Grid.Column="0" Grid.Row="0" Target="{Binding ElementName=GameAssemblyFolderBox}" Margin="2">Game Binaries Path</Label>
         <views:FolderBox Grid.Column="1" Grid.Row="0"
                          x:Name="GameAssemblyFolderBox"
-                         Margin="2"
+                         Margin="2,2,2,32"
                          VerticalAlignment="Center"
-                         SelectedFolder="{Binding GameBinPath}"
+                         SelectedFolder="{Binding GameBinPath, ValidatesOnNotifyDataErrors=True}"
                          ToolTip="The path where the game has installed its binaries (SpaceEngineers\Bin64 folder)"
-                         DialogTitle="Please select the game binary folder" />
+                         DialogTitle="Please select the game binary folder">
+            <Validation.ErrorTemplate>
+                <ControlTemplate>
+                    <StackPanel>
+                        <!-- Placeholder for the TextBox itself -->
+                        <AdornedElementPlaceholder />
+                        <ItemsControl ItemsSource="{Binding}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding ErrorContent}" Foreground="Red"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </ControlTemplate>
+            </Validation.ErrorTemplate>
+        </views:FolderBox>
         <Label Grid.Column="0" Grid.Row="1" Target="{Binding ElementName=OutputPathFolderBox}" Margin="2">Script Output Path</Label>
         <views:FolderBox Grid.Column="1" Grid.Row="1"
                          x:Name="OutputPathFolderBox"
-                         Margin="2"
+                         Margin="2,2,2,32"
                          VerticalAlignment="Center"
-                         SelectedFolder="{Binding OutputPath}"
+                         SelectedFolder="{Binding OutputPath, ValidatesOnNotifyDataErrors=True}"
                          ToolTip="The path where the final ingame scripts are generated"
                          DialogTitle="Please select the script output folder" />
         <Label Grid.Column="0" Grid.Row="2" Target="{Binding ElementName=MinifyCheckBox}" Margin="2">Minify</Label>
-        <StackPanel Grid.Column="1" Grid.Row="2" >
+        <StackPanel Grid.Column="1" Grid.Row="2" 
+                    Margin ="2,2,2,16">
 
             <CheckBox x:Name="MinifyCheckBox" 
                   Margin="2,8,2,2"
@@ -61,7 +78,8 @@
         </StackPanel>
 
         <Label Grid.Column="0" Grid.Row="3" Target="{Binding ElementName=PromoteCheckBox}" Margin="2">Thumbnail promotes MDK</Label>
-        <StackPanel Grid.Column="1" Grid.Row="3" >
+        <StackPanel Grid.Column="1" Grid.Row="3" 
+                    Margin="2,2,2,16">
 
             <CheckBox x:Name="PromoteCheckBox" 
                       Margin="2,8,2,2"
