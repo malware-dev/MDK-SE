@@ -140,7 +140,6 @@ namespace Malware.MDKServices
         {
             if (!project.IsLoaded())
                 return ScriptProjectAnalysisResult.NonScriptProjectResult;
-            project.Save();
             var projectInfo = ProjectScriptInfo.Load(project.FullName, project.Name);
             if (!projectInfo.IsValid)
                 return ScriptProjectAnalysisResult.NonScriptProjectResult;
