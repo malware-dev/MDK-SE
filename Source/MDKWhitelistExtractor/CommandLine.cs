@@ -16,7 +16,7 @@ namespace Malware.MDKWhitelistExtractor
                 _arguments.AddRange(_regex.Matches(commandLine).Cast<Match>().Select(m => m.Value.Replace("\"", "")));
         }
 
-        public string this[int index] => _arguments[index];
+        public string this[int index] => (index >= 0 && index < _arguments.Count) ? _arguments[index] : null;
 
         public int Count => _arguments.Count;
 

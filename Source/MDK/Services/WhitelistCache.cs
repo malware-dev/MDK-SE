@@ -22,11 +22,13 @@ namespace MDK.Services
 
             var appId = SpaceEngineers.SteamAppId;
             var pluginPath = Path.Combine(installPath, "MDKWhitelistExtractor.dll");
-            var targetPath = Path.Combine(installPath, "Analyzers");
-            var directoryInfo = new DirectoryInfo(targetPath);
+            var whitelistTarget = Path.Combine(installPath, "Analyzers");
+            var terminalTarget = Path.Combine(installPath, "Analyzers");
+            var directoryInfo = new DirectoryInfo(whitelistTarget);
             if (!directoryInfo.Exists)
                 directoryInfo.Create();
-            targetPath = Path.Combine(targetPath, "whitelist.cache");
+            whitelistTarget = Path.Combine(whitelistTarget, "whitelist.cache");
+            terminalTarget = Path.Combine(terminalTarget, "terminal.cache");
 
             var args = new List<string>
             {
@@ -34,7 +36,9 @@ namespace MDK.Services
                 $"-plugin \"{pluginPath}\"",
                 "-nosplash",
                 "-whitelistcaches",
-                $"\"{targetPath}\""
+                $"\"{whitelistTarget}\"",
+                "-terminalcaches",
+                $"\"{terminalTarget}\""
             };
 
             var process = new Process
