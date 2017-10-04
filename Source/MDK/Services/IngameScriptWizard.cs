@@ -164,14 +164,23 @@ namespace MDK.Services
                 var useBinPath = (bool)props.Item(nameof(MDKOptions.UseManualGameBinPath)).Value;
                 binPath = ((string)props.Item(nameof(MDKOptions.GameBinPath))?.Value)?.Trim() ?? "";
                 if (!useBinPath || binPath == "")
+                {
                     binPath = _spaceEngineers.GetInstallPath("Bin64");
+                    if (binPath == null)
+                    {
+                        // We don't have a path. Just exit, let the dialog take care of it
+                        return true;
+                    }
+                }
 
                 var binDirectory = new DirectoryInfo(binPath);
                 if (!binDirectory.Exists)
                 {
+                    // We have a configured path, but it fails.
                     var res = VsShellUtilities.ShowMessageBox(serviceProvider, Text.IngameScriptWizard_TryGetFinalBinPath_SEBinPathNotFoundDescription, Text.IngameScriptWizard_TryGetFinalBinPath_SEBinPathNotFound, OLEMSGICON.OLEMSGICON_CRITICAL, OLEMSGBUTTON.OLEMSGBUTTON_RETRYCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_SECOND);
                     if (res == 4)
                         continue;
+                    binPath = null;
                     return false;
                 }
                 binPath = binDirectory.ToString().TrimEnd('\\');
@@ -187,7 +196,14 @@ namespace MDK.Services
                 var useOutputPath = (bool)props.Item(nameof(MDKOptions.UseManualOutputPath)).Value;
                 outputPath = ((string)props.Item(nameof(MDKOptions.OutputPath))?.Value)?.Trim() ?? "";
                 if (!useOutputPath || outputPath == "")
+                {
                     outputPath = _spaceEngineers.GetDataPath("IngameScripts", "local");
+                    if (outputPath == null)
+                    {
+                        // We don't have a path. Just exit, let the dialog take care of it
+                        return true;
+                    }
+                }
                 var outputDirectory = new DirectoryInfo(outputPath);
                 try
                 {
