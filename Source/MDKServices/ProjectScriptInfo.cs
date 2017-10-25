@@ -37,6 +37,11 @@ namespace Malware.MDKServices
             {
                 var document = XDocument.Load(mdkOptionsFileName);
                 var root = document.Element("mdk");
+
+                // Check if this is a template options file
+                if ((string)root?.Attribute("version") == "$mdkversion$")
+                    return new ProjectScriptInfo(fileName, name, false);
+
                 var useManualGameBinPath = ((string)root?.Element("gamebinpath")?.Attribute("enabled") ?? "no").Trim().Equals("yes", StringComparison.CurrentCultureIgnoreCase);
                 var gameBinPath = (string)root?.Element("gamebinpath");
                 var installPath = (string)root?.Element("installpath");
