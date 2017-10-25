@@ -20,7 +20,6 @@ namespace MDK.Views.BlueprintManager
         string _editedName;
         bool _isBeingEdited;
         bool _editedNameIsValid;
-        DirectoryInfo _directory;
         string _renameError;
 
         /// <summary>
@@ -34,13 +33,18 @@ namespace MDK.Views.BlueprintManager
         {
             Manager = manager ?? throw new ArgumentNullException(nameof(manager));
             Thumbnail = thumbnail;
-            _directory = directory ?? throw new ArgumentNullException(nameof(directory));
-            Name = _directory.Name;
+            Directory = directory ?? throw new ArgumentNullException(nameof(directory));
+            Name = Directory.Name;
             IsSignificant = isSignificant;
         }
 
         /// <inheritdoc cref="INotifyDataErrorInfo.ErrorsChanged"/>
         public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
+
+        /// <summary>
+        /// The script directory
+        /// </summary>
+        public DirectoryInfo Directory { get; }
 
         /// <summary>
         /// Gets the blueprint manager model this blueprint belongs to
@@ -148,8 +152,8 @@ namespace MDK.Views.BlueprintManager
             {
                 try
                 {
-                    var newPath = Path.Combine(_directory.Parent?.FullName ?? ".", EditedName);
-                    _directory.MoveTo(newPath);
+                    var newPath = Path.Combine(Directory.Parent?.FullName ?? ".", EditedName);
+                    Directory.MoveTo(newPath);
                 }
                 catch (Exception exception)
                 {
@@ -188,7 +192,7 @@ namespace MDK.Views.BlueprintManager
         {
             try
             {
-                _directory.Delete(true);
+                Directory.Delete(true);
             }
             catch (Exception e)
             {
@@ -207,7 +211,7 @@ namespace MDK.Views.BlueprintManager
             {
                 StartInfo =
                 {
-                    FileName = _directory.FullName
+                    FileName = Directory.FullName
                 }
             };
             process.Start();

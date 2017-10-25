@@ -97,6 +97,44 @@ namespace MDK.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Copy.
+        /// </summary>
+        internal static string BlueprintManagerDialogModel_CopyToClipboard_Copy {
+            get {
+                return ResourceManager.GetString("BlueprintManagerDialogModel_CopyToClipboard_Copy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The blueprint was copied to the clipboard..
+        /// </summary>
+        internal static string BlueprintManagerDialogModel_CopyToClipboard_Copy_Description {
+            get {
+                return ResourceManager.GetString("BlueprintManagerDialogModel_CopyToClipboard_Copy_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error Copying Script.
+        /// </summary>
+        internal static string BlueprintManagerDialogModel_CopyToClipboard_Copy_Error {
+            get {
+                return ResourceManager.GetString("BlueprintManagerDialogModel_CopyToClipboard_Copy_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An unexpected error occurred during the attempt to copy the blueprint.
+        ///
+        ///{0}.
+        /// </summary>
+        internal static string BlueprintManagerDialogModel_CopyToClipboard_Copy_Error_Description {
+            get {
+                return ResourceManager.GetString("BlueprintManagerDialogModel_CopyToClipboard_Copy_Error_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error Deleting Blueprint.
         /// </summary>
         internal static string BlueprintManagerDialogModel_Delete_Error {

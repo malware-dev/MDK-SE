@@ -41,6 +41,9 @@
         <ListBox x:Name="blueprintsListBox" Grid.Column="0" Grid.Row="1"
                  ItemsSource="{Binding Blueprints}" SelectedItem="{Binding SelectedBlueprint}" SelectionMode="Single"
                  HorizontalContentAlignment="Stretch">
+            <ListBox.InputBindings>
+                <KeyBinding Key="C" Modifiers="Control" Command="{Binding CopyToClipboardCommand}"/>
+            </ListBox.InputBindings>
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Grid x:Name="container">
@@ -73,6 +76,7 @@
             <Button Margin="0,0,0,8" Command="{Binding RenameCommand}">_Rename</Button>
             <Button Margin="0,0,0,8" Command="{Binding DeleteCommand}">_Delete</Button>
             <Button Margin="0,0,0,8" Command="{Binding OpenFolderCommand}">_Open Folder</Button>
+            <Button Margin="0,0,0,8" Command="{Binding CopyToClipboardCommand}">_Copy</Button>
         </StackPanel>
 
         <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" TextWrapping="Wrap" Margin="0,8,0,8">

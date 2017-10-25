@@ -280,4 +280,18 @@
   <data name="NewScriptWizardDialogModel_OutputPath_OutputPathRequired" xml:space="preserve">
     <value>The output path is required to create an MDK project.</value>
   </data>
+  <data name="BlueprintManagerDialogModel_CopyToClipboard_Copy_Error" xml:space="preserve">
+    <value>Error Copying Script</value>
+  </data>
+  <data name="BlueprintManagerDialogModel_CopyToClipboard_Copy_Error_Description" xml:space="preserve">
+    <value>An unexpected error occurred during the attempt to copy the blueprint.
+
+{0}</value>
+  </data>
+  <data name="BlueprintManagerDialogModel_CopyToClipboard_Copy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="BlueprintManagerDialogModel_CopyToClipboard_Copy_Description" xml:space="preserve">
+    <value>The blueprint was copied to the clipboard.</value>
+  </data>
 </root>

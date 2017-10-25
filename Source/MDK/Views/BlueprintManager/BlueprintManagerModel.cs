@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
+using System.Windows;
 using System.Windows.Media.Imaging;
 using MDK.Resources;
 
@@ -26,6 +28,7 @@ namespace MDK.Views.BlueprintManager
             DeleteCommand = new ModelCommand(Delete, false);
             RenameCommand = new ModelCommand(Rename, false);
             OpenFolderCommand = new ModelCommand(OpenFolder, false);
+            CopyToClipboardCommand = new ModelCommand(CopyToClipboard, false);
         }
 
         /// <summary>
@@ -78,6 +81,7 @@ namespace MDK.Views.BlueprintManager
                 RenameCommand.IsEnabled = hasSelection;
                 DeleteCommand.IsEnabled = hasSelection;
                 OpenFolderCommand.IsEnabled = hasSelection;
+                CopyToClipboardCommand.IsEnabled = hasSelection;
                 OnPropertyChanged();
             }
         }
@@ -96,6 +100,11 @@ namespace MDK.Views.BlueprintManager
         /// A command to open the target folder of a selected blueprint
         /// </summary>
         public ModelCommand OpenFolderCommand { get; set; }
+
+        /// <summary>
+        /// A command to copy the selected script to the clipboard.
+        /// </summary>
+        public ModelCommand CopyToClipboardCommand { get; set; }
 
         /// <summary>
         /// A custom description to show at the top of the dialog.
@@ -138,6 +147,25 @@ namespace MDK.Views.BlueprintManager
         {
             var item = SelectedBlueprint;
             item?.BeginEdit();
+        }
+
+        void CopyToClipboard()
+        {
+            try
+            {
+                var item = SelectedBlueprint;
+                var fileInfo = new FileInfo(Path.Combine(item.Directory.FullName, "script.cs"));
+                if (fileInfo.Exists)
+                {
+                    var script = File.ReadAllText(fileInfo.FullName, Encoding.UTF8);
+                    Clipboard.SetText(script, TextDataFormat.UnicodeText);
+                    SendMessage(Text.BlueprintManagerDialogModel_CopyToClipboard_Copy, Text.BlueprintManagerDialogModel_CopyToClipboard_Copy_Description, MessageEventType.Info);
+                }
+            }
+            catch (Exception e)
+            {
+                SendMessage(Text.BlueprintManagerDialogModel_CopyToClipboard_Copy_Error, string.Format(Text.BlueprintManagerDialogModel_CopyToClipboard_Copy_Error_Description, e.Message), MessageEventType.Error);
+            }
         }
 
         void Delete()
