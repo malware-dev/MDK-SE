@@ -50,5 +50,10 @@ namespace Malware.MDKUtilities
         /// </summary>
         [Obsolete("This property no longer holds any meaning.")]
         public virtual int CurrentMethodCallCount { get; } = 0;
+
+        /// <summary>
+        //     Gets or sets how frequently this script will run itself
+        /// </summary>
+        public UpdateFrequency UpdateFrequency { get; set; }
     }
 }

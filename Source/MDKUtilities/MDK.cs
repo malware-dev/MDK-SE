@@ -81,7 +81,8 @@ namespace Malware.MDKUtilities
         /// <param name="gridProgram">The program to run</param>
         /// <param name="argument">The argument to pass to the program</param>
         /// <param name="timeSinceLastRun">The simulated time since the last time the program was run</param>
-        public static void Run(IMyGridProgram gridProgram, string argument = "", TimeSpan timeSinceLastRun = default(TimeSpan))
+        /// <param name="updateType">The source of this simulated run. Defaults to Trigger.</param>
+        public static void Run(IMyGridProgram gridProgram, string argument = "", TimeSpan timeSinceLastRun = default(TimeSpan), UpdateType updateType = UpdateType.Trigger)
         {
             if (gridProgram == null)
                 throw new ArgumentNullException(nameof(gridProgram));
@@ -90,7 +91,7 @@ namespace Malware.MDKUtilities
             if (runtime != null)
                 runtime.TimeSinceLastRun = timeSinceLastRun;
             var stopwatch = Stopwatch.StartNew();
-            gridProgram.Main(argument ?? "");
+            gridProgram.Main(argument ?? "", updateType);
             if (runtime != null)
                 runtime.LastRunTimeMs = stopwatch.Elapsed.TotalMilliseconds;
         }
