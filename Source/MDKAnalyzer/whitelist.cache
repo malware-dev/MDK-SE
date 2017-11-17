@@ -80,6 +80,7 @@ System.StringSplitOptions+*, mscorlib
 System.DateTimeKind+*, mscorlib
 System.MidpointRounding+*, mscorlib
 System.EventArgs+*, mscorlib
+System.Buffer+*, mscorlib
 System.Reflection.MemberInfo, mscorlib
 System.Reflection.MemberInfo.Name, mscorlib
 System.Type, mscorlib
@@ -184,6 +185,7 @@ VRage.Game.ObjectBuilders.Definitions.MyObjectBuilder_GasProperties+*, VRage.Gam
 VRage.ObjectBuilders.MyObjectBuilder_Base+*, VRage.Game
 VRage.Game.Components.MyComponentBase+*, VRage.Game
 VRage.ObjectBuilders.SerializableDefinitionId+*, VRage.Game
+VRage.Game.MyCubeSize+*, VRage.Game
 Sandbox.Game.EntityComponents.MyResourceSourceComponent, Sandbox.Game
 Sandbox.Game.EntityComponents.MyResourceSourceComponent.CurrentOutput, Sandbox.Game
 Sandbox.Game.EntityComponents.MyResourceSourceComponent.MaxOutput, Sandbox.Game
