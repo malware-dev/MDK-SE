@@ -61,13 +61,29 @@ namespace MDK.VisualStudio
                 if (!_isEnabled)
                 {
                     object icon = (short)_currentAnimation;
-                    StatusBar.Animation(0, ref icon);
+                    try
+                    {
+                        StatusBar.Animation(0, ref icon);
+                    }
+                    catch
+                    {
+                        // Sometimes just crashes deep within Visual Studio. We don't bother with that
+                        // because we can't do anything about it anyway.
+                    }
                 }
                 else
                 {
                     _currentAnimation = _animation;
                     object icon = (short)_currentAnimation;
-                    StatusBar.Animation(1, ref icon);
+                    try
+                    {
+                        StatusBar.Animation(1, ref icon);
+                    }
+                    catch
+                    {
+                        // Sometimes just crashes deep within Visual Studio. We don't bother with that
+                        // because we can't do anything about it anyway.
+                    }
                 }
             }
         }
