@@ -42,6 +42,10 @@ namespace IngameScript
             //     
             // The constructor is optional and can be removed if not
             // needed.
+            // 
+            // It's recommended to set RuntimeInfo.UpdateFrequency 
+            // here, which will allow your script to run itself without a 
+            // timer block.
         }
 
         public void Save()
@@ -54,12 +58,16 @@ namespace IngameScript
             // needed.
         }
 
-        public void Main(string argument)
+        public void Main(string argument, UpdateType updateSource)
         {
             // The main entry point of the script, invoked every time
-            // one of the programmable block's Run actions are invoked.
+            // one of the programmable block's Run actions are invoked,
+            // or the script updates itself. The updateSource argument
+            // describes where the update came from. Be aware that the
+            // updateSource is a  bitfield  and might contain more than 
+            // one update type.
             // 
-            // The method itself is required, but the argument above
+            // The method itself is required, but the arguments above
             // can be removed if not needed.
         }
     }
