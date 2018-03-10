@@ -59,10 +59,12 @@
     <Compile Include="Build\DocumentAnalyzer.cs" />
     <Compile Include="Build\ExtensionScriptPart.cs" />
     <Compile Include="Build\Minifier.cs" />
+    <Compile Include="Build\MinifyingComposer.cs" />
     <Compile Include="Build\ProgramScriptPart.cs" />
     <Compile Include="Build\ProgressChangedEventArgs.cs" />
     <Compile Include="Build\ProjectContent.cs" />
-    <Compile Include="Build\ScriptGenerator.cs" />
+    <Compile Include="Build\ScriptComposer.cs" />
+    <Compile Include="Build\SimpleComposer.cs" />
     <Compile Include="Build\ScriptPart.cs" />
     <Compile Include="Build\UsingDirectiveComparer.cs" />
     <Compile Include="Build\WeightedPartSorter.cs" />
@@ -83,6 +85,7 @@
       <DependentUpon>Text.resx</DependentUpon>
     </Compile>
     <Compile Include="Services\IngameScriptWizard.cs" />
+    <Compile Include="SyntaxDumper.cs" />
     <Compile Include="Views\BlueprintManager\BlueprintManagerDialog.xaml.cs">
       <DependentUpon>BlueprintManagerDialog.xaml</DependentUpon>
     </Compile>

@@ -11,6 +11,7 @@ using JetBrains.Annotations;
 using Malware.MDKServices;
 using MDK.Resources;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.MSBuild;
 
@@ -136,19 +137,20 @@ namespace MDK.Build
                     return null;
             }
 
+            var macros = CreateMacros();
+
             var content = await LoadContent(project, config).ConfigureAwait(false);
             Steps++;
 
-            var document = CreateProgramDocument(project, content);
+            var document = CreateProgramDocument(project, content, macros);
 
-            var minifyResult = await PreMinify(project, config, document);
-            var minifier = minifyResult.Minifier;
-            document = minifyResult.Document;
+            //var minifyResult = await PreMinify(project, config, document);
+            //var minifier = minifyResult.Minifier;
+            //document = minifyResult.Document;
 
-            var script = await GenerateScript(project, document).ConfigureAwait(false);
+            var composer = config.Minify ? (ScriptComposer)new MinifyingComposer() : new SimpleComposer();
+            var script = await Compose(project, document, composer).ConfigureAwait(false);
             Steps++;
-
-            script = PostMinify(project, minifier, script);
 
             if (content.Readme != null)
             {
@@ -160,41 +162,50 @@ namespace MDK.Build
             return config;
         }
 
-        async Task<(Minifier Minifier, Document Document)> PreMinify(Project project, ProjectScriptInfo config, Document document)
+        IDictionary<string, string> CreateMacros()
         {
-            try
+            return new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
             {
-                var minifier = config.Minify ? new Minifier() : null;
-                if (minifier != null)
-                    document = await minifier.PreMinify(document);
-                return (minifier, document);
-            }
-            catch (Exception e)
-            {
-                throw new BuildException(string.Format(Text.BuildModule_PreMinify_Error, project.FilePath), e);
-            }
+                ["%MDK_DATETIME%"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm"),
+                ["%MDK_DATE%"] = DateTime.Now.ToString("yyyy-MM-dd"),
+                ["%MDK_TIME%"] = DateTime.Now.ToString("HH:mm"),
+            };
         }
 
-        string PostMinify(Project project, Minifier minifier, string script)
-        {
-            try
-            {
-                if (minifier != null)
-                    script = minifier.PostMinify(script);
-                return script;
-            }
-            catch (Exception e)
-            {
-                throw new BuildException(string.Format(Text.BuildModule_PostMinify_Error, project.FilePath), e);
-            }
-        }
+        //async Task<(Minifier Minifier, Document Document)> PreMinify(Project project, ProjectScriptInfo config, Document document)
+        //{
+        //    try
+        //    {
+        //        var minifier = config.Minify ? new Minifier() : null;
+        //        if (minifier != null)
+        //            document = await minifier.PreMinify(document);
+        //        return (minifier, document);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        throw new BuildException(string.Format(Text.BuildModule_PreMinify_Error, project.FilePath), e);
+        //    }
+        //}
 
-        async Task<string> GenerateScript(Project project, Document document)
+        //string PostMinify(Project project, Minifier minifier, string script)
+        //{
+        //    try
+        //    {
+        //        if (minifier != null)
+        //            script = minifier.PostMinify(script);
+        //        return script;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        throw new BuildException(string.Format(Text.BuildModule_PostMinify_Error, project.FilePath), e);
+        //    }
+        //}
+
+        async Task<string> Compose(Project project, Document document, ScriptComposer composer)
         {
             try
             {
-                var generator = new ScriptGenerator();
-                var script = await generator.Generate(document).ConfigureAwait(false);
+                var script = await composer.Generate(document).ConfigureAwait(false);
                 return script;
             }
             catch (Exception e)
@@ -252,30 +263,79 @@ namespace MDK.Build
             });
         }
 
-        Document CreateProgramDocument(Project project, ProjectContent content)
+        Document CreateProgramDocument(Project project, ProjectContent content, IDictionary<string, string> macros)
         {
             try
             {
-                var usings = string.Join(Environment.NewLine, content.UsingDirectives.Select(d => d.ToString()));
                 var solution = project.Solution;
 
-                var buffer = new StringBuilder();
-                buffer.Append("public class Program: MyGridProgram {");
-                buffer.Append(string.Join("", content.Parts.OfType<ProgramScriptPart>().OrderBy(part => part, PartComparer).Select(p => p.GenerateContent())));
-                buffer.Append("}");
-                var programContent = buffer.ToString();
+                var programDeclaration =
+                    SyntaxFactory.ClassDeclaration("Program")
+                        .WithModifiers(SyntaxTokenList.Create(SyntaxFactory.Token(SyntaxKind.PublicKeyword)))
+                        .WithBaseList(SyntaxFactory.BaseList(
+                            SyntaxFactory.SeparatedList<BaseTypeSyntax>()
+                                .Add(SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName("MyGridProgram"))
+                                )))
+                        .NormalizeWhitespace();
+                var pendingTrivia = new List<SyntaxTrivia>();
+                var programParts = content.Parts.OfType<ProgramScriptPart>().OrderBy(part => part, PartComparer).ToArray();
+                var members = new List<MemberDeclarationSyntax>();
+                foreach (var part in programParts)
+                {
+                    pendingTrivia.AddRange(part.GetLeadingTrivia());
 
-                buffer.Clear();
-                buffer.Append(string.Join("", content.Parts.OfType<ExtensionScriptPart>().OrderBy(part => part, PartComparer).Select(p => p.GenerateContent())));
-                var extensionContent = buffer.ToString();
-                
-                var finalContent = $"{usings}\n{programContent}\n{extensionContent}";
+                    var nodes = part.Content().ToArray();
+                    if (pendingTrivia.Count > 0)
+                    {
+                        var firstNode = nodes.FirstOrDefault();
+                        if (firstNode != null)
+                        {
+                            nodes[0] = firstNode.WithLeadingTrivia(pendingTrivia.Concat(firstNode.GetLeadingTrivia()));
+                            pendingTrivia.Clear();
+                        }
+                    }
+
+                    pendingTrivia.AddRange(part.GetTrailingTrivia());
+                    if (pendingTrivia.Count > 0)
+                    {
+                        var lastNode = nodes.LastOrDefault();
+                        if (lastNode != null)
+                        {
+                            nodes[nodes.Length - 1] = lastNode.WithTrailingTrivia(pendingTrivia.Concat(lastNode.GetTrailingTrivia()));
+                            pendingTrivia.Clear();
+                        }
+                    }
+
+                    members.AddRange(nodes.Select(node => node.Unindented(2)));
+                }
+
+                programDeclaration = programDeclaration.WithMembers(new SyntaxList<MemberDeclarationSyntax>().AddRange(members));
+
+                var extensionDeclarations = content.Parts.OfType<ExtensionScriptPart>().OrderBy(part => part, PartComparer).Select(p => p.PartRoot.Unindented(1)).Cast<MemberDeclarationSyntax>().ToArray();
+
+                if (extensionDeclarations.Any())
+                {
+                    programDeclaration = programDeclaration
+                        .WithCloseBraceToken(
+                            programDeclaration.CloseBraceToken
+                                .WithLeadingTrivia(SyntaxFactory.EndOfLine("\n"))
+                                .WithTrailingTrivia(SyntaxFactory.EndOfLine("\n"), SyntaxFactory.EndOfLine("\n")
+                                )
+                        );
+                }
 
                 var compilationProject = solution.AddProject("__ScriptCompilationProject", "__ScriptCompilationProject.dll", LanguageNames.CSharp)
                     .WithCompilationOptions(project.CompilationOptions)
                     .WithMetadataReferences(project.MetadataReferences);
 
-                return compilationProject.AddDocument("Program.cs", finalContent);
+                var unit = SyntaxFactory.CompilationUnit()
+                    .WithUsings(SyntaxFactory.List(content.UsingDirectives))
+                    .AddMembers(programDeclaration)
+                    .AddMembers(extensionDeclarations);
+
+                var document = compilationProject.AddDocument("Program.cs", unit.WithMdkAnnotations(macros));
+
+                return document;
             }
             catch (Exception e)
             {

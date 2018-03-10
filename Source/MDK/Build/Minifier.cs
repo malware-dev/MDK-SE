@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -16,28 +17,31 @@ namespace MDK.Build
     /// </summary>
     public class Minifier
     {
-        static readonly char[] BaseNChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
+        static char[] GenerateBaseNChars()
+        {
+            // Lu, Ll, Lt, Lm, or Lo _
+            var firstCharTypes = new[]
+            {
+                UnicodeCategory.UppercaseLetter,
+                UnicodeCategory.LowercaseLetter,
+                UnicodeCategory.TitlecaseLetter,
+                UnicodeCategory.ModifierLetter,
+                UnicodeCategory.OtherLetter
+            };
 
-        //async Task<Document> TrimWhitespace(Document document)
-        //{
-        //    var root = await document.GetSyntaxRootAsync().ConfigureAwait(false);
-        //    var regex = new Regex(@"(?<string>\$?((@""[^""]*(""""[^""]*)*"")|(""[^""\\\r\n]*(?:\\.[^""\\\r\n]*)*"")))|(?<whitespace>\s+)");
-        //    var originalCode = root.ToString();
-        //    var lastNewlineIndex = 0;
-        //    var cleanedCode = regex.Replace(originalCode, match =>
-        //    {
-        //        if (match.Groups["string"].Success)
-        //            return match.Value;
+            var chars = new List<char>();
 
-        //        if (match.Index - lastNewlineIndex > 100)
-        //        {
-        //            lastNewlineIndex = match.Index;
-        //            return "\n";
-        //        }
-        //        return " ";
-        //    });
-        //    return document.WithText(SourceText.From(cleanedCode));
-        //}
+            for (var ch = (char)0; ch < (char)0xffff; ch++)
+            {
+                var cat = char.GetUnicodeCategory(ch);
+                if (firstCharTypes.Contains(cat))
+                    chars.Add(ch);
+            }
+
+            return chars.ToArray();
+        }
+
+        static readonly char[] BaseNChars = GenerateBaseNChars();
 
         /// <summary>
         /// Determines whether the given symbol represents an interface implementation.
@@ -50,13 +54,6 @@ namespace MDK.Build
                 return false;
             return symbol.ContainingType.AllInterfaces.SelectMany(i => i.GetMembers()).Any(member => symbol.ContainingType.FindImplementationForInterfaceMember(member).Equals(symbol));
         }
-
-        //static bool IsMemberDeclaration(ISymbol symbol)
-        //{
-        //    return symbol is IMethodSymbol
-        //           || symbol is IPropertySymbol
-        //           || symbol is IEventSymbol;
-        //}
 
         bool IsSymbolDeclaration(SyntaxNode node)
         {
@@ -86,7 +83,6 @@ namespace MDK.Build
             document = await TrimSyntax(document).ConfigureAwait(false);
             document = await Refactor(document).ConfigureAwait(false);
             document = await TrimTrivia(document).ConfigureAwait(false);
-            //document = await TrimWhitespace(document).ConfigureAwait(false);
             return document;
         }
 
@@ -116,10 +112,6 @@ namespace MDK.Build
             var symbolSrc = 0;
             var semanticModel = await document.GetSemanticModelAsync();
 
-            //var typeDeclarations = root.DescendantNodes().Where(n => n is ClassDeclarationSyntax || n is StructDeclarationSyntax).Cast<TypeDeclarationSyntax>()
-            //    .SelectMany(d => d.BaseList.Types.Where(t => IsInterfaceReference(t, semanticModel)))
-            //    .ToArray();
-
             var declaredSymbols = root.DescendantNodes().Where(IsSymbolDeclaration)
                 .Select(n => semanticModel.GetDeclaredSymbol(n))
                 .Where(s => s != null)
@@ -127,17 +119,7 @@ namespace MDK.Build
                 .Where(s => !protectedSymbols.Contains(s.GetFullName(DeclarationFullNameFlags.WithoutNamespaceName)))
                 .Where(s => !s.IsOverride)
                 .Where(s => !IsInterfaceImplementation(s))
-                //.Where(s => !s.Name.Contains("."))
                 .ToArray();
-
-            //var implementedInterfaces = declaredSymbols.Where(IsMemberDeclaration).SelectMany(m => m.ContainingType.Interfaces).Distinct().ToArray();
-
-            //var z = declaredSymbols.Where(IsInterfaceImplementation).ToArray();
-
-            //foreach (var iface in implementedInterfaces)
-            //{
-            //    var symbols = await SymbolFinder.FindImplementedInterfaceMembersAsync(iface, document.Project.Solution, ImmutableHashSet.Create(document.Project));
-            //}
 
             var allDeclaredSymbols = new HashSet<string>(declaredSymbols.Select(s => s.Name).Where(n => n != null));
             var maxSymbolLength = allDeclaredSymbols.Count.ToNBaseString(BaseNChars).Length;
@@ -164,12 +146,12 @@ namespace MDK.Build
                     minStart = symbolNode.FullSpan.Start;
                     continue;
                 }
-                // If a symbol name is less than or equal to the maximum minified symbol length, just leave it
-                if (symbol.Name.Length <= maxSymbolLength)
-                {
-                    minStart = symbolNode.FullSpan.Start;
-                    continue;
-                }
+                //// If a symbol name is less than or equal to the maximum minified symbol length, just leave it
+                //if (symbol.Name.Length <= maxSymbolLength)
+                //{
+                //    minStart = symbolNode.FullSpan.Start;
+                //    continue;
+                //}
                 minStart = symbolNode.FullSpan.Start;
                 if (!minifiedSymbolNames.TryGetValue(symbol.Name, out string newName))
                     continue;

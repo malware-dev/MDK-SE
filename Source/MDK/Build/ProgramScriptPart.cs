@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -20,6 +21,37 @@ namespace MDK.Build
         /// <param name="partRoot"></param>
         public ProgramScriptPart(Document document, ClassDeclarationSyntax partRoot) : base(document, partRoot)
         { }
+
+        public IEnumerable<SyntaxTrivia> GetLeadingTrivia() => ((ClassDeclarationSyntax)PartRoot).OpenBraceToken.TrailingTrivia;
+
+        public IEnumerable<MemberDeclarationSyntax> Content()
+        {
+            // Write general content
+            foreach (var node in PartRoot.ChildNodes())
+            {
+                switch (node.Kind())
+                {
+                    case SyntaxKind.ClassDeclaration:
+                    case SyntaxKind.StructDeclaration:
+                    case SyntaxKind.InterfaceDeclaration:
+                    case SyntaxKind.EnumDeclaration:
+                    case SyntaxKind.DelegateDeclaration:
+                    case SyntaxKind.FieldDeclaration:
+                    case SyntaxKind.EventFieldDeclaration:
+                    case SyntaxKind.MethodDeclaration:
+                    case SyntaxKind.OperatorDeclaration:
+                    case SyntaxKind.ConversionOperatorDeclaration:
+                    case SyntaxKind.ConstructorDeclaration:
+                    case SyntaxKind.DestructorDeclaration:
+                    case SyntaxKind.PropertyDeclaration:
+                    case SyntaxKind.EventDeclaration:
+                    case SyntaxKind.IndexerDeclaration:
+                        yield return (MemberDeclarationSyntax)node;
+                        break;
+                }
+            }
+        }
+        public IEnumerable<SyntaxTrivia> GetTrailingTrivia() => ((ClassDeclarationSyntax)PartRoot).CloseBraceToken.LeadingTrivia;
 
         /// <inheritdoc />
         public override string GenerateContent()

@@ -11,7 +11,7 @@ namespace MDK.Build
     /// <summary>
     /// The generator used to produce the final script after all the rest of the build operation is complete.
     /// </summary>
-    public class ScriptGenerator
+    public class SimpleComposer: ScriptComposer
     {
         static readonly string[] NewLines = {"\r\n", "\n"};
 
@@ -21,17 +21,17 @@ namespace MDK.Build
         /// </summary>
         /// <param name="document"></param>
         /// <returns></returns>
-        public async Task<string> Generate(Document document)
+        public override async Task<string> Generate(Document document)
         {
             var analyzer = new DocumentAnalyzer();
             var result = await analyzer.Analyze(document);
             var buffer = new StringBuilder();
 
             var programContent =
-                DeIndent(
+                /*DeIndent(*/
                     string.Join("\n", result.Parts.OfType<ProgramScriptPart>().Select(p => p.GenerateContent()))
-                        .Split(NewLines, StringSplitOptions.None)
-                ).Trim();
+                        /*.Split(NewLines, StringSplitOptions.None)
+                ).Trim()*/;
             buffer.Append(programContent);
             buffer.Append("\n");
 
