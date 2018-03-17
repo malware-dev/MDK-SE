@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -20,10 +19,12 @@ namespace MDK.Build
         /// <param name="node"></param>
         /// <param name="macros">An optional dictionary of macros to replace within macro regions</param>
         /// <returns></returns>
-        public static T WithMdkAnnotations<T>(this T node, IDictionary<string, string> macros = null) where T: SyntaxNode
+        public static T TransformAndAnnotate<T>(this T node, IDictionary<string, string> macros = null) where T: SyntaxNode
         {
-            var rewriter = new MdkAnnotationRewriter(macros);
-            return (T)rewriter.Visit(node);
+            var symbolDeclarations = new List<SyntaxNode>();
+            var rewriter = new MdkAnnotationRewriter(macros, symbolDeclarations);
+            var root = (T)rewriter.Visit(node);
+            return root;
         }
 
         /// <summary>
@@ -105,15 +106,16 @@ namespace MDK.Build
         class MdkAnnotationRewriter : CSharpSyntaxRewriter
         {
             static readonly char[] TagSeparators = {' '};
+
+            List<SyntaxNode> _symbolDeclarations;
             readonly IDictionary<string, string> _macros;
             Regex _regionRegex = new Regex(@"\s*#region\s+mdk\s+([^\r\n]*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            Regex _macroAnnotationRegex = new Regex(@"\bmacros\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
             Stack<RegionInfo> _stack = new Stack<RegionInfo>();
+            Regex _macroRegex = new Regex(@"\$\w+\$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-            Regex _macroRegex = new Regex(@"%\w+%", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
-            public MdkAnnotationRewriter(IDictionary<string, string> macros) : base(true)
+            public MdkAnnotationRewriter(IDictionary<string, string> macros, List<SyntaxNode> symbolDeclarations) : base(true)
             {
+                _symbolDeclarations = symbolDeclarations;
                 _macros = macros;
                 _stack.Push(new RegionInfo());
             }
@@ -128,6 +130,24 @@ namespace MDK.Build
                 });
             }
 
+            bool IsSymbolDeclaration(SyntaxNode node)
+            {
+                return node is ClassDeclarationSyntax
+                       || node is PropertyDeclarationSyntax
+                       || node is EventDeclarationSyntax
+                       || node is VariableDeclaratorSyntax
+                       || node is EnumDeclarationSyntax
+                       || node is EnumMemberDeclarationSyntax
+                       || node is ConstructorDeclarationSyntax
+                       || node is DelegateDeclarationSyntax
+                       || node is MethodDeclarationSyntax
+                       || node is StructDeclarationSyntax
+                       || node is InterfaceDeclarationSyntax
+                       || node is TypeParameterSyntax
+                       || node is ParameterSyntax
+                       || node is AnonymousObjectMemberDeclaratorSyntax;
+            }
+
             public override SyntaxNode Visit(SyntaxNode node)
             {
                 node = base.Visit(node);
@@ -136,39 +156,102 @@ namespace MDK.Build
                 var region = _stack.Peek();
                 if (region.Annotation != null)
                     return node.WithAdditionalAnnotations(region.Annotation);
-                return node;
-            }
 
-            public override SyntaxNode VisitInterpolatedStringText(InterpolatedStringTextSyntax node)
-            {
-                return base.VisitInterpolatedStringText(node);
+                if (IsSymbolDeclaration(node))
+                    _symbolDeclarations.Add(node);
+                return node;
             }
 
             public override SyntaxToken VisitToken(SyntaxToken token)
             {
                 token = base.VisitToken(token);
                 var region = _stack.Peek();
+                if (token.IsKind(SyntaxKind.StringLiteralToken) && region.ExpandsMacros)
+                {
+                    token = SyntaxFactory.Literal(ReplaceMacros(token.Text));
+                }
+
                 if (region.Annotation != null)
                     token = token.WithAdditionalAnnotations(region.Annotation);
-                if (token.IsKind(SyntaxKind.StringLiteralToken))
+
+                if (token.HasStructuredTrivia)
                 {
-                    var annotation = token.GetAnnotations("MDK").FirstOrDefault();
-                    if (_macroRegex.IsMatch(annotation?.Data ?? ""))
+                    if (token.HasLeadingTrivia)
                     {
-                        return SyntaxFactory.Literal(ReplaceMacros(token.Text))
-                            .WithAdditionalAnnotations(region.Annotation);
+                        var originalTrivia = token.LeadingTrivia;
+                        var trimmedTrivia = TrimTrivia(originalTrivia);
+                        token = token.WithLeadingTrivia(trimmedTrivia);
+                    }
+
+                    if (token.HasTrailingTrivia)
+                    {
+                        var originalTrivia = token.TrailingTrivia;
+                        var trimmedTrivia = TrimTrivia(originalTrivia);
+                        token = token.WithTrailingTrivia(trimmedTrivia);
                     }
                 }
 
                 return token;
             }
 
+            SyntaxTriviaList TrimTrivia(SyntaxTriviaList source)
+            {
+                var list = new List<SyntaxTrivia>();
+                foreach (var trivia in source)
+                {
+                    if (trivia.HasStructure)
+                    {
+                        if (trivia.GetStructure() is RegionDirectiveTriviaSyntax regionDirective)
+                        {
+                            list.AddRange(regionDirective.GetLeadingTrivia());
+                            list.AddRange(regionDirective.GetTrailingTrivia());
+                            continue;
+                        }
+
+                        if (trivia.GetStructure() is EndRegionDirectiveTriviaSyntax endRegionDirective)
+                        {
+                            list.AddRange(endRegionDirective.GetLeadingTrivia());
+                            list.AddRange(endRegionDirective.GetTrailingTrivia());
+                            continue;
+                        }
+                    }
+
+                    list.Add(trivia);
+                }
+
+                return SyntaxFactory.TriviaList(list);
+            }
+
             public override SyntaxTrivia VisitTrivia(SyntaxTrivia trivia)
             {
                 trivia = base.VisitTrivia(trivia);
                 var region = _stack.Peek();
+                if (region.ExpandsMacros)
+                {
+                    if (trivia.IsKind(SyntaxKind.SingleLineCommentTrivia))
+                    {
+                        return SyntaxFactory.Comment(ReplaceMacros(trivia.ToFullString()))
+                            .WithAdditionalAnnotations(region.Annotation);
+                    }
+
+                    if (trivia.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia))
+                    {
+                        //return SyntaxFactory.DocumentationCommentTrivia(ReplaceMacros(trivia.ToFullString()))
+                        //    .WithAdditionalAnnotations(region.Annotation);
+                    }
+
+                    if (trivia.IsKind(SyntaxKind.MultiLineCommentTrivia))
+                    {
+                        return SyntaxFactory.Comment(ReplaceMacros(trivia.ToFullString()))
+                            .WithAdditionalAnnotations(region.Annotation);
+                    }
+
+                    if (trivia.IsKind(SyntaxKind.MultiLineDocumentationCommentTrivia))
+                    { }
+                }
+
                 if (region.Annotation != null)
-                    return trivia.WithAdditionalAnnotations(region.Annotation);
+                    trivia = trivia.WithAdditionalAnnotations(region.Annotation);
                 return trivia;
             }
 
@@ -186,7 +269,7 @@ namespace MDK.Build
                         tagString = region.Annotation.Data + " " + tagString;
                     region = new RegionInfo(new SyntaxAnnotation("MDK", tagString));
                     _stack.Push(region);
-                    return null;
+                    return node;
                 }
 
                 _stack.Push(region.AsCopy());
@@ -210,11 +293,13 @@ namespace MDK.Build
             {
                 public SyntaxAnnotation Annotation { get; }
                 public bool IsDeclaration { get; }
+                public bool ExpandsMacros { get; }
 
                 public RegionInfo(SyntaxAnnotation annotation, bool isDeclaration = true)
                 {
                     Annotation = annotation;
                     IsDeclaration = isDeclaration;
+                    ExpandsMacros = annotation != null && Regex.IsMatch(annotation.Data, @"\bmacros\b", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
                 }
 
                 public RegionInfo AsCopy() => new RegionInfo(Annotation, false);

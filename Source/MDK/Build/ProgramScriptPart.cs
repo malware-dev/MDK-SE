@@ -1,7 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -19,11 +16,20 @@ namespace MDK.Build
         /// </summary>
         /// <param name="document"></param>
         /// <param name="partRoot"></param>
-        public ProgramScriptPart(Document document, ClassDeclarationSyntax partRoot) : base(document, partRoot)
+        /// <param name="sortWeight"></param>
+        public ProgramScriptPart(Document document, ClassDeclarationSyntax partRoot, int? sortWeight) : base(document, partRoot, sortWeight)
         { }
 
+        /// <summary>
+        /// Retrieves the leading trivia of this part.
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<SyntaxTrivia> GetLeadingTrivia() => ((ClassDeclarationSyntax)PartRoot).OpenBraceToken.TrailingTrivia;
 
+        /// <summary>
+        /// Gets the content of this part.
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<MemberDeclarationSyntax> Content()
         {
             // Write general content
@@ -51,6 +57,11 @@ namespace MDK.Build
                 }
             }
         }
+
+        /// <summary>
+        /// Gets the trailing trivia of this part.
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<SyntaxTrivia> GetTrailingTrivia() => ((ClassDeclarationSyntax)PartRoot).CloseBraceToken.LeadingTrivia;
 
         /// <inheritdoc />

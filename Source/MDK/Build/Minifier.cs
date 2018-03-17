@@ -17,31 +17,17 @@ namespace MDK.Build
     /// </summary>
     public class Minifier
     {
-        static char[] GenerateBaseNChars()
+        static char[] GetSymbolChars()
         {
-            // Lu, Ll, Lt, Lm, or Lo _
-            var firstCharTypes = new[]
+            var chars = new List<char>(50000);
+            for (int u = 0; u <= ushort.MaxValue; u++)
             {
-                UnicodeCategory.UppercaseLetter,
-                UnicodeCategory.LowercaseLetter,
-                UnicodeCategory.TitlecaseLetter,
-                UnicodeCategory.ModifierLetter,
-                UnicodeCategory.OtherLetter
-            };
-
-            var chars = new List<char>();
-
-            for (var ch = (char)0; ch < (char)0xffff; ch++)
-            {
-                var cat = char.GetUnicodeCategory(ch);
-                if (firstCharTypes.Contains(cat))
-                    chars.Add(ch);
+                if (char.IsLetter((char)u))
+                    chars.Add((char)u);
             }
-
             return chars.ToArray();
         }
-
-        static readonly char[] BaseNChars = GenerateBaseNChars();
+        static readonly char[] BaseNChars = GetSymbolChars();
 
         /// <summary>
         /// Determines whether the given symbol represents an interface implementation.

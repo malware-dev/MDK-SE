@@ -30,6 +30,8 @@ namespace MDK.Build
 
         long WeightOf(ScriptPart scriptPart)
         {
+            if (scriptPart.SortWeight != null)
+                return scriptPart.SortWeight.Value;
             long weight = 0;
             if (string.Equals(scriptPart.Name, "Program.cs", StringComparison.CurrentCultureIgnoreCase))
                 weight++;

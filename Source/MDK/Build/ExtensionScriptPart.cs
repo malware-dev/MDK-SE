@@ -12,7 +12,8 @@ namespace MDK.Build
         /// </summary>
         /// <param name="document"></param>
         /// <param name="partRoot"></param>
-        public ExtensionScriptPart(Document document, SyntaxNode partRoot) : base(document, partRoot)
+        /// <param name="sortWeight"></param>
+        public ExtensionScriptPart(Document document, SyntaxNode partRoot, int? sortWeight) : base(document, partRoot, sortWeight)
         { }
 
         /// <inheritdoc />

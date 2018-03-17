@@ -14,10 +14,12 @@ namespace MDK.Build
         /// </summary>
         /// <param name="document"></param>
         /// <param name="partRoot"></param>
-        protected ScriptPart(Document document, SyntaxNode partRoot)
+        /// <param name="sortWeight"></param>
+        protected ScriptPart(Document document, SyntaxNode partRoot, long? sortWeight)
         {
             Document = document;
             PartRoot = partRoot;
+            SortWeight = sortWeight;
         }
 
         /// <summary>
@@ -34,6 +36,11 @@ namespace MDK.Build
         /// The root part that contains this part
         /// </summary>
         public SyntaxNode PartRoot { get; }
+
+        /// <summary>
+        /// The sorting weight of this part. The higher the number, the higher up it gets.
+        /// </summary>
+        public long? SortWeight { get; }
 
         /// <summary>
         /// Generates the script content that makes up this part

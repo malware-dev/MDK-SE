@@ -166,9 +166,9 @@ namespace MDK.Build
         {
             return new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
             {
-                ["%MDK_DATETIME%"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm"),
-                ["%MDK_DATE%"] = DateTime.Now.ToString("yyyy-MM-dd"),
-                ["%MDK_TIME%"] = DateTime.Now.ToString("HH:mm"),
+                ["$MDK_DATETIME$"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm"),
+                ["$MDK_DATE$"] = DateTime.Now.ToString("yyyy-MM-dd"),
+                ["$MDK_TIME$"] = DateTime.Now.ToString("HH:mm"),
             };
         }
 
@@ -333,7 +333,7 @@ namespace MDK.Build
                     .AddMembers(programDeclaration)
                     .AddMembers(extensionDeclarations);
 
-                var document = compilationProject.AddDocument("Program.cs", unit.WithMdkAnnotations(macros));
+                var document = compilationProject.AddDocument("Program.cs", unit.TransformAndAnnotate(macros));
 
                 return document;
             }
@@ -366,8 +366,9 @@ namespace MDK.Build
                         readme += "\n";
                 }
 
-                foreach (var document in documents)
+                for (var index = 0; index < documents.Count; index++)
                 {
+                    var document = documents[index];
                     var result = await Analyzer.Analyze(document).ConfigureAwait(false);
                     if (result == null)
                         continue;
