@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using Sandbox.ModAPI;
 using Sandbox.ModAPI.Ingame;
+using IMyGridTerminalSystem = Sandbox.ModAPI.Ingame.IMyGridTerminalSystem;
 using IMyProgrammableBlock = Sandbox.ModAPI.Ingame.IMyProgrammableBlock;
 
 namespace Malware.MDKUtilities
@@ -67,6 +68,7 @@ namespace Malware.MDKUtilities
             instance.Storage = config.Storage ?? "";
             instance.Me = config.ProgrammableBlock;
             instance.Echo = config.Echo ?? DefaultEcho;
+            instance.GridTerminalSystem = config.GridTerminalSystem;
             constructor.Invoke(instance, null);
             if (!instance.HasMainMethod)
                 throw new ArgumentException(Resources.MDK_CreateProgram_NoMainMethod, nameof(type));
@@ -119,6 +121,11 @@ namespace Malware.MDKUtilities
             ///     The programmable block which is to be simulated as running the program (the <c>Me</c> property)
             /// </summary>
             public IMyProgrammableBlock ProgrammableBlock;
+
+            /// <summary>
+            ///     The grid terminal system which is to be made available for the running program
+            /// </summary>
+            public IMyGridTerminalSystem GridTerminalSystem;
 
             /// <summary>
             ///     A custom runtime instance
