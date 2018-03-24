@@ -361,7 +361,7 @@ namespace MDK
 
                 if (deployedScripts.Length > 0)
                 {
-                    if (!nonBlocking)
+                    if (!nonBlocking && Options.ShowBlueprintManagerOnDeploy)
                     {
                         var distinctPaths = deployedScripts.Select(script => FormattedPath(script.OutputPath)).Distinct().ToArray();
                         if (distinctPaths.Length == 1)

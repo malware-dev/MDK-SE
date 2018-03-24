@@ -8,7 +8,7 @@
     xmlns:views="clr-namespace:MDK.Views"
     mc:Ignorable="d"
     d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{d:DesignInstance services:MDKOptions}">
-    
+
     <UserControl.Resources>
         <views:BooleanVisibilityConverter x:Key="converters/booleanVisibility" TrueVisibility="Visible"
                                           FalseVisibility="Hidden" />
@@ -22,6 +22,7 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -79,12 +80,17 @@
                 A prerelease version will always check for new prereleases
             </TextBlock>
 
-            <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" IsChecked="{Binding PromoteMDK}"
+            <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" IsChecked="{Binding ShowBlueprintManagerOnDeploy}"
+                      VerticalAlignment="Center" VerticalContentAlignment="Center">
+                <Label>Show blueprint manager on deploy</Label>
+            </CheckBox>
+
+            <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="5" IsChecked="{Binding PromoteMDK}"
                       VerticalAlignment="Center" VerticalContentAlignment="Center">
                 <Label>Promote MDK on the default script thumbnail</Label>
             </CheckBox>
 
-            <views:ButtonBar Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="5" VerticalAlignment="Bottom" />
+            <views:ButtonBar Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="6" VerticalAlignment="Bottom" />
         </Grid>
     </Border>
 </UserControl>

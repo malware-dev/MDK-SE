@@ -26,6 +26,7 @@ namespace MDK.Services
         bool _notifyPrereleaseUpdates;
         SpaceEngineers _spaceEngineers;
         bool _promoteMDK = true;
+        bool _showBlueprintManagerOnDeploy = true;
 
         /// <summary>
         /// Creates an instance of <see cref="MDKOptions" />
@@ -160,6 +161,24 @@ namespace MDK.Services
                 if (_promoteMDK == value)
                     return;
                 _promoteMDK = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Whether script projects should default to generating minified scripts.
+        /// </summary>
+        [Category("MDK/SE")]
+        [DisplayName("Show blueprint manager on deploy")]
+        [Description("Whether the blueprint manager is shown when a deployment is complete.")]
+        public bool ShowBlueprintManagerOnDeploy
+        {
+            get => _showBlueprintManagerOnDeploy;
+            set
+            {
+                if (_showBlueprintManagerOnDeploy == value)
+                    return;
+                _showBlueprintManagerOnDeploy = value;
                 OnPropertyChanged();
             }
         }

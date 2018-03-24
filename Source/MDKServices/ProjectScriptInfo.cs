@@ -47,6 +47,7 @@ namespace Malware.MDKServices
                 var installPath = (string)root?.Element("installpath");
                 var outputPath = (string)root?.Element("outputpath");
                 var minify = ((string)root?.Element("minify") ?? "no").Trim().Equals("yes", StringComparison.CurrentCultureIgnoreCase);
+                var trimTypes = ((string)root?.Element("trimTypes") ?? "no").Trim().Equals("yes", StringComparison.CurrentCultureIgnoreCase);
                 string[] ignoredFolders = null;
                 string[] ignoredFiles = null;
                 var ignoreElement = root?.Element("ignore");
@@ -62,7 +63,8 @@ namespace Malware.MDKServices
                     GameBinPath = gameBinPath,
                     InstallPath = installPath,
                     OutputPath = outputPath,
-                    Minify = minify
+                    Minify = minify,
+                    TrimTypes = trimTypes
                 };
                 if (ignoredFolders != null)
                     foreach (var item in ignoredFolders)
@@ -88,6 +90,7 @@ namespace Malware.MDKServices
         string[] _ignoredFilesCache;
         string[] _ignoredFoldersCache;
         string _baseDir;
+        bool _trimTypes;
 
         ProjectScriptInfo(string fileName, string name, bool isValid)
         {
@@ -198,6 +201,22 @@ namespace Malware.MDKServices
         }
 
         /// <summary>
+        /// Determines whether the script generated from this project should be run through the type trimmer which removes unused types
+        /// </summary>
+        public bool TrimTypes
+        {
+            get => _trimTypes;
+            set
+            {
+                if (value == _trimTypes)
+                    return;
+                _trimTypes = value;
+                HasChanges = true;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
         /// Determines whether the script generated from this project should be run through the minifier
         /// </summary>
         public bool Minify
@@ -273,6 +292,7 @@ namespace Malware.MDKServices
                 XElement installPathElement = null;
                 XElement outputPathElement = null;
                 XElement minifyElement = null;
+                XElement trimTypesElement = null;
                 XElement ignoreElement = null;
                 XElement root;
                 if (!mdkOptionsFileName.Exists)
@@ -294,6 +314,7 @@ namespace Malware.MDKServices
                     installPathElement = root.Element("installpath");
                     outputPathElement = root.Element("outputpath");
                     minifyElement = root.Element("minify");
+                    trimTypesElement = root.Element("trimTypes");
                     ignoreElement = root.Element("ignore");
                 }
 
@@ -323,6 +344,11 @@ namespace Malware.MDKServices
                     minifyElement = new XElement("minify");
                     root.Add(minifyElement);
                 }
+                if (trimTypesElement == null)
+                {
+                    trimTypesElement = new XElement("trimTypes");
+                    root.Add(trimTypesElement);
+                }
                 if (ignoreElement == null && IgnoredFolders.Count > 0)
                 {
                     ignoreElement = new XElement("ignore");
@@ -334,6 +360,7 @@ namespace Malware.MDKServices
                 installPathElement.Value = InstallPath.TrimEnd('\\');
                 outputPathElement.Value = OutputPath.TrimEnd('\\');
                 minifyElement.Value = Minify ? "yes" : "no";
+                trimTypesElement.Value = TrimTypes ? "yes" : "no";
                 ignoreElement?.RemoveNodes();
                 if (ignoreElement != null)
                 {
