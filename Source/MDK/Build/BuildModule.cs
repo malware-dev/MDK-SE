@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -9,10 +8,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Malware.MDKServices;
+using MDK.Build.Minifier;
+using MDK.Build.Solution;
+using MDK.Build.TypeTrimming;
+using MDK.Build.UsageAnalysis;
 using MDK.Resources;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.MSBuild;
 
 namespace MDK.Build
@@ -22,6 +23,19 @@ namespace MDK.Build
     /// </summary>
     public class BuildModule
     {
+        static async Task<ProgramComposition> ComposeDocument(Project project, ProjectScriptInfo config)
+        {
+            try
+            {
+                var documentComposer = new ProgramDocumentComposer();
+                return await documentComposer.ComposeAsync(project, config).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                throw new BuildException(string.Format(Text.BuildModule_LoadContent_Error, project.FilePath), e);
+            }
+        }
+
         readonly IProgress<float> _progress;
         Project[] _scriptProjects;
         int _steps;
@@ -63,11 +77,6 @@ namespace MDK.Build
         public string SelectedProjectFileName { get; }
 
         /// <summary>
-        /// The document analysis utility
-        /// </summary>
-        public DocumentAnalyzer Analyzer { get; } = new DocumentAnalyzer();
-
-        /// <summary>
         /// The current step index for the build. Moves towards <see cref="TotalSteps"/>.
         /// </summary>
         protected int Steps
@@ -86,11 +95,6 @@ namespace MDK.Build
         /// The total number of steps to reach before the build is complete.
         /// </summary>
         protected int TotalSteps { get; private set; }
-
-        /// <summary>
-        /// Gets the comparer used to determine the order of parts (files) when building.
-        /// </summary>
-        public IComparer<ScriptPart> PartComparer { get; } = new WeightedPartSorter();
 
         /// <summary>
         /// Starts the build.
@@ -137,24 +141,22 @@ namespace MDK.Build
                     return null;
             }
 
-            var macros = CreateMacros();
-
-            var content = await LoadContent(project, config).ConfigureAwait(false);
+            var composition = await ComposeDocument(project, config);
             Steps++;
 
-            var document = CreateProgramDocument(project, content, macros);
-
-            //var minifyResult = await PreMinify(project, config, document);
-            //var minifier = minifyResult.Minifier;
-            //document = minifyResult.Document;
+            if (config.TrimTypes)
+            {
+                var processor = new TypeTrimmer();
+                composition = await processor.Process(composition, config);
+            }
 
             var composer = config.Minify ? (ScriptComposer)new MinifyingComposer() : new SimpleComposer();
-            var script = await Compose(project, document, composer).ConfigureAwait(false);
+            var script = await ComposeScript(project, composition.Document, composer).ConfigureAwait(false);
             Steps++;
 
-            if (content.Readme != null)
+            if (composition.Readme != null)
             {
-                script = content.Readme + script;
+                script = composition.Readme + script;
             }
 
             WriteScript(project, config.OutputPath, script);
@@ -162,46 +164,7 @@ namespace MDK.Build
             return config;
         }
 
-        IDictionary<string, string> CreateMacros()
-        {
-            return new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
-            {
-                ["$MDK_DATETIME$"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm"),
-                ["$MDK_DATE$"] = DateTime.Now.ToString("yyyy-MM-dd"),
-                ["$MDK_TIME$"] = DateTime.Now.ToString("HH:mm"),
-            };
-        }
-
-        //async Task<(Minifier Minifier, Document Document)> PreMinify(Project project, ProjectScriptInfo config, Document document)
-        //{
-        //    try
-        //    {
-        //        var minifier = config.Minify ? new Minifier() : null;
-        //        if (minifier != null)
-        //            document = await minifier.PreMinify(document);
-        //        return (minifier, document);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        throw new BuildException(string.Format(Text.BuildModule_PreMinify_Error, project.FilePath), e);
-        //    }
-        //}
-
-        //string PostMinify(Project project, Minifier minifier, string script)
-        //{
-        //    try
-        //    {
-        //        if (minifier != null)
-        //            script = minifier.PostMinify(script);
-        //        return script;
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        throw new BuildException(string.Format(Text.BuildModule_PostMinify_Error, project.FilePath), e);
-        //    }
-        //}
-
-        async Task<string> Compose(Project project, Document document, ScriptComposer composer)
+        async Task<string> ComposeScript(Project project, Document document, ScriptComposer composer)
         {
             try
             {
@@ -261,146 +224,6 @@ namespace MDK.Build
                         return match.Value;
                 }
             });
-        }
-
-        Document CreateProgramDocument(Project project, ProjectContent content, IDictionary<string, string> macros)
-        {
-            try
-            {
-                var solution = project.Solution;
-
-                var programDeclaration =
-                    SyntaxFactory.ClassDeclaration("Program")
-                        .WithModifiers(SyntaxTokenList.Create(SyntaxFactory.Token(SyntaxKind.PublicKeyword)))
-                        .WithBaseList(SyntaxFactory.BaseList(
-                            SyntaxFactory.SeparatedList<BaseTypeSyntax>()
-                                .Add(SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName("MyGridProgram"))
-                                )))
-                        .NormalizeWhitespace();
-                var pendingTrivia = new List<SyntaxTrivia>();
-                var programParts = content.Parts.OfType<ProgramScriptPart>().OrderBy(part => part, PartComparer).ToArray();
-                var members = new List<MemberDeclarationSyntax>();
-                foreach (var part in programParts)
-                {
-                    pendingTrivia.AddRange(part.GetLeadingTrivia());
-
-                    var nodes = part.Content().ToArray();
-                    if (pendingTrivia.Count > 0)
-                    {
-                        var firstNode = nodes.FirstOrDefault();
-                        if (firstNode != null)
-                        {
-                            nodes[0] = firstNode.WithLeadingTrivia(pendingTrivia.Concat(firstNode.GetLeadingTrivia()));
-                            pendingTrivia.Clear();
-                        }
-                    }
-
-                    pendingTrivia.AddRange(part.GetTrailingTrivia());
-                    if (pendingTrivia.Count > 0)
-                    {
-                        var lastNode = nodes.LastOrDefault();
-                        if (lastNode != null)
-                        {
-                            nodes[nodes.Length - 1] = lastNode.WithTrailingTrivia(pendingTrivia.Concat(lastNode.GetTrailingTrivia()));
-                            pendingTrivia.Clear();
-                        }
-                    }
-
-                    members.AddRange(nodes.Select(node => node.Unindented(2)));
-                }
-
-                programDeclaration = programDeclaration.WithMembers(new SyntaxList<MemberDeclarationSyntax>().AddRange(members));
-
-                var extensionDeclarations = content.Parts.OfType<ExtensionScriptPart>().OrderBy(part => part, PartComparer).Select(p => p.PartRoot.Unindented(1)).Cast<MemberDeclarationSyntax>().ToArray();
-
-                if (extensionDeclarations.Any())
-                {
-                    programDeclaration = programDeclaration
-                        .WithCloseBraceToken(
-                            programDeclaration.CloseBraceToken
-                                .WithLeadingTrivia(SyntaxFactory.EndOfLine("\n"))
-                                .WithTrailingTrivia(SyntaxFactory.EndOfLine("\n"), SyntaxFactory.EndOfLine("\n")
-                                )
-                        );
-                }
-
-                var compilationProject = solution.AddProject("__ScriptCompilationProject", "__ScriptCompilationProject.dll", LanguageNames.CSharp)
-                    .WithCompilationOptions(project.CompilationOptions)
-                    .WithMetadataReferences(project.MetadataReferences);
-
-                var unit = SyntaxFactory.CompilationUnit()
-                    .WithUsings(SyntaxFactory.List(content.UsingDirectives))
-                    .AddMembers(programDeclaration)
-                    .AddMembers(extensionDeclarations);
-
-                var document = compilationProject.AddDocument("Program.cs", unit.TransformAndAnnotate(macros));
-
-                return document;
-            }
-            catch (Exception e)
-            {
-                throw new BuildException(string.Format(Text.BuildModule_CreateProgramDocument_Error, project.FilePath), e);
-            }
-        }
-
-        async Task<ProjectContent> LoadContent(Project project, ProjectScriptInfo config)
-        {
-            try
-            {
-                var usingDirectives = ImmutableArray.CreateBuilder<UsingDirectiveSyntax>();
-                var parts = ImmutableArray.CreateBuilder<ScriptPart>();
-                var documents = project.Documents
-                    .Where(document => !IsDebugDocument(document.FilePath, config))
-                    .ToList();
-
-                var readmeDocument = project.Documents
-                    .Where(document => Path.GetDirectoryName(document.FilePath)?.Equals(Path.GetDirectoryName(project.FilePath), StringComparison.CurrentCultureIgnoreCase) ?? false)
-                    .FirstOrDefault(document => Path.GetFileNameWithoutExtension(document.FilePath).Equals("readme", StringComparison.CurrentCultureIgnoreCase));
-
-                string readme = null;
-                if (readmeDocument != null)
-                {
-                    documents.Remove(readmeDocument);
-                    readme = (await readmeDocument.GetTextAsync()).ToString().Replace("\r\n", "\n");
-                    if (!readme.EndsWith("\n"))
-                        readme += "\n";
-                }
-
-                for (var index = 0; index < documents.Count; index++)
-                {
-                    var document = documents[index];
-                    var result = await Analyzer.Analyze(document).ConfigureAwait(false);
-                    if (result == null)
-                        continue;
-                    usingDirectives.AddRange(result.UsingDirectives);
-                    parts.AddRange(result.Parts);
-                }
-
-                var comparer = new UsingDirectiveComparer();
-                return new ProjectContent(usingDirectives.Distinct(comparer).ToImmutableArray(), parts.ToImmutable(), readme);
-            }
-            catch (Exception e)
-            {
-                throw new BuildException(string.Format(Text.BuildModule_LoadContent_Error, project.FilePath), e);
-            }
-        }
-
-        bool IsDebugDocument(string filePath, ProjectScriptInfo config)
-        {
-            var fileName = Path.GetFileName(filePath);
-            if (string.IsNullOrWhiteSpace(fileName))
-                return true;
-
-            if (fileName.Contains(".NETFramework,Version="))
-                return true;
-
-            if (fileName.EndsWith(".debug", StringComparison.CurrentCultureIgnoreCase))
-                return true;
-
-            if (fileName.IndexOf(".debug.", StringComparison.CurrentCultureIgnoreCase) >= 0)
-                return true;
-
-            return config.IsIgnoredFilePath(filePath);
         }
 
         /// <summary>

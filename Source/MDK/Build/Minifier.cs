@@ -41,24 +41,6 @@ namespace MDK.Build
             return symbol.ContainingType.AllInterfaces.SelectMany(i => i.GetMembers()).Any(member => symbol.ContainingType.FindImplementationForInterfaceMember(member).Equals(symbol));
         }
 
-        bool IsSymbolDeclaration(SyntaxNode node)
-        {
-            return node is ClassDeclarationSyntax
-                   || node is PropertyDeclarationSyntax
-                   || node is EventDeclarationSyntax
-                   || node is VariableDeclaratorSyntax
-                   || node is EnumDeclarationSyntax
-                   || node is EnumMemberDeclarationSyntax
-                   || node is ConstructorDeclarationSyntax
-                   || node is DelegateDeclarationSyntax
-                   || node is MethodDeclarationSyntax
-                   || node is StructDeclarationSyntax
-                   || node is InterfaceDeclarationSyntax
-                   || node is TypeParameterSyntax
-                   || node is ParameterSyntax
-                   || node is AnonymousObjectMemberDeclaratorSyntax;
-        }
-
         /// <summary>
         /// Minification is performed in multiple steps in relation to the build process. This runs the first step.
         /// </summary>
@@ -98,7 +80,7 @@ namespace MDK.Build
             var symbolSrc = 0;
             var semanticModel = await document.GetSemanticModelAsync();
 
-            var declaredSymbols = root.DescendantNodes().Where(IsSymbolDeclaration)
+            var declaredSymbols = root.DescendantNodes().Where(node => node.IsSymbolDeclaration())
                 .Select(n => semanticModel.GetDeclaredSymbol(n))
                 .Where(s => s != null)
                 .Where(s => !protectedNames.Contains(s.Name))
@@ -120,7 +102,7 @@ namespace MDK.Build
                 semanticModel = await document.GetSemanticModelAsync();
                 root = await document.GetSyntaxRootAsync().ConfigureAwait(false);
                 var symbolNode = root.DescendantNodes()
-                    .Where(IsSymbolDeclaration)
+                    .Where(node => node.IsSymbolDeclaration())
                     .FirstOrDefault(node => node.FullSpan.Start > minStart);
                 if (symbolNode == null)
                     break;
@@ -132,21 +114,9 @@ namespace MDK.Build
                     minStart = symbolNode.FullSpan.Start;
                     continue;
                 }
-                //// If a symbol name is less than or equal to the maximum minified symbol length, just leave it
-                //if (symbol.Name.Length <= maxSymbolLength)
-                //{
-                //    minStart = symbolNode.FullSpan.Start;
-                //    continue;
-                //}
                 minStart = symbolNode.FullSpan.Start;
                 if (!minifiedSymbolNames.TryGetValue(symbol.Name, out string newName))
                     continue;
-                //if (symbol.Name.Contains("."))
-                //{
-                //    minStart = symbolNode.FullSpan.Start;
-                //    continue;
-                //}
-                //var newName = minifiedSymbolNames[symbol.Name];
                 var newSolution = await Renamer.RenameSymbolAsync(document.Project.Solution, symbol, newName, document.Project.Solution.Options);
                 document = newSolution.GetDocument(documentId);
             }

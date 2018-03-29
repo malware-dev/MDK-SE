@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -25,6 +26,18 @@ namespace MDK.Build
             var rewriter = new MdkAnnotationRewriter(macros, symbolDeclarations);
             var root = (T)rewriter.Visit(node);
             return root;
+        }
+
+        /// <summary>
+        /// Determines whether the given symbol represents an interface implementation.
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <returns></returns>
+        public static bool IsInterfaceImplementation(this ISymbol symbol)
+        {
+            if (symbol.ContainingType == null)
+                return false;
+            return symbol.ContainingType.AllInterfaces.SelectMany(i => i.GetMembers()).Any(member => symbol.ContainingType.FindImplementationForInterfaceMember(member).Equals(symbol));
         }
 
         /// <summary>
@@ -103,6 +116,44 @@ namespace MDK.Build
             return string.Join(".", ident);
         }
 
+        /// <summary>
+        /// Determines whether the given syntax node is a symbol declaration.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        public static bool IsSymbolDeclaration(this SyntaxNode node)
+        {
+            return node is ClassDeclarationSyntax
+                   || node is PropertyDeclarationSyntax
+                   || node is EventDeclarationSyntax
+                   || node is VariableDeclaratorSyntax
+                   || node is EnumDeclarationSyntax
+                   || node is EnumMemberDeclarationSyntax
+                   || node is ConstructorDeclarationSyntax
+                   || node is DelegateDeclarationSyntax
+                   || node is MethodDeclarationSyntax
+                   || node is StructDeclarationSyntax
+                   || node is InterfaceDeclarationSyntax
+                   || node is TypeParameterSyntax
+                   || node is ParameterSyntax
+                   || node is AnonymousObjectMemberDeclaratorSyntax;
+        }
+
+        /// <summary>
+        /// Determines whether the given syntax node is a symbol declaration.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        public static bool IsTypeDeclaration(this SyntaxNode node)
+        {
+            return node is ClassDeclarationSyntax
+                   || node is EnumDeclarationSyntax
+                   || node is DelegateDeclarationSyntax
+                   || node is StructDeclarationSyntax
+                   || node is InterfaceDeclarationSyntax
+                   || node is TypeParameterSyntax;
+        }
+
         class MdkAnnotationRewriter : CSharpSyntaxRewriter
         {
             static readonly char[] TagSeparators = {' '};
@@ -130,24 +181,6 @@ namespace MDK.Build
                 });
             }
 
-            bool IsSymbolDeclaration(SyntaxNode node)
-            {
-                return node is ClassDeclarationSyntax
-                       || node is PropertyDeclarationSyntax
-                       || node is EventDeclarationSyntax
-                       || node is VariableDeclaratorSyntax
-                       || node is EnumDeclarationSyntax
-                       || node is EnumMemberDeclarationSyntax
-                       || node is ConstructorDeclarationSyntax
-                       || node is DelegateDeclarationSyntax
-                       || node is MethodDeclarationSyntax
-                       || node is StructDeclarationSyntax
-                       || node is InterfaceDeclarationSyntax
-                       || node is TypeParameterSyntax
-                       || node is ParameterSyntax
-                       || node is AnonymousObjectMemberDeclaratorSyntax;
-            }
-
             public override SyntaxNode Visit(SyntaxNode node)
             {
                 node = base.Visit(node);
@@ -157,7 +190,7 @@ namespace MDK.Build
                 if (region.Annotation != null)
                     return node.WithAdditionalAnnotations(region.Annotation);
 
-                if (IsSymbolDeclaration(node))
+                if (node.IsSymbolDeclaration())
                     _symbolDeclarations.Add(node);
                 return node;
             }
