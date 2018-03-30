@@ -53,14 +53,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Build\AnalysisExtensions.cs" />
+    <Compile Include="Build\Annotations\AnnotationExtensions.cs" />
+    <Compile Include="Build\Annotations\MdkAnnotationRewriter.cs" />
     <Compile Include="Build\BuildException.cs" />
     <Compile Include="Build\BuildModule.cs" />
     <Compile Include="Build\DocumentAnalysisResult.cs" />
     <Compile Include="Build\DocumentAnalyzer.cs" />
     <Compile Include="Build\ExtensionScriptPart.cs" />
-    <Compile Include="Build\ICompositionPreprocessor.cs" />
-    <Compile Include="Build\MdkAnnotations.cs" />
     <Compile Include="Build\Minifier\MinifyingComposer.cs" />
+    <Compile Include="Build\Minifier\SimplifyingRewriter.cs" />
+    <Compile Include="Build\Minifier\SymbolRenamer.cs" />
     <Compile Include="Build\ProgramScriptPart.cs" />
     <Compile Include="Build\ProgressChangedEventArgs.cs" />
     <Compile Include="Build\ProjectContent.cs" />
@@ -70,6 +72,7 @@
     <Compile Include="Build\Solution\ProgramComposition.cs" />
     <Compile Include="Build\Solution\ProgramDocumentComposer.cs" />
     <Compile Include="Build\TypeTrimming\TypeTrimmer.cs" />
+    <Compile Include="Build\UsageAnalysis\SymbolAnalyzer.cs" />
     <Compile Include="Build\UsageAnalysis\SymbolDefinitionInfo.cs" />
     <Compile Include="Build\UsageAnalysis\UsageAnalyzer.cs" />
     <Compile Include="Build\UsingDirectiveComparer.cs" />

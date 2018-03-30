@@ -84,7 +84,7 @@
         </TextBlock>
 
         <views:ButtonBar Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="3" VerticalAlignment="Bottom">
-            <Button MinWidth="96" Margin="2,2,8,2" Command="{Binding SaveAndCloseCommand}">Close</Button>
+            <Button MinWidth="96" Margin="2,2,8,2" IsCancel="True" Command="{Binding SaveAndCloseCommand}">Close</Button>
         </views:ButtonBar>
     </Grid>
 </vs:DialogWindow>

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Malware.MDKServices;
+using MDK.Build.Annotations;
 using MDK.Resources;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -51,7 +52,7 @@ namespace MDK.Build.Solution
         {
             var content = await LoadContent(project, config).ConfigureAwait(false);
             var document = CreateProgramDocument(project, content);
-            return new ProgramComposition(document, content.Readme);
+            return await ProgramComposition.CreateAsync(document, content.Readme).ConfigureAwait(false);
         }
 
         bool IsDebugDocument(string filePath, ProjectScriptInfo config)

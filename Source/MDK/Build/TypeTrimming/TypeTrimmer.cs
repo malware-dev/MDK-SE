@@ -9,7 +9,7 @@ using Microsoft.CodeAnalysis;
 
 namespace MDK.Build.TypeTrimming
 {
-    class TypeTrimmer : ICompositionPreprocessor
+    class TypeTrimmer
     {
         public async Task<ProgramComposition> Process([NotNull] ProgramComposition composition, [NotNull] ProjectScriptInfo config)
         {
@@ -25,9 +25,8 @@ namespace MDK.Build.TypeTrimming
                 if (symbol == null)
                     break;
 
-                var rootNode = await symbol.SyntaxNode.SyntaxTree.GetRootAsync();
-                rootNode = RemoveDefinition(rootNode, symbol);
-                composition = composition.WithDocument(composition.Document.WithSyntaxRoot(rootNode));
+                var rootNode = RemoveDefinition(composition.RootNode, symbol);
+                composition = await composition.WithNewDocumentRootAsync(rootNode);
             }
 
             return composition;

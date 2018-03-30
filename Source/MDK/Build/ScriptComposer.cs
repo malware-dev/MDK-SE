@@ -1,4 +1,6 @@
 using System.Threading.Tasks;
+using Malware.MDKServices;
+using MDK.Build.Solution;
 using Microsoft.CodeAnalysis;
 
 namespace MDK.Build
@@ -11,8 +13,9 @@ namespace MDK.Build
         /// <summary>
         /// Generate a Space Engineers script file from the given document
         /// </summary>
-        /// <param name="document"></param>
+        /// <param name="composition"></param>
+        /// <param name="config"></param>
         /// <returns></returns>
-        public abstract Task<string> Generate(Document document);
+        public abstract Task<string> Generate(ProgramComposition composition, ProjectScriptInfo config);
     }
 }

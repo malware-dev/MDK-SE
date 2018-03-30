@@ -151,7 +151,7 @@ namespace MDK.Build
             }
 
             var composer = config.Minify ? (ScriptComposer)new MinifyingComposer() : new SimpleComposer();
-            var script = await ComposeScript(project, composition.Document, composer).ConfigureAwait(false);
+            var script = await ComposeScript(composition, composer, config).ConfigureAwait(false);
             Steps++;
 
             if (composition.Readme != null)
@@ -164,16 +164,16 @@ namespace MDK.Build
             return config;
         }
 
-        async Task<string> ComposeScript(Project project, Document document, ScriptComposer composer)
+        async Task<string> ComposeScript(ProgramComposition composition, ScriptComposer composer, ProjectScriptInfo config)
         {
             try
             {
-                var script = await composer.Generate(document).ConfigureAwait(false);
+                var script = await composer.Generate(composition, config).ConfigureAwait(false);
                 return script;
             }
             catch (Exception e)
             {
-                throw new BuildException(string.Format(Text.BuildModule_GenerateScript_ErrorGeneratingScript, project.FilePath), e);
+                throw new BuildException(string.Format(Text.BuildModule_GenerateScript_ErrorGeneratingScript, composition.Document.Project.FilePath), e);
             }
         }
 
