@@ -11,7 +11,7 @@ namespace MDK.Build.TypeTrimming
 {
     class TypeTrimmer
     {
-        public async Task<ProgramComposition> Process([NotNull] ProgramComposition composition, [NotNull] ProjectScriptInfo config)
+        public async Task<ProgramComposition> ProcessAsync([NotNull] ProgramComposition composition, [NotNull] ProjectScriptInfo config)
         {
             if (composition == null)
                 throw new ArgumentNullException(nameof(composition));

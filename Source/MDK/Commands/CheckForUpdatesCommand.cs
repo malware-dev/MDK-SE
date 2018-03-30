@@ -22,7 +22,7 @@ namespace MDK.Commands
         protected override async void OnExecute()
         {
             var package = (MDKPackage)Package;
-            var version = await package.CheckForUpdates(package.Options.NotifyPrereleaseUpdates);
+            var version = await package.CheckForUpdatesAsync(package.Options.NotifyPrereleaseUpdates);
             UpdateDetectedDialog.ShowDialog(new UpdateDetectedDialogModel(version));
         }
     }

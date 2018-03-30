@@ -49,6 +49,7 @@ namespace Malware.MDKServices
         /// <param name="project"></param>
         public static UnloadedProjectHandle Unload(this EnvDTE.Project project)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             var serviceProvider = new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)project.DTE);
             var solutionService = (IVsSolution)serviceProvider.GetService(typeof(SVsSolution));
             var hr = solutionService.GetProjectOfUniqueName(project.UniqueName, out IVsHierarchy projectHierarchy);
@@ -98,6 +99,7 @@ namespace Malware.MDKServices
             /// </summary>
             public void Reload()
             {
+                ThreadHelper.ThrowIfNotOnUIThread();
                 _solutionService4.ReloadProject(ref _projectGuid);
             }
         }

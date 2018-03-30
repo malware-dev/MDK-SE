@@ -31,6 +31,7 @@ namespace MDK.VisualStudio
         {
             get
             {
+                ThreadHelper.ThrowIfNotOnUIThread();
                 if (_dte == null)
                     _dte = (DTE)GetService(typeof(DTE));
                 return _dte;
@@ -62,6 +63,7 @@ namespace MDK.VisualStudio
         /// <param name="exception"></param>
         public void LogPackageError(string category, Exception exception)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (!(GetService(typeof(SVsOutputWindow)) is IVsOutputWindow outWindow))
                 throw new InvalidOperationException("Could not retrieve the Visual Studio output window");
             var generalPaneGuid = VSConstants.GUID_OutWindowGeneralPane;

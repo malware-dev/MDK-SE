@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.VisualStudio.Shell;
 
 namespace MDK.VisualStudio
 {
@@ -19,6 +20,7 @@ namespace MDK.VisualStudio
         /// <param name="serviceProvider">The Visual Studio service provider</param>
         public StatusBarProgressBar(IServiceProvider serviceProvider) : base(serviceProvider)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             StatusBar.Progress(ref _cookie, 0, "", 0, 0);
         }
 
@@ -105,6 +107,7 @@ namespace MDK.VisualStudio
 
         void Update()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (!_isEnabled && _cookie != 0)
             {
                 StatusBar.Progress(ref _cookie, 0, "", 0, 0);

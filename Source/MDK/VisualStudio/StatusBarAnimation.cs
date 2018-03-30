@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.VisualStudio.Shell;
 
 namespace MDK.VisualStudio
 {
@@ -55,6 +56,7 @@ namespace MDK.VisualStudio
             get => _isEnabled;
             set
             {
+                ThreadHelper.ThrowIfNotOnUIThread();
                 if (_isEnabled == value)
                     return;
                 _isEnabled = value;

@@ -37,6 +37,7 @@ namespace MDK.Services
         /// <inheritdoc />
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             var serviceProvider = new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)automationObject);
 
             if (!TryGetProperties(serviceProvider, out Properties props))
@@ -84,6 +85,7 @@ namespace MDK.Services
         /// <inheritdoc />
         public void ProjectFinishedGenerating(Project project)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             var serviceProvider = new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)project.DTE);
 
             if (!TryGetFinalInstallPath(serviceProvider, out string installPath))

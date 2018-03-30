@@ -22,23 +22,23 @@ namespace MDK.Build.Minifier
         /// <param name="composition"></param>
         /// <param name="config"></param>
         /// <returns></returns>
-        public override async Task<string> Generate(ProgramComposition composition, ProjectScriptInfo config)
+        public override async Task<string> GenerateAsync(ProgramComposition composition, ProjectScriptInfo config)
         {
             var simplifier = new SimplifyingRewriter();
             composition = await simplifier.ProcessAsync(composition, config);
 
             var renamer = new SymbolRenamer();
-            composition = await renamer.Process(composition, config);
+            composition = await renamer.ProcessAsync(composition, config);
 
-            return await GenerateScript(composition);
+            return await GenerateScriptAsync(composition);
         }
 
-        async Task<string> GenerateScript(ProgramComposition composition)
+        async Task<string> GenerateScriptAsync(ProgramComposition composition)
         {
             var root = composition.RootNode;
             composition = await composition.WithNewDocumentRootAsync(root);
             var analyzer = new DocumentAnalyzer();
-            var result = await analyzer.Analyze(composition.Document);
+            var result = await analyzer.AnalyzeAsync(composition.Document);
             var buffer = new StringBuilder();
 
             var programContent = string.Join("", result.Parts.OfType<ProgramScriptPart>().Select(p => p.GenerateContent()));

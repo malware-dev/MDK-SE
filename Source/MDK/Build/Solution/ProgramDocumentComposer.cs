@@ -50,7 +50,7 @@ namespace MDK.Build.Solution
         /// <returns></returns>
         public async Task<ProgramComposition> ComposeAsync(Project project, ProjectScriptInfo config)
         {
-            var content = await LoadContent(project, config).ConfigureAwait(false);
+            var content = await LoadContentAsync(project, config).ConfigureAwait(false);
             var document = CreateProgramDocument(project, content);
             return await ProgramComposition.CreateAsync(document, content.Readme).ConfigureAwait(false);
         }
@@ -73,7 +73,7 @@ namespace MDK.Build.Solution
             return config.IsIgnoredFilePath(filePath);
         }
 
-        async Task<ProjectContent> LoadContent(Project project, ProjectScriptInfo config)
+        async Task<ProjectContent> LoadContentAsync(Project project, ProjectScriptInfo config)
         {
                 var usingDirectives = ImmutableArray.CreateBuilder<UsingDirectiveSyntax>();
                 var parts = ImmutableArray.CreateBuilder<ScriptPart>();
@@ -97,7 +97,7 @@ namespace MDK.Build.Solution
                 for (var index = 0; index < documents.Count; index++)
                 {
                     var document = documents[index];
-                    var result = await _analyzer.Analyze(document).ConfigureAwait(false);
+                    var result = await _analyzer.AnalyzeAsync(document).ConfigureAwait(false);
                     if (result == null)
                         continue;
                     usingDirectives.AddRange(result.UsingDirectives);

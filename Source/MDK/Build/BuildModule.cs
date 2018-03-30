@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,10 +10,11 @@ using Malware.MDKServices;
 using MDK.Build.Minifier;
 using MDK.Build.Solution;
 using MDK.Build.TypeTrimming;
-using MDK.Build.UsageAnalysis;
 using MDK.Resources;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.MSBuild;
+using Microsoft.VisualStudio.Shell;
+using Task = System.Threading.Tasks.Task;
 
 namespace MDK.Build
 {
@@ -23,19 +23,6 @@ namespace MDK.Build
     /// </summary>
     public class BuildModule
     {
-        static async Task<ProgramComposition> ComposeDocument(Project project, ProjectScriptInfo config)
-        {
-            try
-            {
-                var documentComposer = new ProgramDocumentComposer();
-                return await documentComposer.ComposeAsync(project, config).ConfigureAwait(false);
-            }
-            catch (Exception e)
-            {
-                throw new BuildException(string.Format(Text.BuildModule_LoadContent_Error, project.FilePath), e);
-            }
-        }
-
         readonly IProgress<float> _progress;
         Project[] _scriptProjects;
         int _steps;
@@ -87,7 +74,7 @@ namespace MDK.Build
                 if (_steps == value)
                     return;
                 _steps = value;
-                SynchronizationContext.Post(o => OnProgressChanged(), null);
+                FireProgressChange();
             }
         }
 
@@ -96,16 +83,35 @@ namespace MDK.Build
         /// </summary>
         protected int TotalSteps { get; private set; }
 
+        async Task<ProgramComposition> ComposeDocumentAsync(Project project, ProjectScriptInfo config)
+        {
+            try
+            {
+                var documentComposer = new ProgramDocumentComposer();
+                return await documentComposer.ComposeAsync(project, config).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                throw new BuildException(string.Format(Text.BuildModule_LoadContent_Error, project.FilePath), e);
+            }
+        }
+
+        async void FireProgressChange()
+        {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            OnProgressChanged();
+        }
+
         /// <summary>
         /// Starts the build.
         /// </summary>
         /// <returns>The number of deployed projects</returns>
-        public Task<ProjectScriptInfo[]> Run()
+        public Task<ProjectScriptInfo[]> RunAsync()
         {
             return Task.Run(async () =>
             {
-                var scriptProjects = _scriptProjects ?? await LoadScriptProjects();
-                var builtScripts = (await Task.WhenAll(scriptProjects.Select(Build)).ConfigureAwait(false))
+                var scriptProjects = _scriptProjects ?? await LoadScriptProjectsAsync();
+                var builtScripts = (await Task.WhenAll(scriptProjects.Select(BuildAsync)).ConfigureAwait(false))
                     .Where(item => item != null)
                     .ToArray();
                 _scriptProjects = null;
@@ -113,7 +119,7 @@ namespace MDK.Build
             });
         }
 
-        async Task<Project[]> LoadScriptProjects()
+        async Task<Project[]> LoadScriptProjectsAsync()
         {
             try
             {
@@ -129,7 +135,7 @@ namespace MDK.Build
             }
         }
 
-        async Task<ProjectScriptInfo> Build(Project project)
+        async Task<ProjectScriptInfo> BuildAsync(Project project)
         {
             var config = LoadConfig(project);
             if (!config.IsValid)
@@ -141,17 +147,17 @@ namespace MDK.Build
                     return null;
             }
 
-            var composition = await ComposeDocument(project, config);
+            var composition = await ComposeDocumentAsync(project, config);
             Steps++;
 
             if (config.TrimTypes)
             {
                 var processor = new TypeTrimmer();
-                composition = await processor.Process(composition, config);
+                composition = await processor.ProcessAsync(composition, config);
             }
 
             var composer = config.Minify ? (ScriptComposer)new MinifyingComposer() : new SimpleComposer();
-            var script = await ComposeScript(composition, composer, config).ConfigureAwait(false);
+            var script = await ComposeScriptAsync(composition, composer, config).ConfigureAwait(false);
             Steps++;
 
             if (composition.Readme != null)
@@ -164,11 +170,11 @@ namespace MDK.Build
             return config;
         }
 
-        async Task<string> ComposeScript(ProgramComposition composition, ScriptComposer composer, ProjectScriptInfo config)
+        async Task<string> ComposeScriptAsync(ProgramComposition composition, ScriptComposer composer, ProjectScriptInfo config)
         {
             try
             {
-                var script = await composer.Generate(composition, config).ConfigureAwait(false);
+                var script = await composer.GenerateAsync(composition, config).ConfigureAwait(false);
                 return script;
             }
             catch (Exception e)

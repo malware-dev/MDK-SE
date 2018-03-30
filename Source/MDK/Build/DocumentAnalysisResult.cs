@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace MDK.Build
 {
     /// <summary>
-    /// Contains the results of a document analysis performed by <see cref="DocumentAnalyzer.Analyze"/>.
+    /// Contains the results of a document analysis performed by <see cref="DocumentAnalyzer.AnalyzeAsync"/>.
     /// </summary>
     public class DocumentAnalysisResult
     {

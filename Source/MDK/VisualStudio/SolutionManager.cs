@@ -1,6 +1,7 @@
 ﻿using System;
 using EnvDTE;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace MDK.VisualStudio
@@ -20,6 +21,7 @@ namespace MDK.VisualStudio
         /// <param name="serviceProvider">The package service manager</param>
         public SolutionManager(IServiceProvider serviceProvider)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             _solutionCtl = (IVsSolution)serviceProvider.GetService(typeof(SVsSolution));
             _solutionCtl.AdviseSolutionEvents(this, out _solutionEventsCookie);
         }
@@ -76,6 +78,7 @@ namespace MDK.VisualStudio
         /// <param name="disposing"><c>true</c> if this method is being called from the <see cref="Dispose()"/> method.</param>
         protected virtual void Dispose(bool disposing)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             _solutionCtl.UnadviseSolutionEvents(_solutionEventsCookie);
         }
 
@@ -84,6 +87,7 @@ namespace MDK.VisualStudio
             // I cannot rely on the fAdded argument, because it's behavior changes between normal and lightweight solution load,
             // and I need a reliable system.
 
+            ThreadHelper.ThrowIfNotOnUIThread();
             pHierarchy.GetProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_ExtObject, out object objProj);
             var project = (Project)objProj;
             if (project == null)

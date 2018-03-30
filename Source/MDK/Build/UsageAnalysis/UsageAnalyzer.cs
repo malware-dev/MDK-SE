@@ -15,12 +15,12 @@ namespace MDK.Build.UsageAnalysis
             var symbolDefinitions = _symbolAnalyzer.FindSymbols(composition, config);
 
             for (var index = 0; index < symbolDefinitions.Length; index++)
-                symbolDefinitions = symbolDefinitions.SetItem(index, await WithUsageData(symbolDefinitions[index], composition));
+                symbolDefinitions = symbolDefinitions.SetItem(index, await WithUsageDataAsync(symbolDefinitions[index], composition));
 
             return symbolDefinitions.ToImmutableArray();
         }
 
-        async Task<SymbolDefinitionInfo> WithUsageData(SymbolDefinitionInfo definition, ProgramComposition composition)
+        async Task<SymbolDefinitionInfo> WithUsageDataAsync(SymbolDefinitionInfo definition, ProgramComposition composition)
         {
             var references = (await SymbolFinder.FindReferencesAsync(definition.Symbol, composition.Document.Project.Solution))
                 .ToImmutableArray();

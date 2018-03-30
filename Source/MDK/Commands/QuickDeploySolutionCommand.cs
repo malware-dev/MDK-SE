@@ -21,7 +21,7 @@ namespace MDK.Commands
         protected override async void OnExecute()
         {
             var package = (MDKPackage)Package;
-            await package.Deploy();
+            await package.DeployAsync();
         }
     }
 }

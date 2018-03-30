@@ -7,6 +7,7 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using MDK.Resources;
 using Microsoft.VisualStudio.PlatformUI;
+using Microsoft.VisualStudio.Shell;
 
 namespace MDK.Views.BlueprintManager
 {
@@ -109,17 +110,15 @@ namespace MDK.Views.BlueprintManager
             Close();
         }
 
-        void EditBox_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        async void EditBox_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             var element = (FrameworkElement)sender;
             if (!element.IsVisible)
                 return;
-            Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
-            {
-                var textBox = (TextBox)sender;
-                textBox.SelectAll();
-                textBox.Focus();
-            }));
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            var textBox = (TextBox)sender;
+            textBox.SelectAll();
+            textBox.Focus();
         }
 
         void EditBox_OnLostFocus(object sender, RoutedEventArgs e)

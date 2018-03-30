@@ -24,7 +24,7 @@ namespace MDK.Commands
                 return;
             }
             var package = (MDKPackage)Package;
-            await package.Deploy(project);
+            await package.DeployAsync(project);
         }
     }
 }

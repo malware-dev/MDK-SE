@@ -16,6 +16,6 @@ namespace MDK.Build
         /// <param name="composition"></param>
         /// <param name="config"></param>
         /// <returns></returns>
-        public abstract Task<string> Generate(ProgramComposition composition, ProjectScriptInfo config);
+        public abstract Task<string> GenerateAsync(ProgramComposition composition, ProjectScriptInfo config);
     }
 }

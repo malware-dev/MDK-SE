@@ -24,7 +24,7 @@ namespace MDK.Build.Minifier
         }
         static readonly char[] BaseNChars = GetSymbolChars();
 
-        public async Task<ProgramComposition> Process([NotNull] ProgramComposition composition, [NotNull] ProjectScriptInfo config)
+        public async Task<ProgramComposition> ProcessAsync([NotNull] ProgramComposition composition, [NotNull] ProjectScriptInfo config)
         {
             if (composition == null)
                 throw new ArgumentNullException(nameof(composition));

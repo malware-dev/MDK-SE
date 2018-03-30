@@ -19,7 +19,7 @@ namespace MDK.Build
         /// </summary>
         /// <param name="document"></param>
         /// <returns></returns>
-        public async Task<DocumentAnalysisResult> Analyze(Document document)
+        public async Task<DocumentAnalysisResult> AnalyzeAsync(Document document)
         {
             var text = await document.GetTextAsync();
             string mdkOptions = null;

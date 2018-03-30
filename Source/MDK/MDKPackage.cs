@@ -139,12 +139,12 @@ namespace MDK
             base.Initialize();
         }
 
-        async void CheckForUpdates()
+        async void CheckForUpdatesAsync()
         {
             if (!Options.NotifyUpdates)
                 return;
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-            var version = await CheckForUpdates(Options.NotifyPrereleaseUpdates || IsPrerelease);
+            var version = await CheckForUpdatesAsync(Options.NotifyPrereleaseUpdates || IsPrerelease);
             if (version != null)
                 OnUpdateDetected(version);
         }
@@ -153,7 +153,7 @@ namespace MDK
         /// Checks the GitHub sites for any updated releases.
         /// </summary>
         /// <returns>The newest release version on GitHub, or <c>null</c> if the current version is the latest</returns>
-        public async Task<Version> CheckForUpdates(bool includePrerelease)
+        public async Task<Version> CheckForUpdatesAsync(bool includePrerelease)
         {
             try
             {
@@ -287,7 +287,7 @@ namespace MDK
             if (!_hasCheckedForUpdates)
             {
                 _hasCheckedForUpdates = true;
-                CheckForUpdates();
+                CheckForUpdatesAsync();
             }
         }
 
@@ -297,7 +297,7 @@ namespace MDK
         /// <param name="project">The specific project to build</param>
         /// <param name="nonBlocking"><c>true</c> if there should be no blocking dialogs shown during deployment. Instead, an <see cref="InvalidOperationException"/> will be thrown for the more grievous errors, while other stoppers merely return false.</param>
         /// <returns></returns>
-        public async Task<bool> Deploy(Project project = null, bool nonBlocking = false)
+        public async Task<bool> DeployAsync(Project project = null, bool nonBlocking = false)
         {
             var dte = DTE;
 
@@ -356,7 +356,7 @@ namespace MDK
                 using (new StatusBarAnimation(ServiceProvider, Animation.Deploy))
                 {
                     var buildModule = new BuildModule(this, dte.Solution.FileName, project?.FullName, statusBar);
-                    deployedScripts = await buildModule.Run();
+                    deployedScripts = await buildModule.RunAsync();
                 }
 
                 if (deployedScripts.Length > 0)

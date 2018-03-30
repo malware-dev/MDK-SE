@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace MDK.VisualStudio
@@ -14,6 +15,7 @@ namespace MDK.VisualStudio
         /// <param name="serviceProvider"></param>
         protected StatusBarUtility(IServiceProvider serviceProvider)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             StatusBar = (IVsStatusbar)serviceProvider.GetService(typeof(SVsStatusbar));
         }
 

@@ -24,10 +24,10 @@ namespace MDK.Build
         /// <param name="composition"></param>
         /// <param name="config"></param>
         /// <returns></returns>
-        public override async Task<string> Generate(ProgramComposition composition, ProjectScriptInfo config)
+        public override async Task<string> GenerateAsync(ProgramComposition composition, ProjectScriptInfo config)
         {
             var analyzer = new DocumentAnalyzer();
-            var result = await analyzer.Analyze(composition.Document);
+            var result = await analyzer.AnalyzeAsync(composition.Document);
             var buffer = new StringBuilder();
 
             var programContent =
