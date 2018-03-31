@@ -30,6 +30,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Label Grid.Column="0" Grid.Row="0" Target="{Binding ElementName=GameAssemblyFolderBox}" Margin="2">Game Binaries Path</Label>
@@ -64,8 +65,21 @@
                          SelectedFolder="{Binding OutputPath, ValidatesOnNotifyDataErrors=True}"
                          ToolTip="The path where the final ingame scripts are generated"
                          DialogTitle="Please select the script output folder" />
-        <Label Grid.Column="0" Grid.Row="2" Target="{Binding ElementName=MinifyCheckBox}" Margin="2">Minify</Label>
+
+        <Label Grid.Column="0" Grid.Row="2" Target="{Binding ElementName=TrimTypesCheckBox}" Margin="2">Trim Unused Types</Label>
         <StackPanel Grid.Column="1" Grid.Row="2" 
+                    Margin ="2,2,2,16">
+
+            <CheckBox x:Name="TrimTypesCheckBox" 
+                      Margin="2,8,2,2"
+                      HorizontalAlignment="Left"
+                      IsChecked="{Binding TrimTypes}">
+                <TextBlock TextWrapping="Wrap">Removes type definitions that are not in use.</TextBlock>
+            </CheckBox>
+        </StackPanel>
+
+        <Label Grid.Column="0" Grid.Row="3" Target="{Binding ElementName=MinifyCheckBox}" Margin="2">Minify</Label>
+        <StackPanel Grid.Column="1" Grid.Row="3" 
                     Margin ="2,2,2,16">
 
             <CheckBox x:Name="MinifyCheckBox" 
@@ -73,12 +87,12 @@
                   HorizontalAlignment="Left"
                   IsChecked="{Binding Minify}">
             <TextBlock TextWrapping="Wrap">Deployment will make your code as small as possible at the expense of readability.
-                Use only if you know your code won't fit conventionally.</TextBlock>
+                Use only if you know your code won't fit conventionally. Warning: Slow deployment.</TextBlock>
             </CheckBox>
         </StackPanel>
 
-        <Label Grid.Column="0" Grid.Row="3" Target="{Binding ElementName=PromoteCheckBox}" Margin="2">Thumbnail promotes MDK</Label>
-        <StackPanel Grid.Column="1" Grid.Row="3" 
+        <Label Grid.Column="0" Grid.Row="4" Target="{Binding ElementName=PromoteCheckBox}" Margin="2">Thumbnail promotes MDK</Label>
+        <StackPanel Grid.Column="1" Grid.Row="4" 
                     Margin="2,2,2,16">
 
             <CheckBox x:Name="PromoteCheckBox" 
@@ -90,8 +104,7 @@
             </CheckBox>
         </StackPanel>
 
-
-        <views:ButtonBar Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="4" VerticalAlignment="Bottom">
+        <views:ButtonBar Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="5" VerticalAlignment="Bottom">
             <Button IsDefault="True" MinWidth="96" Margin="2,2,8,2" Command="{Binding SaveAndCloseCommand}">Create New Project</Button>
             <Button IsCancel="True" MinWidth="96" Margin="0,2,2,2" Command="{Binding CancelCommand}">Cancel</Button>
         </views:ButtonBar>

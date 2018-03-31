@@ -1,6 +1,6 @@
 using Microsoft.CodeAnalysis;
 
-namespace MDK.Build
+namespace MDK.Build.DocumentAnalysis
 {
     /// <summary>
     /// Represents a script part which consists of an extension class; that is a class that is defined outside of the Program.

@@ -5,6 +5,7 @@
   <gamebinpath enabled="$mdkusemanualgamebinpath$">$mdkgamebinpath$</gamebinpath>
   <installpath>$mdkinstallpath$</installpath>
   <outputpath>$mdkoutputpath$</outputpath>
+  <trimtypes>$mdktrimtypes$</trimtypes>
   <minify>$mdkminify$</minify>
   <ignore>
     <folder>mdk</folder>

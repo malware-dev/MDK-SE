@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MDK.Build
+namespace MDK.Build.DocumentAnalysis
 {
     /// <summary>
     /// Compares two script parts against each other, determining their placement order.

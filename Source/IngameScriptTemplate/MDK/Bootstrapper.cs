@@ -1,6 +1,6 @@
 ﻿using Malware.MDKUtilities;
 
-namespace IngameScript.Properties
+namespace IngameScript.MDK
 {
     public class TestBootstrapper
     {
@@ -20,8 +20,8 @@ namespace IngameScript.Properties
             // your script uses from the game, since they're not available outside of the game.
 
             // Create and configure the desired program.
-            var program = MDK.CreateProgram<Program>();
-            MDK.Run(program);
+            var program = MDKFactory.CreateProgram<Program>();
+            MDKFactory.Run(program);
         }
     }
 }

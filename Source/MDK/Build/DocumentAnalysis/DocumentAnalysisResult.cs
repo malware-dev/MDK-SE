@@ -1,7 +1,7 @@
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace MDK.Build
+namespace MDK.Build.DocumentAnalysis
 {
     /// <summary>
     /// Contains the results of a document analysis performed by <see cref="DocumentAnalyzer.AnalyzeAsync"/>.

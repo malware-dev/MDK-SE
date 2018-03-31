@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace MDK.Build
+namespace MDK.Build.DocumentAnalysis
 {
     /// <summary>
     /// Represents a normal script part, which means types and members contained within the Program.
@@ -72,8 +72,16 @@ namespace MDK.Build
             // Write opening brace trailing trivia
             if (classDeclaration.OpenBraceToken.HasTrailingTrivia)
             {
-                foreach (var trivia in classDeclaration.OpenBraceToken.TrailingTrivia)
-                    buffer.Append(trivia.ToFullString());
+                var trailingTrivia = classDeclaration.OpenBraceToken.TrailingTrivia;
+
+                // Skip the whitespace and line the brace itself is on
+                var i = 0;
+                while (i < trailingTrivia.Count && trailingTrivia[i].Kind() == SyntaxKind.WhitespaceTrivia)
+                    i++;
+                if (i < trailingTrivia.Count && trailingTrivia[i].Kind() == SyntaxKind.EndOfLineTrivia)
+                    i++;
+                for (; i < trailingTrivia.Count; i++)
+                    buffer.Append(trailingTrivia[i].ToFullString());
             }
 
             // Write general content

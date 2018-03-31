@@ -7,7 +7,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Malware.MDKServices;
-using MDK.Build.Minifier;
+using MDK.Build.Composers;
+using MDK.Build.Composers.Default;
+using MDK.Build.Composers.Minifying;
 using MDK.Build.Solution;
 using MDK.Build.TypeTrimming;
 using MDK.Resources;
@@ -156,7 +158,7 @@ namespace MDK.Build
                 composition = await processor.ProcessAsync(composition, config);
             }
 
-            var composer = config.Minify ? (ScriptComposer)new MinifyingComposer() : new SimpleComposer();
+            var composer = config.Minify ? (ScriptComposer)new MinifyingComposer() : new DefaultComposer();
             var script = await ComposeScriptAsync(composition, composer, config).ConfigureAwait(false);
             Steps++;
 

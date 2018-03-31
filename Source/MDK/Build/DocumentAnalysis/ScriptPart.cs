@@ -1,7 +1,6 @@
-using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 
-namespace MDK.Build
+namespace MDK.Build.DocumentAnalysis
 {
     /// <summary>
     /// Represents a part of a script. Script parts will be evaluated and joined together during build in order to

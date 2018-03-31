@@ -27,6 +27,7 @@ namespace MDK.Services
         SpaceEngineers _spaceEngineers;
         bool _promoteMDK = true;
         bool _showBlueprintManagerOnDeploy = true;
+        bool _trimTypes;
 
         /// <summary>
         /// Creates an instance of <see cref="MDKOptions" />
@@ -125,6 +126,24 @@ namespace MDK.Services
                 _outputPath = value;
                 if (string.IsNullOrWhiteSpace(_outputPath))
                     _outputPath = _spaceEngineers.GetDataPath("IngameScripts", "local");
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Whether script projects should default to generating minified scripts.
+        /// </summary>
+        [Category("MDK/SE")]
+        [DisplayName("Trim Types")]
+        [Description("Determines whether script projects should default to removing unused type definitions. Does not affect existing projects.")]
+        public bool TrimTypes
+        {
+            get => _trimTypes;
+            set
+            {
+                if (_trimTypes == value)
+                    return;
+                _trimTypes = value;
                 OnPropertyChanged();
             }
         }

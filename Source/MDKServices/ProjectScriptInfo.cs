@@ -47,7 +47,7 @@ namespace Malware.MDKServices
                 var installPath = (string)root?.Element("installpath");
                 var outputPath = (string)root?.Element("outputpath");
                 var minify = ((string)root?.Element("minify") ?? "no").Trim().Equals("yes", StringComparison.CurrentCultureIgnoreCase);
-                var trimTypes = ((string)root?.Element("trimTypes") ?? "no").Trim().Equals("yes", StringComparison.CurrentCultureIgnoreCase);
+                var trimTypes = ((string)root?.Element("trimtypes") ?? "no").Trim().Equals("yes", StringComparison.CurrentCultureIgnoreCase);
                 string[] ignoredFolders = null;
                 string[] ignoredFiles = null;
                 var ignoreElement = root?.Element("ignore");
@@ -314,7 +314,7 @@ namespace Malware.MDKServices
                     installPathElement = root.Element("installpath");
                     outputPathElement = root.Element("outputpath");
                     minifyElement = root.Element("minify");
-                    trimTypesElement = root.Element("trimTypes");
+                    trimTypesElement = root.Element("trimtypes");
                     ignoreElement = root.Element("ignore");
                 }
 
@@ -346,7 +346,7 @@ namespace Malware.MDKServices
                 }
                 if (trimTypesElement == null)
                 {
-                    trimTypesElement = new XElement("trimTypes");
+                    trimTypesElement = new XElement("trimtypes");
                     root.Add(trimTypesElement);
                 }
                 if (ignoreElement == null && IgnoredFolders.Count > 0)

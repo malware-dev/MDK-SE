@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.VisualStudio.PlatformUI;
 
 namespace MDK.Build
 {
@@ -68,10 +69,69 @@ namespace MDK.Build
         /// <summary>
         /// Retrieves the fully qualified name of the given type declaration.
         /// </summary>
-        /// <param name="typeDeclaration"></param>
+        /// <param name="declaration"></param>
         /// <param name="flags"></param>
         /// <returns></returns>
-        public static string GetFullName(this TypeDeclarationSyntax typeDeclaration, DeclarationFullNameFlags flags = DeclarationFullNameFlags.Default)
+        public static string GetFullName(this VariableDeclaratorSyntax declaration, DeclarationFullNameFlags flags = DeclarationFullNameFlags.Default)
+        {
+            if (declaration == null)
+                return null;
+
+            var parent = declaration.Parent;
+            while (!(parent is null || parent is TypeDeclarationSyntax))
+                parent = parent.Parent;
+            var parentName = GetFullName(parent as MemberDeclarationSyntax);
+            if (parentName != null)
+                return $"{parentName}.{declaration.Identifier}";
+
+            return declaration.Identifier.ToString();
+        }
+
+        /// <summary>
+        /// Retrieves the fully qualified name of the given type declaration.
+        /// </summary>
+        /// <param name="declaration"></param>
+        /// <param name="flags"></param>
+        /// <returns></returns>
+        public static string GetFullName(this MemberDeclarationSyntax declaration, DeclarationFullNameFlags flags = DeclarationFullNameFlags.Default)
+        {
+            if (declaration == null)
+                return null;
+
+            if (declaration is TypeDeclarationSyntax typeDeclaration)
+                return GetFullNameCore(typeDeclaration, flags);
+
+            if (declaration is FieldDeclarationSyntax)
+            {
+                throw new ArgumentException("Cannot get full names of field declarations as they may contain multiple fields. Retrieve the full names of the individual variable declarators.", nameof(declaration));
+            }
+
+            if (declaration is ConstructorDeclarationSyntax constructorDeclaration)
+            {
+                var parentName = GetFullName(constructorDeclaration.Parent as MemberDeclarationSyntax);
+                if (parentName != null)
+                    return $"{parentName}..ctor";
+                return ".ctor";
+            }
+            if (declaration is MethodDeclarationSyntax methodDeclaration)
+            {
+                var parentName = GetFullName(methodDeclaration.Parent as MemberDeclarationSyntax);
+                if (parentName != null)
+                    return $"{parentName}.{methodDeclaration.Identifier}";
+                return methodDeclaration.Identifier.ToString();
+            }
+            if (declaration is EventDeclarationSyntax eventDeclaration)
+            {
+                var parentName = GetFullName(eventDeclaration.Parent as MemberDeclarationSyntax);
+                if (parentName != null)
+                    return $"{parentName}.{eventDeclaration.Identifier}";
+                return eventDeclaration.Identifier.ToString();
+            }
+
+            throw new ArgumentException("Do not understand the declaration type", nameof(declaration));
+        }
+
+        static string GetFullNameCore(TypeDeclarationSyntax typeDeclaration, DeclarationFullNameFlags flags)
         {
             var ident = new List<string>(10)
             {

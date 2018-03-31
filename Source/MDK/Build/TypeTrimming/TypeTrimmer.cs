@@ -20,7 +20,7 @@ namespace MDK.Build.TypeTrimming
             var analyzer = new UsageAnalyzer();
             while (true)
             {
-                var symbolDefinitions = await analyzer.ProcessAsync(composition, config);
+                var symbolDefinitions = await analyzer.FindUsagesAsync(composition, config);
                 var symbol = symbolDefinitions.FirstOrDefault(s => !s.IsProtected && s.SyntaxNode.IsTypeDeclaration() && HasNoUsage(s));
                 if (symbol == null)
                     break;

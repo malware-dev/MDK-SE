@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Malware.MDKServices;
 using MDK.Build.Annotations;
+using MDK.Build.DocumentAnalysis;
 using MDK.Resources;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;

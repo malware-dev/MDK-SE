@@ -18,11 +18,17 @@ namespace MDK.Build.UsageAnalysis
         /// <param name="usage"></param>
         public SymbolDefinitionInfo(ISymbol symbol, SyntaxNode syntaxNode, bool isProtected = false, ImmutableArray<ReferencedSymbol> usage = default(ImmutableArray<ReferencedSymbol>))
         {
+            FullName = symbol.GetFullName(DeclarationFullNameFlags.WithoutNamespaceName);
             Symbol = symbol;
             SyntaxNode = syntaxNode;
             IsProtected = isProtected;
             Usage = usage;
         }
+
+        /// <summary>
+        /// The name of this symbol (no namespace, but includes nested type parents)
+        /// </summary>
+        public string FullName { get; }
 
         /// <summary>
         /// The defined symbol 

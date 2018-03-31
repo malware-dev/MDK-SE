@@ -1,5 +1,4 @@
-﻿using System;
-using MDK.Resources;
+﻿using MDK.Resources;
 
 namespace MDK.Views.Wizard
 {
@@ -12,6 +11,7 @@ namespace MDK.Views.Wizard
         string _outputPath;
         bool _minify;
         bool _promoteMDK;
+        bool _trimTypes;
 
         /// <summary>
         /// Creates a new instance of <see cref="NewScriptWizardDialogModel"/>
@@ -37,6 +37,7 @@ namespace MDK.Views.Wizard
                     AddError(nameof(GameBinPath), Text.NewScriptWizardDialogModel_GameBinPath_GameBinariesRequired);
                     return;
                 }
+
                 if (value == _gameBinPath)
                     return;
                 _gameBinPath = value.TrimEnd('\\');
@@ -59,9 +60,25 @@ namespace MDK.Views.Wizard
                     AddError(nameof(OutputPath), Text.NewScriptWizardDialogModel_OutputPath_OutputPathRequired);
                     return;
                 }
+
                 if (value == _outputPath)
                     return;
                 _outputPath = value.TrimEnd('\\');
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Whether unused type definitions will be removed from the script
+        /// </summary>
+        public bool TrimTypes
+        {
+            get => _trimTypes;
+            set
+            {
+                if (value == _trimTypes)
+                    return;
+                _trimTypes = value;
                 OnPropertyChanged();
             }
         }

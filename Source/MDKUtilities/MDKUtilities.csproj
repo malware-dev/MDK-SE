@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MDKFactory.cs" />
     <Compile Include="MDKUtilityFramework.cs" />
     <Compile Include="MDK.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

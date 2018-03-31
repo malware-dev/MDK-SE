@@ -1,14 +1,16 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Malware.MDKServices;
+using MDK.Build.DocumentAnalysis;
 using MDK.Build.Solution;
 using MDK.Build.UsageAnalysis;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Simplification;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.FindSymbols;
 
-namespace MDK.Build.Minifier
+namespace MDK.Build.Composers.Minifying
 {
     /// <summary>
     /// A composer which attempts to fit the given script into as small a space as possible.
@@ -24,11 +26,19 @@ namespace MDK.Build.Minifier
         /// <returns></returns>
         public override async Task<string> GenerateAsync(ProgramComposition composition, ProjectScriptInfo config)
         {
-            var simplifier = new SimplifyingRewriter();
+            var simplifier = new CodeSimplifier();
             composition = await simplifier.ProcessAsync(composition, config);
 
             var renamer = new SymbolRenamer();
             composition = await renamer.ProcessAsync(composition, config);
+
+            var compactor = new WhitespaceCompactor();
+            composition = await compactor.ProcessAsync(composition, config);
+
+            var lineWrapper = new LineWrapper();
+            composition = await lineWrapper.ProcessAsync(composition, config);
+
+            // return (await composition.Document.GetTextAsync()).ToString();
 
             return await GenerateScriptAsync(composition);
         }
@@ -50,8 +60,9 @@ namespace MDK.Build.Minifier
                 // and removing the final ending brace of the last extension class to let Space Engineers close it 
                 // for itself.
 
-                // Close off the Program class
-                buffer.Append("}");
+                // Close off the Program class. Unfortunately we do need a newline because the whitespace compactor 
+                // can't properly deal with the separation.
+                buffer.Append("\n}");
                 buffer.Append(extensionContent);
                 // Remove the ending brace of the last extension class
                 var index = FindEndBrace(buffer);
@@ -59,7 +70,7 @@ namespace MDK.Build.Minifier
                     buffer.Length = index;
             }
 
-            return buffer.ToString();
+            return TrimPointlessWhitespace(buffer.ToString());
         }
 
         int FindEndBrace(StringBuilder buffer)
@@ -71,6 +82,7 @@ namespace MDK.Build.Minifier
                     continue;
                 return i;
             }
+
             return -1;
         }
     }

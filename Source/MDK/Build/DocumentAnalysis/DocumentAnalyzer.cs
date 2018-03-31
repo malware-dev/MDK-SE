@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -7,7 +8,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace MDK.Build
+namespace MDK.Build.DocumentAnalysis
 {
     /// <summary>
     /// Analyses a document, finding <see cref="ScriptPart"/> and other useful information related to a build operation.
@@ -108,10 +109,44 @@ namespace MDK.Build
             public override void VisitClassDeclaration(ClassDeclarationSyntax node)
             {
                 if (node.GetFullName(DeclarationFullNameFlags.WithoutNamespaceName) == "Program")
-                    _parts.Add(new ProgramScriptPart(_document, node, _sortWeight));
+                    _parts.Add(new ProgramScriptPart(_document, MoveBraceTrivia(node), _sortWeight));
                 else
                     _parts.Add(new ExtensionScriptPart(_document, node, _sortWeight));
                 _sortWeight++;
+            }
+
+            ClassDeclarationSyntax MoveBraceTrivia(ClassDeclarationSyntax node)
+            {
+                // If there is some node to move the brace trivia to, do so in order
+                // to have it treated correctly by the composers. Otherwise it doesn't
+                // matter.
+                var firstChild = node.ChildNodes().FirstOrDefault();
+                if (firstChild != null)
+                {
+                    var trailingTrivia = node.OpenBraceToken.TrailingTrivia;
+
+                    // Skip the whitespace and line the brace itself is on
+                    var i = 0;
+                    while (i < trailingTrivia.Count && trailingTrivia[i].Kind() == SyntaxKind.WhitespaceTrivia)
+                        i++;
+                    if (i < trailingTrivia.Count && trailingTrivia[i].Kind() == SyntaxKind.EndOfLineTrivia)
+                        i++;
+                    node = node.WithOpenBraceToken(node.OpenBraceToken.WithTrailingTrivia());
+                    if (i < trailingTrivia.Count)
+                    {
+                        node = node.ReplaceNode(firstChild, firstChild.WithLeadingTrivia(firstChild.GetLeadingTrivia().InsertRange(0, trailingTrivia.Skip(i))));
+                    }
+                }
+
+                var lastChild = node.ChildNodes().LastOrDefault();
+                if (lastChild != null)
+                {
+                    var leadingTrivia = node.CloseBraceToken.LeadingTrivia;
+                    node = node.WithCloseBraceToken(node.CloseBraceToken.WithLeadingTrivia());
+                    node = node.ReplaceNode(lastChild, lastChild.WithTrailingTrivia(lastChild.GetTrailingTrivia().AddRange(leadingTrivia)));
+                }
+
+                return node;
             }
         }
     }

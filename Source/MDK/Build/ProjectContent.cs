@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using MDK.Build.DocumentAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MDK.Build

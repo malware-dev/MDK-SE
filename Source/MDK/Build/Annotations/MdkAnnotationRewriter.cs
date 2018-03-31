@@ -55,7 +55,7 @@ namespace MDK.Build.Annotations
             var region = _stack.Peek();
             if (token.IsKind(SyntaxKind.StringLiteralToken) && region.ExpandsMacros)
             {
-                token = SyntaxFactory.Literal(ReplaceMacros(token.Text));
+                token = SyntaxFactory.Literal(ReplaceMacros(token.ValueText));
             }
 
             if (region.Annotation != null)

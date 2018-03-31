@@ -8,7 +8,7 @@ using MDK.Build.Solution;
 using MDK.Build.UsageAnalysis;
 using Microsoft.CodeAnalysis.Rename;
 
-namespace MDK.Build.Minifier
+namespace MDK.Build.Composers.Minifying
 {
     class SymbolRenamer
     {
