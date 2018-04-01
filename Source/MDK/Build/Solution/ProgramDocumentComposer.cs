@@ -122,7 +122,7 @@ namespace MDK.Build.Solution
                             SyntaxFactory.SeparatedList<BaseTypeSyntax>()
                                 .Add(SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName("MyGridProgram"))
                                 )))
-                        .NormalizeWhitespace();
+                        .NormalizeWhitespace("", "\n");
                 var pendingTrivia = new List<SyntaxTrivia>();
                 var programParts = content.Parts.OfType<ProgramScriptPart>().OrderBy(part => part, _partComparer).ToArray();
                 var members = new List<MemberDeclarationSyntax>();
