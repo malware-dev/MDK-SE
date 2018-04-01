@@ -13,16 +13,18 @@
     TextOptions.TextFormattingMode="Display"
     TextOptions.TextHintingMode="Auto"
     TextOptions.TextRenderingMode="Auto"
-    Title="Script Blueprint Manager" 
+    Title="Script Blueprint Manager"
     MinWidth="100"
     MinHeight="100"
-    Width="500" 
+    Width="500"
     Height="400">
-    
+
     <vs:DialogWindow.Resources>
         <views:ToBooleanConverter x:Key="converters/toBoolean" />
-        <views:BooleanVisibilityConverter x:Key="converters/visibility" TrueVisibility="Visible" FalseVisibility="Collapsed"/>
-        <views:BooleanVisibilityConverter x:Key="converters/inverseVisibility" TrueVisibility="Collapsed" FalseVisibility="Visible"/>
+        <views:BooleanVisibilityConverter x:Key="converters/visibility" TrueVisibility="Visible"
+                                          FalseVisibility="Collapsed" />
+        <views:BooleanVisibilityConverter x:Key="converters/inverseVisibility" TrueVisibility="Collapsed"
+                                          FalseVisibility="Visible" />
     </vs:DialogWindow.Resources>
 
     <Grid x:Name="Host" Margin="16"
@@ -37,12 +39,18 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBlock Margin="0,0,0,8" TextWrapping="Wrap" Text="{Binding CustomDescription}" Visibility="{Binding CustomDescription, Converter={StaticResource converters/visibility}}" />
+        <TextBlock Margin="0,0,0,8" TextWrapping="Wrap" Text="{Binding CustomDescription}"
+                   Visibility="{Binding CustomDescription, Converter={StaticResource converters/visibility}}" />
         <ListBox x:Name="blueprintsListBox" Grid.Column="0" Grid.Row="1"
                  ItemsSource="{Binding Blueprints}" SelectedItem="{Binding SelectedBlueprint}" SelectionMode="Single"
                  HorizontalContentAlignment="Stretch">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                    <Setter Property="Padding" Value="1" />
+                </Style>
+            </ListBox.ItemContainerStyle>
             <ListBox.InputBindings>
-                <KeyBinding Key="C" Modifiers="Control" Command="{Binding CopyToClipboardCommand}"/>
+                <KeyBinding Key="C" Modifiers="Control" Command="{Binding CopyToClipboardCommand}" />
             </ListBox.InputBindings>
             <ListBox.ItemTemplate>
                 <DataTemplate>
@@ -51,27 +59,33 @@
                             <ColumnDefinition Width="48" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <Image Grid.Column="0" Width="32" Height="20" Margin="0,2,16,2" Stretch="Uniform"
+                        <Image Grid.Column="0" Width="32" Height="20" Margin="3,2,16,2" Stretch="Uniform"
                                Source="{Binding Thumbnail}"
                                RenderOptions.BitmapScalingMode="HighQuality" VerticalAlignment="Center" />
-                        <TextBox Visibility="{Binding IsBeingEdited, Converter={StaticResource converters/visibility}}" 
-                                 Grid.Column="1" x:Name="editBox" Text="{Binding EditedName, UpdateSourceTrigger=LostFocus, NotifyOnValidationError=True}" 
+                        <TextBox Visibility="{Binding IsBeingEdited, Converter={StaticResource converters/visibility}}"
+                                 Margin="0,0,3,0"
+                                 Grid.Column="1" x:Name="editBox"
+                                 Text="{Binding EditedName, UpdateSourceTrigger=LostFocus, NotifyOnValidationError=True}"
                                  HorizontalAlignment="Stretch" VerticalAlignment="Center"
                                  IsVisibleChanged="EditBox_OnIsVisibleChanged"
                                  LostFocus="EditBox_OnLostFocus"
-                                 KeyDown="EditBox_OnKeyDown"/>
-                        <TextBlock Visibility="{Binding IsBeingEdited, Converter={StaticResource converters/inverseVisibility}}" Margin="3,1,0,0" Grid.Column="1" x:Name="name" Text="{Binding Name}" VerticalAlignment="Center"/>
-                        </Grid>
+                                 KeyDown="EditBox_OnKeyDown" />
+                        <TextBlock
+                            Visibility="{Binding IsBeingEdited, Converter={StaticResource converters/inverseVisibility}}"
+                            Margin="3,1,3,0" Grid.Column="1" x:Name="name" Text="{Binding Name}"
+                            VerticalAlignment="Center" />
+                    </Grid>
                     <DataTemplate.Triggers>
                         <DataTrigger Binding="{Binding IsSignificant}" Value="True">
                             <Setter TargetName="name" Property="FontWeight" Value="Bold" />
-                            <Setter TargetName="container" Property="Background" Value="{StaticResource {x:Static SystemColors.InfoBrushKey}}" />
+                            <Setter TargetName="container" Property="Background"
+                                    Value="{StaticResource {x:Static SystemColors.InfoBrushKey}}" />
                         </DataTrigger>
                     </DataTemplate.Triggers>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        
+
         <StackPanel Grid.Column="1" Grid.Row="1" Margin="8,0,0,0" Width="96">
             <Button Margin="0,0,0,8" Command="{Binding RenameCommand}">_Rename</Button>
             <Button Margin="0,0,0,8" Command="{Binding DeleteCommand}">_Delete</Button>
