@@ -76,37 +76,37 @@ namespace MDK.Build.Solution
 
         async Task<ProjectContent> LoadContentAsync(Project project, ProjectScriptInfo config)
         {
-                var usingDirectives = ImmutableArray.CreateBuilder<UsingDirectiveSyntax>();
-                var parts = ImmutableArray.CreateBuilder<ScriptPart>();
-                var documents = project.Documents
-                    .Where(document => !IsDebugDocument(document.FilePath, config))
-                    .ToList();
+            var usingDirectives = ImmutableArray.CreateBuilder<UsingDirectiveSyntax>();
+            var parts = ImmutableArray.CreateBuilder<ScriptPart>();
+            var documents = project.Documents
+                .Where(document => !IsDebugDocument(document.FilePath, config))
+                .ToList();
 
-                var readmeDocument = project.Documents
-                    .Where(document => DirectoryOf(document)?.Equals(Path.GetDirectoryName(project.FilePath), StringComparison.CurrentCultureIgnoreCase) ?? false)
-                    .FirstOrDefault(document => NameOf(document).Equals("readme", StringComparison.CurrentCultureIgnoreCase));
+            var readmeDocument = project.Documents
+                .Where(document => DirectoryOf(document)?.Equals(Path.GetDirectoryName(project.FilePath), StringComparison.CurrentCultureIgnoreCase) ?? false)
+                .FirstOrDefault(document => NameOf(document).Equals("readme", StringComparison.CurrentCultureIgnoreCase));
 
-                string readme = null;
-                if (readmeDocument != null)
-                {
-                    documents.Remove(readmeDocument);
-                    readme = (await readmeDocument.GetTextAsync()).ToString().Replace("\r\n", "\n");
-                    if (!readme.EndsWith("\n"))
-                        readme += "\n";
-                }
+            string readme = null;
+            if (readmeDocument != null)
+            {
+                documents.Remove(readmeDocument);
+                readme = (await readmeDocument.GetTextAsync()).ToString().Replace("\r\n", "\n");
+                if (!readme.EndsWith("\n"))
+                    readme += "\n";
+            }
 
-                for (var index = 0; index < documents.Count; index++)
-                {
-                    var document = documents[index];
-                    var result = await _analyzer.AnalyzeAsync(document).ConfigureAwait(false);
-                    if (result == null)
-                        continue;
-                    usingDirectives.AddRange(result.UsingDirectives);
-                    parts.AddRange(result.Parts);
-                }
+            for (var index = 0; index < documents.Count; index++)
+            {
+                var document = documents[index];
+                var result = await _analyzer.AnalyzeAndTransformAsync(document, Macros).ConfigureAwait(false);
+                if (result == null)
+                    continue;
+                usingDirectives.AddRange(result.UsingDirectives);
+                parts.AddRange(result.Parts);
+            }
 
-                var comparer = new UsingDirectiveComparer();
-                return new ProjectContent(usingDirectives.Distinct(comparer).ToImmutableArray(), parts.ToImmutable(), readme);
+            var comparer = new UsingDirectiveComparer();
+            return new ProjectContent(usingDirectives.Distinct(comparer).ToImmutableArray(), parts.ToImmutable(), readme);
         }
 
         Document CreateProgramDocument(Project project, ProjectContent content)
@@ -123,6 +123,7 @@ namespace MDK.Build.Solution
                                 .Add(SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName("MyGridProgram"))
                                 )))
                         .NormalizeWhitespace("", "\n");
+
                 var pendingTrivia = new List<SyntaxTrivia>();
                 var programParts = content.Parts.OfType<ProgramScriptPart>().OrderBy(part => part, _partComparer).ToArray();
                 var members = new List<MemberDeclarationSyntax>();
@@ -157,7 +158,13 @@ namespace MDK.Build.Solution
 
                 programDeclaration = programDeclaration.WithMembers(new SyntaxList<MemberDeclarationSyntax>().AddRange(members));
 
-                var extensionDeclarations = content.Parts.OfType<ExtensionScriptPart>().OrderBy(part => part, _partComparer).Select(p => p.PartRoot.Unindented(1)).Cast<MemberDeclarationSyntax>().ToArray();
+                var extensionDeclarations = content.Parts
+                    .OfType<ExtensionScriptPart>()
+                    .OrderBy(part => part, _partComparer)
+                    .Select(p => p.PartRoot
+                        .Unindented(1))
+                    .Cast<MemberDeclarationSyntax>()
+                    .ToArray();
 
                 if (extensionDeclarations.Any())
                 {
@@ -179,9 +186,7 @@ namespace MDK.Build.Solution
                     .AddMembers(programDeclaration)
                     .AddMembers(extensionDeclarations);
 
-                var document = compilationProject.AddDocument("Program.cs", unit.TransformAndAnnotate(Macros));
-
-                return document;
+                return compilationProject.AddDocument("Program.cs", unit);
             }
             catch (Exception e)
             {

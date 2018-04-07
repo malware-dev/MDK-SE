@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace MDK.Build
 {
     /// <summary>
-    /// Flags altering the behavior of <see cref="AnalysisExtensions.GetFullName(ISymbol, DeclarationFullNameFlags)"/> and <see cref="AnalysisExtensions.GetFullName(TypeDeclarationSyntax, DeclarationFullNameFlags)"/>
+    /// Flags altering the behavior of <see cref="AnalysisExtensions.GetFullName(ISymbol, DeclarationFullNameFlags)"/> and <see cref="AnalysisExtensions.GetFullName(MemberDeclarationSyntax, DeclarationFullNameFlags)"/>
     /// </summary>
     [Flags]
     public enum DeclarationFullNameFlags

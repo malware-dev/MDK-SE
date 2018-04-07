@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using JetBrains.Annotations;
+using MDK.Build.Annotations;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -16,11 +19,21 @@ namespace MDK.Build.DocumentAnalysis
     public class DocumentAnalyzer
     {
         /// <summary>
-        /// Analyse the given document
+        /// Analyse the given document, then also transform macros and annotate with MDK annotations.
         /// </summary>
         /// <param name="document"></param>
+        /// <param name="macros"></param>
         /// <returns></returns>
-        public async Task<DocumentAnalysisResult> AnalyzeAsync(Document document)
+        public async Task<DocumentAnalysisResult> AnalyzeAndTransformAsync([NotNull] Document document, [NotNull] Dictionary<string, string> macros)
+        {
+            if (document == null)
+                throw new ArgumentNullException(nameof(document));
+            if (macros == null)
+                throw new ArgumentNullException(nameof(macros));
+            return await AnalyseCoreAsync(document, macros);
+        }
+
+        async Task<DocumentAnalysisResult> AnalyseCoreAsync(Document document, Dictionary<string, string> macros)
         {
             var text = await document.GetTextAsync();
             string mdkOptions = null;
@@ -55,9 +68,23 @@ namespace MDK.Build.DocumentAnalysis
             var parts = ImmutableArray.CreateBuilder<ScriptPart>();
             var usings = ImmutableArray.CreateBuilder<UsingDirectiveSyntax>();
             var root = await document.GetSyntaxRootAsync().ConfigureAwait(false);
+            if (macros != null)
+                root = root.TransformAndAnnotate(macros);
             var walker = new Walker(sortWeight, document, parts, usings);
             walker.Visit(root);
             return new DocumentAnalysisResult(parts.ToImmutable(), usings.ToImmutable());
+        }
+
+        /// <summary>
+        /// Analyse the given document
+        /// </summary>
+        /// <param name="document"></param>
+        /// <returns></returns>
+        public Task<DocumentAnalysisResult> AnalyzeAsync([NotNull] Document document)
+        {
+            if (document == null)
+                throw new ArgumentNullException(nameof(document));
+            return AnalyseCoreAsync(document, null);
         }
 
         class Walker : CSharpSyntaxWalker
