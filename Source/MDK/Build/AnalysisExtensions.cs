@@ -23,7 +23,12 @@ namespace MDK.Build
         {
             if (symbol.ContainingType == null)
                 return false;
-            return symbol.ContainingType.AllInterfaces.SelectMany(i => i.GetMembers()).Any(member => symbol.ContainingType.FindImplementationForInterfaceMember(member).Equals(symbol));
+            return symbol.ContainingType.AllInterfaces.SelectMany(i => i.GetMembers())
+                .Any(member =>
+                {
+                    var implementation = symbol.ContainingType.FindImplementationForInterfaceMember(member);
+                    return implementation != null && implementation.Equals(symbol);
+                });
         }
 
         /// <summary>
