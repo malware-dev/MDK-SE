@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
@@ -82,17 +84,28 @@ namespace MDK.VisualStudio
             _solutionCtl.UnadviseSolutionEvents(_solutionEventsCookie);
         }
 
+        ConcurrentQueue<Action> _recordedEvents = new ConcurrentQueue<Action>();
+        bool _recordEvents = false;
+
         int IVsSolutionEvents.OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)
         {
             // I cannot rely on the fAdded argument, because it's behavior changes between normal and lightweight solution load,
             // and I need a reliable system.
 
             ThreadHelper.ThrowIfNotOnUIThread();
+
             pHierarchy.GetProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_ExtObject, out object objProj);
             var project = (Project)objProj;
             if (project == null)
                 return VSConstants.S_OK;
-            OnProjectLoaded((Project)objProj, Status != SolutionStatus.Loading);
+
+            void raiseEvent() => OnProjectLoaded((Project)objProj, Status != SolutionStatus.Loading);
+
+            if (_recordEvents)
+                _recordedEvents.Enqueue(raiseEvent);
+            else
+                raiseEvent();
+
             return VSConstants.S_OK;
         }
 
@@ -133,19 +146,37 @@ namespace MDK.VisualStudio
 
         int IVsSolutionEvents.OnBeforeCloseSolution(object pUnkReserved)
         {
-            OnSolutionClosing();
+            void raiseEvent() => OnSolutionClosing();
+
+            if (_recordEvents)
+                _recordedEvents.Enqueue(raiseEvent);
+            else
+                raiseEvent();
+
             return VSConstants.S_OK;
         }
 
         int IVsSolutionEvents.OnAfterCloseSolution(object pUnkReserved)
         {
-            OnSolutionClosed();
+            void raiseEvent() => OnSolutionClosed();
+
+            if (_recordEvents)
+                _recordedEvents.Enqueue(raiseEvent);
+            else
+                raiseEvent();
+
             return VSConstants.S_OK;
         }
 
         int IVsSolutionLoadEvents.OnBeforeOpenSolution(string pszSolutionFilename)
         {
-            OnSolutionLoading();
+            void raiseEvent() => OnSolutionLoading();
+
+            if (_recordEvents)
+                _recordedEvents.Enqueue(raiseEvent);
+            else
+                raiseEvent();
+
             return VSConstants.S_OK;
         }
 
@@ -172,7 +203,13 @@ namespace MDK.VisualStudio
 
         int IVsSolutionLoadEvents.OnAfterBackgroundSolutionLoadComplete()
         {
-            OnSolutionLoaded();
+            void raiseEvent() => OnSolutionLoaded();
+
+            if (_recordEvents)
+                _recordedEvents.Enqueue(raiseEvent);
+            else
+                raiseEvent();
+
             return VSConstants.S_OK;
         }
 
@@ -220,6 +257,37 @@ namespace MDK.VisualStudio
         protected virtual void OnProjectLoaded(Project project, bool isStandalone)
         {
             ProjectLoaded?.Invoke(this, new ProjectLoadedEventArgs(project, isStandalone));
+        }
+
+        /// <summary>
+        /// Begins suppressing and recording all incoming events for later playback.
+        /// </summary>
+        public void BeginRecording()
+        {
+            _recordEvents = true;
+        }
+
+        /// <summary>
+        /// Ends suppression and recording of all incoming events.
+        /// </summary>
+        /// <param name="playback">If <c>true</c>, playback all events immediately. Otherwise the queue remains filled for later manual playback.</param>
+        public void EndRecording(bool playback = true)
+        {
+            _recordEvents = false;
+            if (playback)
+                Playback();
+        }
+        
+        /// <summary>
+        /// Plays back all recorded events.
+        /// </summary>
+        public void Playback()
+        {
+            while (!_recordedEvents.IsEmpty)
+            {
+                if (_recordedEvents.TryDequeue(out var action))
+                    action();
+            }
         }
     }
 }

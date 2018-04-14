@@ -33,6 +33,7 @@ namespace MDK
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     [ProvideOptionPage(typeof(MDKOptions), "MDK/SE", "Options", 0, 0, true)]
 //    [ProvideAutoLoad(UIContextGuids80.NoSolution)]
+    [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionOpening_string)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.ShellInitialized_string)]
     public sealed partial class MDKPackage : ExtendedPackage
     {
@@ -120,6 +121,12 @@ namespace MDK
         /// </summary>
         protected override void Initialize()
         {
+            _solutionManager = new SolutionManager(this);
+            _solutionManager.BeginRecording();
+            _solutionManager.ProjectLoaded += OnProjectLoaded;
+            _solutionManager.SolutionLoaded += OnSolutionLoaded;
+            _solutionManager.SolutionClosed += OnSolutionClosed;
+
             // Make sure the dialog page is loaded, since the options are needed in other threads and not preloading it 
             // here will cause a threading exception.
             GetDialogPage(typeof(MDKOptions));
@@ -191,10 +198,7 @@ namespace MDK
 
         void OnShellActivated()
         {
-            _solutionManager = new SolutionManager(this);
-            _solutionManager.ProjectLoaded += OnProjectLoaded;
-            _solutionManager.SolutionLoaded += OnSolutionLoaded;
-            _solutionManager.SolutionClosed += OnSolutionClosed; 
+            _solutionManager.EndRecording();
         }
 
         private void OnSolutionClosed(object sender, EventArgs e)
