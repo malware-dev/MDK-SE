@@ -10,6 +10,31 @@ namespace MDK
 {
     static class SyntaxDumperExtensions
     {
+        public static void Dump(this SyntaxNode node, bool withTrivia = false)
+        {
+            var writer = new StringWriter();
+            node.Dump(writer);
+            writer.Flush();
+            Debug.Write(writer.ToString());
+        }
+
+        public static void Dump(this SyntaxNode node, [NotNull] TextWriter writer, bool withTrivia = false)
+        {
+            if (writer == null)
+                throw new ArgumentNullException(nameof(writer));
+            var dumper = new SyntaxDumper(writer, withTrivia);
+            dumper.Visit(node);
+        }
+
+        public static void Dump(this SyntaxNode node, [NotNull] StringBuilder stringBuilder, bool withTrivia = false)
+        {
+            if (stringBuilder == null)
+                throw new ArgumentNullException(nameof(stringBuilder));
+            var writer = new StringBuilderWriter(stringBuilder);
+            node.Dump(writer, withTrivia);
+            writer.Flush();
+        }
+
         class StringBuilderWriter : TextWriter
         {
             readonly StringBuilder _stringBuilder;
@@ -22,31 +47,6 @@ namespace MDK
             public override Encoding Encoding => Encoding.Unicode;
 
             public override void Write(char value) => _stringBuilder.Append(value);
-        }
-
-        public static void Dump(this SyntaxNode node)
-        {
-            var writer = new StringWriter();
-            node.Dump(writer);
-            writer.Flush();
-            Debug.Write(writer.ToString());
-        }
-
-        public static void Dump(this SyntaxNode node, [NotNull] TextWriter writer)
-        {
-            if (writer == null)
-                throw new ArgumentNullException(nameof(writer));
-            var dumper = new SyntaxDumper(writer);
-            dumper.Visit(node);
-        }
-
-        public static void Dump(this SyntaxNode node, [NotNull] StringBuilder stringBuilder)
-        {
-            if (stringBuilder == null)
-                throw new ArgumentNullException(nameof(stringBuilder));
-            var writer = new StringBuilderWriter(stringBuilder);
-            node.Dump(writer);
-            writer.Flush();
         }
     }
 
@@ -104,22 +104,29 @@ namespace MDK
         }
 
         readonly TextWriter _writer;
+        readonly bool _withTrivia;
         int _indent;
 
-        public SyntaxDumper(TextWriter writer) : base(SyntaxWalkerDepth.Node)
+        public SyntaxDumper(TextWriter writer, bool withTrivia) : base(SyntaxWalkerDepth.Node)
         {
             _writer = writer;
+            _withTrivia = withTrivia;
         }
 
         public override void Visit(SyntaxNode node)
         {
             var indent = new string(' ', _indent * 2);
-            _writer.WriteLine($"{indent}{{");
-            foreach (var annotation in node.GetAnnotations("MDK"))
-                _writer.WriteLine($"{indent}  [{annotation.Kind} {annotation.Data}]");
+            if (_withTrivia)
+            {
+                _writer.WriteLine($"{indent}{{");
+                foreach (var annotation in node.GetAnnotations("MDK"))
+                    _writer.WriteLine($"{indent}  [{annotation.Kind} {annotation.Data}]");
+            }
+
             _writer.WriteLine($"{indent}  {node.Kind()}");
+
             _indent++;
-            if (node.HasLeadingTrivia)
+            if (node.HasLeadingTrivia && _withTrivia)
             {
                 _writer.WriteLine($"{indent}  [>>");
                 var trivia = node.GetLeadingTrivia();
@@ -127,9 +134,10 @@ namespace MDK
                 {
                     VisitTrivia(item);
                 }
+
                 _writer.WriteLine($"{indent}  >>]");
             }
-            else if (node.HasTrailingTrivia)
+            else if (node.HasTrailingTrivia && _withTrivia)
             {
                 _writer.WriteLine($"{indent}  [<<");
                 var trivia = node.GetTrailingTrivia();
@@ -137,8 +145,10 @@ namespace MDK
                 {
                     VisitTrivia(item);
                 }
+
                 _writer.WriteLine($"{indent}  <<]");
             }
+
             base.Visit(node);
             _indent--;
             _writer.WriteLine($"{indent}}}");
@@ -146,6 +156,8 @@ namespace MDK
 
         public override void VisitTrivia(SyntaxTrivia trivia)
         {
+            if (!_withTrivia)
+                return;
             var indent = new string(' ', _indent * 4);
             if (IsInterestingTrivia(trivia.Kind()))
             {
@@ -155,6 +167,7 @@ namespace MDK
                 _writer.WriteLine($"{indent}  {trivia.Kind()}");
                 _indent++;
             }
+
             base.VisitTrivia(trivia);
             if (IsInterestingTrivia(trivia.Kind()))
             {

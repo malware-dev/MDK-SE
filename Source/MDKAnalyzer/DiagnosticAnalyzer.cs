@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.ComTypes;
@@ -88,6 +89,10 @@ namespace Malware.MDKAnalyzer
                 SyntaxKind.QualifiedName,
                 SyntaxKind.GenericName,
                 SyntaxKind.IdentifierName);
+            context.RegisterSyntaxNodeAction(AnalyzeDeclaration,
+                SyntaxKind.PropertyDeclaration,
+                SyntaxKind.VariableDeclaration,
+                SyntaxKind.Parameter);
             context.RegisterSyntaxNodeAction(AnalyzeNamespace,
                 SyntaxKind.ClassDeclaration);
         }
@@ -152,6 +157,46 @@ namespace Malware.MDKAnalyzer
             catch (Exception)
             {
                 return false;
+            }
+        }
+
+        void AnalyzeDeclaration(SyntaxNodeAnalysisContext context)
+        {
+            var node = context.Node;
+            if (IsIgnorableNode(context))
+                return;
+
+            if (!_whitelist.IsEnabled)
+            {
+                var diagnostic = Diagnostic.Create(NoOptionsRule, context.SemanticModel.SyntaxTree.GetRoot().GetLocation());
+                context.ReportDiagnostic(diagnostic);
+                return;
+            }
+
+            IdentifierNameSyntax identifier;
+
+            switch (node.Kind())
+            {
+                case SyntaxKind.PropertyDeclaration:
+                    identifier = ((PropertyDeclarationSyntax)node).Type as IdentifierNameSyntax;
+                    break;
+                case SyntaxKind.VariableDeclaration:
+                    identifier = ((VariableDeclarationSyntax)node).Type as IdentifierNameSyntax;
+                    break;
+                case SyntaxKind.Parameter:
+                    identifier = ((ParameterSyntax)node).Type as IdentifierNameSyntax;
+                    break;
+                default:
+                    identifier = null;
+                    break;
+            }
+            if (identifier == null)
+                return;
+            var name = identifier.Identifier.ToString();
+            if (name == "dynamic")
+            {
+                var diagnostic = Diagnostic.Create(ProhibitedLanguageElementRule, identifier.Identifier.GetLocation(), name);
+                context.ReportDiagnostic(diagnostic);
             }
         }
 
