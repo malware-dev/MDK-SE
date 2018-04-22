@@ -8,12 +8,12 @@ namespace MDK
 	    /// <summary>
 		/// The current package version
 		/// </summary>
-		public static readonly Version Version = new Version("1.1.6");
+		public static readonly Version Version = new Version("1.1.8");
 
 	    /// <summary>
 		/// Determines whether this version is a prerelease version
 		/// </summary>
-        public const bool IsPrerelease = true;
+        public const bool IsPrerelease = false;
 
 	    /// <summary>
 		/// Gets the help page navigation URL
