@@ -40,6 +40,16 @@ namespace Malware.MDKUtilities
         public virtual int CurrentInstructionCount { get; set; } = 0;
 
         /// <summary>
+        /// The maximum number of method calls that may be performed in a chained manner (one method calling the next calling the next etc.)
+        /// </summary>
+        public int MaxCallChainDepth { get; set; } = 0;
+
+        /// <summary>
+        /// The current number of method calls that may be performed in a chained manner (one method calling the next calling the next etc.)
+        /// </summary>
+        public int CurrentCallChainDepth { get; } = 0;
+
+        /// <summary>
         ///     This property is obsolete and no longer holds any meaning.
         /// </summary>
         [Obsolete("This property no longer holds any meaning.")]

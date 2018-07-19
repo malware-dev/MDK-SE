@@ -151,8 +151,10 @@ System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult
 System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult>+*, System.Core
 System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult>+*, System.Core
 SpaceEngineers.Game.ModAPI.Ingame.*, SpaceEngineers.Game
+SpaceEngineers.Game.ModAPI.Ingame.*, SpaceEngineers.ObjectBuilders
 System.Collections.Generic.*, VRage.Library
 VRage.Game.ModAPI.Ingame.*, VRage.Game
+VRage.Game.ModAPI.Ingame.Utilities.*, VRage.Game
 Sandbox.ModAPI.Ingame.*, Sandbox.Common
 VRageMath.*, VRage.Math
 Sandbox.Game.Gui.TerminalActionExtensions+*, Sandbox.Game
@@ -162,6 +164,15 @@ Sandbox.ModAPI.Interfaces.ITerminalProperty<TValue>+*, Sandbox.Common
 Sandbox.ModAPI.Interfaces.TerminalPropertyExtensions+*, Sandbox.Common
 Sandbox.Game.Localization.MySpaceTexts+*, Sandbox.Game
 VRage.MyFixedPoint+*, VRage.Library
+VRage.MyTuple+*, VRage.Library
+VRage.MyTuple<T1>+*, VRage.Library
+VRage.MyTuple<T1, T2>+*, VRage.Library
+VRage.MyTuple<T1, T2, T3>+*, VRage.Library
+VRage.MyTuple<T1, T2, T3, T4>+*, VRage.Library
+VRage.MyTuple<T1, T2, T3, T4, T5>+*, VRage.Library
+VRage.MyTuple<T1, T2, T3, T4, T5, T6>+*, VRage.Library
+VRage.MyTupleComparer<T1, T2>+*, VRage.Library
+VRage.MyTupleComparer<T1, T2, T3>+*, VRage.Library
 VRage.MyTexts, VRage
 VRage.MyTexts.GetString(string), VRage
 VRage.MyTexts.GetString(VRage.Utils.MyStringId), VRage
@@ -182,10 +193,12 @@ VRage.Game.MyRelationsBetweenPlayerAndBlock+*, VRage.Game
 VRage.Game.MyRelationsBetweenPlayerAndBlockExtensions+*, VRage.Game
 VRage.Game.Components.MyResourceSourceComponentBase+*, VRage.Game
 VRage.Game.ObjectBuilders.Definitions.MyObjectBuilder_GasProperties+*, VRage.Game
-VRage.ObjectBuilders.MyObjectBuilder_Base+*, VRage.Game
 VRage.Game.Components.MyComponentBase+*, VRage.Game
 VRage.ObjectBuilders.SerializableDefinitionId+*, VRage.Game
 VRage.Game.MyCubeSize+*, VRage.Game
+VRage.ObjectBuilders.MyObjectBuilder_Base, VRage.Game
+VRage.ObjectBuilders.MyObjectBuilder_Base.TypeId, VRage.Game
+VRage.ObjectBuilders.MyObjectBuilder_Base.SubtypeId, VRage.Game
 Sandbox.Game.EntityComponents.MyResourceSourceComponent, Sandbox.Game
 Sandbox.Game.EntityComponents.MyResourceSourceComponent.CurrentOutput, Sandbox.Game
 Sandbox.Game.EntityComponents.MyResourceSourceComponent.MaxOutput, Sandbox.Game
@@ -207,3 +220,5 @@ VRage.Game.Components.MyResourceSinkComponentBase.IsPoweredByType(VRage.Game.MyD
 VRage.Game.Components.MyResourceSinkComponentBase.MaxRequiredInputByType(VRage.Game.MyDefinitionId), VRage.Game
 VRage.Game.Components.MyResourceSinkComponentBase.RequiredInputByType(VRage.Game.MyDefinitionId), VRage.Game
 VRage.Game.Components.MyResourceSinkComponentBase.SuppliedRatioByType(VRage.Game.MyDefinitionId), VRage.Game
+System.ArrayExtensions, VRage.Library
+System.ArrayExtensions.Contains<T>(T[], T), VRage.Library

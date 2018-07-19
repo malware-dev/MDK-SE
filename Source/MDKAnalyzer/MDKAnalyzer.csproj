@@ -16,9 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="namespaces.cache">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="terminal.cache">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
