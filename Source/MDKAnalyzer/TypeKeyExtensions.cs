@@ -26,6 +26,8 @@ namespace Malware.MDKAnalyzer
                 if (methodSymbol.IsGenericMethod && !methodSymbol.IsDefinition)
                 {
                     methodSymbol = methodSymbol.OriginalDefinition;
+                    if (methodSymbol.IsExtensionMethod && methodSymbol.ReducedFrom != null)
+                        methodSymbol = methodSymbol.ReducedFrom;
                     return methodSymbol.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat)
                            + ", "
                            + symbol.ContainingAssembly.Name;
