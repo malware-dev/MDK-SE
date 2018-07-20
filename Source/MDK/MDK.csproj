@@ -82,6 +82,11 @@
     <Compile Include="Build\UsageAnalysis\UsageAnalyzer.cs" />
     <Compile Include="Build\Solution\UsingDirectiveComparer.cs" />
     <Compile Include="Build\DocumentAnalysis\WeightedPartSorter.cs" />
+    <Compile Include="Views\VersionDetection\VisualStudioVersionDialog.xaml.cs">
+      <DependentUpon>VisualStudioVersionDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\VersionDetection\VisualStudioVersionDialogModel.cs" />
+    <Compile Include="VisualStudio\VsVersion.cs" />
     <Compile Include="Commands\GlobalBlueprintManagerCommand.cs" />
     <Compile Include="Commands\BlueprintManagerCommand.cs" />
     <Compile Include="Commands\CommandGroups.cs" />
@@ -529,6 +534,10 @@
     <Page Include="Views\Options\MDKOptionsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\VersionDetection\VisualStudioVersionDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\UpdateDetection\UpdateDetectedDialog.xaml">
       <Generator>MSBuild:Compile</Generator>

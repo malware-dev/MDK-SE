@@ -285,6 +285,11 @@ namespace MDK
             }
             IsEnabled = true;
 
+            if (VsVersion.Full < new Version(15, 7))
+            {
+
+            }
+
             if (!result.IsValid)
                 QueryUpgrade(this, result);
 
