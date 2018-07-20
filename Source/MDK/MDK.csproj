@@ -199,9 +199,9 @@
     <Content Include="Resources\RunMDKToolCommandPackage.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MDKAnalyzer\MDKAnalyzer.csproj">
+    <ProjectReference Include="..\MDKAnalyzer_Legacy\MDKAnalyzer_Legacy.csproj">
       <Project>{26f72d79-cf7a-4e34-934b-9221722d0482}</Project>
-      <Name>MDKAnalyzer</Name>
+      <Name>MDKAnalyzer_Legacy</Name>
       <VSIXSubPath>Analyzers</VSIXSubPath>
     </ProjectReference>
     <ProjectReference Include="..\MDKServices\MDKServices.csproj">
