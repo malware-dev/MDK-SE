@@ -28,6 +28,7 @@ namespace MDK.Services
         bool _promoteMDK = true;
         bool _showBlueprintManagerOnDeploy = true;
         bool _trimTypes;
+        string _lastSuppressedIdeVersionWarning;
 
         /// <summary>
         /// Creates an instance of <see cref="MDKOptions" />
@@ -198,6 +199,24 @@ namespace MDK.Services
                 if (_showBlueprintManagerOnDeploy == value)
                     return;
                 _showBlueprintManagerOnDeploy = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// The visual studio version warning that should be suppressed.
+        /// </summary>
+        [Category("MDK/SE")]
+        [DisplayName("The last suppressed ide version warning")]
+        [Description("Gets the last suppressed ide version warning, if the currently required warning is less than or equal to this, the warning will be shown.")]
+        public string LastSuppressedIdeVersionWarning
+        {
+            get => _lastSuppressedIdeVersionWarning;
+            set
+            {
+                if (_lastSuppressedIdeVersionWarning == value)
+                    return;
+                _lastSuppressedIdeVersionWarning = value;
                 OnPropertyChanged();
             }
         }

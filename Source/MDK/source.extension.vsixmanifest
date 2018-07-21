@@ -20,15 +20,17 @@ Space Engineers is trademarked to Keen Software House. This toolkit is fan-made,
   </Dependencies>
   <Assets>
     <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="IngameScriptTemplate" d:TargetPath="|IngameScriptTemplate;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
-    <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+    <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="MDK" Path="|MDK;PkgdefProjectOutputGroup|" />
     <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="UtilityClass" d:TargetPath="|UtilityClass;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
     <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="ExtensionClass" d:TargetPath="|ExtensionClass;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" AssemblyName="|%CurrentProject%;AssemblyName|" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="%CurrentProject%WhitelistExtractor" Path="|MDKWhitelistExtractor|" AssemblyName="|MDKWhitelistExtractor;AssemblyName|" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="%CurrentProject%Utilities" Path="|MDKUtilities|" AssemblyName="|MDKUtilities;AssemblyName|" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="%CurrentProject%Analyzer" d:VsixSubPath="Analyzers" Path="|MDKAnalyzer|" AssemblyName="|MDKAnalyzer;AssemblyName|" />
+    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="MDK" Path="|MDK|" AssemblyName="|MDK;AssemblyName|" />
+    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="MDKWhitelistExtractor" Path="|MDKWhitelistExtractor|" AssemblyName="|MDKWhitelistExtractor;AssemblyName|" />
+    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="MDKUtilities" Path="|MDKUtilities|" AssemblyName="|MDKUtilities;AssemblyName|" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="MDKAnalyzer" d:VsixSubPath="Analyzers" Path="|MDKAnalyzer|"/>
+    <Asset Type="Microsoft.VisualStudio.Analyzer" d:Source="Project" d:ProjectName="MDKAnalyzer" d:VsixSubPath="Analyzers" Path="|MDKAnalyzer|"/>
   </Assets>
   <Prerequisites>
     <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0,16.0)" DisplayName="Visual Studio core editor" />
+    <Prerequisite Id="Microsoft.VisualStudio.Component.Roslyn.LanguageServices" Version="[15.0,16.0)" DisplayName="Roslyn Language Services" />
   </Prerequisites>
 </PackageManifest>

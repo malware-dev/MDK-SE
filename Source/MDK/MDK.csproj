@@ -82,11 +82,6 @@
     <Compile Include="Build\UsageAnalysis\UsageAnalyzer.cs" />
     <Compile Include="Build\Solution\UsingDirectiveComparer.cs" />
     <Compile Include="Build\DocumentAnalysis\WeightedPartSorter.cs" />
-    <Compile Include="Views\VersionDetection\VisualStudioVersionDialog.xaml.cs">
-      <DependentUpon>VisualStudioVersionDialog.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\VersionDetection\VisualStudioVersionDialogModel.cs" />
-    <Compile Include="VisualStudio\VsVersion.cs" />
     <Compile Include="Commands\GlobalBlueprintManagerCommand.cs" />
     <Compile Include="Commands\BlueprintManagerCommand.cs" />
     <Compile Include="Commands\CommandGroups.cs" />
@@ -155,7 +150,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Commands\RefreshWhitelistCacheCommand.cs" />
     <Compile Include="Commands\QuickDeploySolutionCommand.cs" />
-    <Compile Include="MDKPackage.cs" />
+    <Compile Include="MDKPackage.cs">
+      <VSIXSubPath>Analyzers</VSIXSubPath>
+    </Compile>
     <Compile Include="Build\StringExtensions.cs" />
     <Compile Include="Views\ModelCommand.cs" />
     <Compile Include="Views\Options\ScriptOptionsDialogModel.cs" />
@@ -199,9 +196,9 @@
     <Content Include="Resources\RunMDKToolCommandPackage.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MDKAnalyzer_Legacy\MDKAnalyzer_Legacy.csproj">
-      <Project>{26f72d79-cf7a-4e34-934b-9221722d0482}</Project>
-      <Name>MDKAnalyzer_Legacy</Name>
+    <ProjectReference Include="..\MDKAnalyzer\MDKAnalyzer.csproj">
+      <Project>{003de686-c301-430b-b01a-d9a346797e88}</Project>
+      <Name>MDKAnalyzer</Name>
       <VSIXSubPath>Analyzers</VSIXSubPath>
     </ProjectReference>
     <ProjectReference Include="..\MDKServices\MDKServices.csproj">
@@ -534,10 +531,6 @@
     <Page Include="Views\Options\MDKOptionsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\VersionDetection\VisualStudioVersionDialog.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\UpdateDetection\UpdateDetectedDialog.xaml">
       <Generator>MSBuild:Compile</Generator>

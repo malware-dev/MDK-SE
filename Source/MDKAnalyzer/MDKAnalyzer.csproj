@@ -1,0 +1,69 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.3</TargetFramework>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <PackageId>MDKAnalyzer</PackageId>
+    <PackageVersion>1.0.0.0</PackageVersion>
+    <Authors>Morten</Authors>
+    <PackageLicenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</PackageLicenseUrl>
+    <PackageProjectUrl>http://PROJECT_URL_HERE_OR_DELETE_THIS_LINE</PackageProjectUrl>
+    <PackageIconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</PackageIconUrl>
+    <RepositoryUrl>http://REPOSITORY_URL_HERE_OR_DELETE_THIS_LINE</RepositoryUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Description>MDKAnalyzer</Description>
+    <PackageReleaseNotes>Summary of changes made in this release of the package.</PackageReleaseNotes>
+    <Copyright>Copyright</Copyright>
+    <PackageTags>MDKAnalyzer, analyzers</PackageTags>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+    <RootNamespace>Malware.MDKAnalyzer</RootNamespace>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <Compile Remove="MDKAnalyzer.Test\**" />
+    <Compile Remove="MDKAnalyzer.Vsix\**" />
+    <EmbeddedResource Remove="MDKAnalyzer.Test\**" />
+    <EmbeddedResource Remove="MDKAnalyzer.Vsix\**" />
+    <None Remove="MDKAnalyzer.Test\**" />
+    <None Remove="MDKAnalyzer.Vsix\**" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Compile Remove="MDKAnalyzerAnalyzer.cs" />
+    <Compile Remove="MDKAnalyzerCodeFixProvider.cs" />
+    <Compile Remove="Resources.Designer.cs" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <EmbeddedResource Remove="Resources.resx" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Remove="terminal.cache" />
+    <None Remove="whitelist.cache" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Content Include="terminal.cache">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="whitelist.cache">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+   
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.7.0" PrivateAssets="all" />
+    <PackageReference Update="NETStandard.Library" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="tools\*.ps1" CopyToOutputDirectory="Always" Pack="true" PackagePath="" />
+    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+  </ItemGroup>
+
+</Project>

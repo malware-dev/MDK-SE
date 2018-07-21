@@ -24,7 +24,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace MDK
 {
     /// <summary>
-    /// The MDK Visual Studio Extension
+    ///     The MDK Visual Studio Extension
     /// </summary>
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
@@ -38,7 +38,7 @@ namespace MDK
     public sealed partial class MDKPackage : ExtendedPackage
     {
         /// <summary>
-        /// RunMDKToolCommandPackage GUID string.
+        ///     RunMDKToolCommandPackage GUID string.
         /// </summary>
         public const string PackageGuidString = "7b9c2d3e-b001-4a3e-86a8-00dc6f2af032";
 
@@ -47,38 +47,30 @@ namespace MDK
         SolutionManager _solutionManager;
 
         /// <summary>
-        /// Creates a new instance of <see cref="MDKPackage" />
+        ///     Creates a new instance of <see cref="MDKPackage" />
         /// </summary>
         public MDKPackage()
         {
             ScriptUpgrades = new ScriptUpgrades();
         }
 
-        /// <inheritdoc />
-        protected override void Dispose(bool disposing)
-        {
-            _solutionManager?.Dispose();
-            _solutionManager = null;
-            base.Dispose(disposing);
-        }
-
         /// <summary>
-        /// Fired when the MDK features are enabled
+        ///     Fired when the MDK features are enabled
         /// </summary>
         public event EventHandler Enabled;
 
         /// <summary>
-        /// Fired when the MDK features are disabled
+        ///     Fired when the MDK features are disabled
         /// </summary>
         public event EventHandler Disabled;
 
         /// <summary>
-        /// Determines whether the package is currently busy deploying scripts.
+        ///     Determines whether the package is currently busy deploying scripts.
         /// </summary>
         public bool IsDeploying { get; private set; }
 
         /// <summary>
-        /// Determines whether the MDK features are currently enabled
+        ///     Determines whether the MDK features are currently enabled
         /// </summary>
         public bool IsEnabled
         {
@@ -96,28 +88,36 @@ namespace MDK
         }
 
         /// <summary>
-        /// Gets the MDK options
+        ///     Gets the MDK options
         /// </summary>
         public MDKOptions Options => (MDKOptions)GetDialogPage(typeof(MDKOptions));
 
         /// <summary>
-        /// The service provider
+        ///     The service provider
         /// </summary>
         public IServiceProvider ServiceProvider => this;
 
         /// <summary>
-        /// The <see cref="ScriptUpgrades"/> service
+        ///     The <see cref="ScriptUpgrades" /> service
         /// </summary>
         public ScriptUpgrades ScriptUpgrades { get; }
 
         /// <summary>
-        /// Gets the installation path for the current MDK package
+        ///     Gets the installation path for the current MDK package
         /// </summary>
         public DirectoryInfo InstallPath { get; } = new FileInfo(new Uri(typeof(MDKPackage).Assembly.CodeBase).LocalPath).Directory;
 
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
+        {
+            _solutionManager?.Dispose();
+            _solutionManager = null;
+            base.Dispose(disposing);
+        }
+
         /// <summary>
-        /// Initialization of the package; this method is called right after the package is sited, so this is the place
-        /// where you can put all the initialization code that rely on services provided by VisualStudio.
+        ///     Initialization of the package; this method is called right after the package is sited, so this is the place
+        ///     where you can put all the initialization code that rely on services provided by VisualStudio.
         /// </summary>
         protected override void Initialize()
         {
@@ -157,7 +157,7 @@ namespace MDK
         }
 
         /// <summary>
-        /// Checks the GitHub sites for any updated releases.
+        ///     Checks the GitHub sites for any updated releases.
         /// </summary>
         /// <returns>The newest release version on GitHub, or <c>null</c> if the current version is the latest</returns>
         public async Task<Version> CheckForUpdatesAsync(bool includePrerelease)
@@ -179,6 +179,7 @@ namespace MDK
                     if (detectedVersion > Version)
                         return detectedVersion;
                 }
+
                 return null;
             }
             catch (Exception e)
@@ -201,17 +202,17 @@ namespace MDK
             _solutionManager.EndRecording();
         }
 
-        private void OnSolutionClosed(object sender, EventArgs e)
+        void OnSolutionClosed(object sender, EventArgs e)
         {
             IsEnabled = false;
         }
 
-        private void OnSolutionLoaded(object sender, EventArgs e)
+        void OnSolutionLoaded(object sender, EventArgs e)
         {
             OnSolutionLoaded(DTE.Solution);
         }
 
-        private void OnProjectLoaded(object sender, ProjectLoadedEventArgs e)
+        void OnProjectLoaded(object sender, ProjectLoadedEventArgs e)
         {
             if (e.IsStandalone)
                 OnProjectLoaded(e.Project);
@@ -239,6 +240,7 @@ namespace MDK
                 IsEnabled = false;
                 return;
             }
+
             if (!result.HasScriptProjects)
                 return;
             IsEnabled = true;
@@ -278,17 +280,14 @@ namespace MDK
                 IsEnabled = false;
                 return;
             }
+
             if (!result.HasScriptProjects)
             {
                 IsEnabled = false;
                 return;
             }
+
             IsEnabled = true;
-
-            if (VsVersion.Full < new Version(15, 7))
-            {
-
-            }
 
             if (!result.IsValid)
                 QueryUpgrade(this, result);
@@ -301,10 +300,14 @@ namespace MDK
         }
 
         /// <summary>
-        /// Deploys the all scripts in the solution or a single script project.
+        ///     Deploys the all scripts in the solution or a single script project.
         /// </summary>
         /// <param name="project">The specific project to build</param>
-        /// <param name="nonBlocking"><c>true</c> if there should be no blocking dialogs shown during deployment. Instead, an <see cref="InvalidOperationException"/> will be thrown for the more grievous errors, while other stoppers merely return false.</param>
+        /// <param name="nonBlocking">
+        ///     <c>true</c> if there should be no blocking dialogs shown during deployment. Instead, an
+        ///     <see cref="InvalidOperationException" /> will be thrown for the more grievous errors, while other stoppers merely
+        ///     return false.
+        /// </param>
         /// <returns></returns>
         public async Task<bool> DeployAsync(Project project = null, bool nonBlocking = false)
         {
@@ -338,13 +341,9 @@ namespace MDK
                 using (new StatusBarAnimation(ServiceProvider, Animation.Build))
                 {
                     if (project != null)
-                    {
                         dte.Solution.SolutionBuild.BuildProject(dte.Solution.SolutionBuild.ActiveConfiguration.Name, project.FullName, true);
-                    }
                     else
-                    {
                         dte.Solution.SolutionBuild.Build(true);
-                    }
                     failedProjects = dte.Solution.SolutionBuild.LastBuildInfo;
                 }
 
@@ -380,9 +379,7 @@ namespace MDK
                             BlueprintManagerDialog.ShowDialog(model);
                         }
                         else
-                        {
                             VsShellUtilities.ShowMessageBox(ServiceProvider, Text.MDKPackage_Deploy_DeploymentCompleteDescription, Text.MDKPackage_Deploy_DeploymentComplete, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
-                        }
                     }
                 }
                 else
@@ -416,13 +413,10 @@ namespace MDK
             }
         }
 
-        string FormattedPath(string scriptOutputPath)
-        {
-            return Path.GetFullPath(scriptOutputPath).TrimEnd('\\').ToUpper();
-        }
+        string FormattedPath(string scriptOutputPath) => Path.GetFullPath(scriptOutputPath).TrimEnd('\\').ToUpper();
 
         /// <summary>
-        /// Displays an error dialog
+        ///     Displays an error dialog
         /// </summary>
         /// <param name="title"></param>
         /// <param name="description"></param>

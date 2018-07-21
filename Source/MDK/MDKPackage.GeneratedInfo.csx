@@ -44,6 +44,7 @@ var isPrerelease = string.Equals(other.XPathSelectElement("/Other/IsPrerelease")
 var helpPageUrl = other.XPathSelectElement("/Other/HelpPageUrl")?.Value ?? "";
 var releasePageUrl = other.XPathSelectElement("/Other/ReleasePageUrl")?.Value ?? "";
 var issuesPageUrl = other.XPathSelectElement("/Other/IssuesPageUrl")?.Value ?? "";
+var requiredIdeVersion = other.XPathSelectElement("/Other/RequiredIdeVersion")?.Value ?? "";
 
 Context.Output.WriteLine($@"using System;
 using System.Collections.Immutable;
@@ -56,6 +57,11 @@ namespace {namespaceName}
 		/// The current package version
 		/// </summary>
 		public static readonly Version Version = new Version(""{version}"");
+
+        /// <summary>
+		/// The required IDE version
+		/// </summary>
+		public static readonly Version RequiredIdeVersion = new Version(""{requiredIdeVersion}"");
 
 	    /// <summary>
 		/// Determines whether this version is a prerelease version
