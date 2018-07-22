@@ -42,7 +42,7 @@ namespace DocGen
 
         public bool IsWhitelisted(Type type)
         {
-            var typeKey = WhitelistKey.ForType(type);
+            var typeKey = ApiEntry.Create(type, null);
             if (typeKey == null)
                 return false;
             return _entries.Any(key => key.IsMatchFor(typeKey));
@@ -52,7 +52,7 @@ namespace DocGen
         {
             if (!IsWhitelisted(memberInfo.DeclaringType.Assembly))
                 return false;
-            var typeKey = WhitelistKey.ForMember(memberInfo);
+            var typeKey = ApiEntry.Create(memberInfo, null);
             return _entries.Any(key => key.IsMatchFor(typeKey));
         }
     }

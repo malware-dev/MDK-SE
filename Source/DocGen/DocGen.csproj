@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApiEntry.cs" />
     <Compile Include="MDKUtilityFramework.cs" />
     <Compile Include="ProgrammableBlockApi.cs" />
     <Compile Include="Program.cs" />

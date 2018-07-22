@@ -8,7 +8,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using System.Xml.XPath;
 using Malware.MDKUtilities;
 
 namespace DocGen
@@ -16,8 +15,8 @@ namespace DocGen
     class ProgrammableBlockApi
     {
         List<MemberInfo> _members = new List<MemberInfo>();
-        List<Assembly> _assemblies;
-        List<IGrouping<Assembly, IGrouping<Type, MemberInfo>>> _groupings;
+        List<ApiEntry> _entries = new List<ApiEntry>();
+        readonly HashSet<char> _invalidCharacters = new HashSet<char>(Path.GetInvalidFileNameChars());
 
         public async Task Scan(string whitelistCacheFileName)
         {
@@ -33,8 +32,29 @@ namespace DocGen
                 foreach (var dllFile in dllFiles)
                     Visit(whitelist, dllFile);
 
-                _groupings = _members.GroupBy(m => m.DeclaringType).GroupBy(m => m.Key.Assembly)
-                    .ToList();
+                foreach (var assemblyGroup in _members.GroupBy(m => m.DeclaringType.Assembly))
+                {
+                    var assemblyPath = new Uri(assemblyGroup.Key.CodeBase).LocalPath;
+                    var xmlFileName = Path.ChangeExtension(assemblyPath, "xml");
+                    XDocument documentation;
+                    if (File.Exists(xmlFileName))
+                        documentation = XDocument.Load(xmlFileName);
+                    else
+                        documentation = null;
+                    foreach (var typeGroup in assemblyGroup.GroupBy(m => m.DeclaringType))
+                    {
+                        var typeEntry = ApiEntry.Create(typeGroup.Key, documentation);
+                        _entries.Add(typeEntry);
+                        foreach (var member in typeGroup)
+                        {
+                            var entry = ApiEntry.Create(member, documentation);
+                            _entries.Add(entry);
+                        }
+                    }
+                }
+
+                foreach (var entry in _entries)
+                    entry.ResolveLinks(_entries);
             });
         }
 
@@ -93,30 +113,20 @@ namespace DocGen
                 await file.WriteLineAsync("#Index");
                 await file.WriteLineAsync();
 
-                foreach (var assemblyGroup in _groupings.OrderBy(g => g.Key.GetName().Name))
+                foreach (var assemblyGroup in _entries.GroupBy(e => e.AssemblyName).OrderBy(e => e.Key))
                 {
-                    var assemblyPath = new Uri(assemblyGroup.Key.CodeBase).LocalPath;
-                    var assemblyFileName = Path.GetFileName(assemblyPath);
-                    var xmlFileName = Path.ChangeExtension(assemblyPath, "xml");
-                    XDocument documentation;
-                    if (File.Exists(xmlFileName))
-                        documentation = XDocument.Load(xmlFileName);
-                    else
-                        documentation = null;
-
-                    await file.WriteLineAsync($"##{assemblyFileName}");
-                    foreach (var typeGroup in assemblyGroup.OrderBy(g => g.Key.FullName))
+                    await file.WriteLineAsync($"##{assemblyGroup.Key}");
+                    foreach (var typeGroup in assemblyGroup.GroupBy(e => e.DeclaringEntry ?? e).OrderBy(g => g.Key.FullName))
                     {
-                        var typeKey = WhitelistKey.ForType(typeGroup.Key);
-                        var mdPath = ToMdFileName(typeKey.Path);
-                        await file.WriteLineAsync($"**[`{typeKey.Path}`]({mdPath})**");
+                        var mdPath = ToMdFileName(typeGroup.Key.FullName);
+                        await file.WriteLineAsync($"**[`{typeGroup.Key.Signature}`]({mdPath})**");
                         foreach (var member in typeGroup.OrderBy(m => m.Name))
                         {
-                            var memberKey = WhitelistKey.ForMember(member, false);
-                            await file.WriteLineAsync($"* [`{memberKey.Path}`]({mdPath})");
+                            await file.WriteLineAsync($"* [`{member.Signature}`]({mdPath})");
                         }
+
                         await file.WriteLineAsync();
-                        await WriteTypeFileAsync(typeGroup, Path.Combine(directory.FullName, mdPath), documentation);
+                        //await WriteTypeFileAsync(typeGroup, Path.Combine(directory.FullName, mdPath), documentation);
                     }
                 }
 
@@ -126,41 +136,40 @@ namespace DocGen
 
         async Task WriteTypeFileAsync(IGrouping<Type, MemberInfo> typeGroup, string fileName, XDocument documentation)
         {
-            using (var file = File.CreateText(fileName))
-            {
-                var typeKey = WhitelistKey.ForType(typeGroup.Key);
-                await file.WriteLineAsync($"#{typeKey.Path}");
-                await file.WriteLineAsync();
-                foreach (var member in typeGroup.OrderBy(m => m.Name))
-                {
-                    var fullMemberKey = WhitelistKey.ForMember(member);
-                    var xmlKey = fullMemberKey.ToXmlDoc();
-                    var memberKey = WhitelistKey.ForMember(member, false);
-                    var doc = documentation?.XPathSelectElement($"/doc/members/member[@name='{xmlKey}']");
-                    string summary;
-                    if (doc != null)
-                        summary = doc.Element("summary")?.Value ?? "";
-                    else
-                        summary = "";
-                    await file.WriteLineAsync($"* `{memberKey.Path}`");
-                    await file.WriteLineAsync($"  " + Trim(summary));
-                    await file.WriteLineAsync();
-                }
-            }
+            //using (var file = File.CreateText(fileName))
+            //{
+            //    var typeKey = WhitelistKey.ForType(typeGroup.Key);
+            //    await file.WriteLineAsync($"#{typeKey.Path}");
+            //    await file.WriteLineAsync();
+            //    foreach (var member in typeGroup.OrderBy(m => m.Name))
+            //    {
+            //        var fullMemberKey = WhitelistKey.ForMember(member);
+            //        var xmlKey = fullMemberKey.ToXmlDoc();
+            //        var memberKey = WhitelistKey.ForMember(member, false);
+            //        var doc = documentation?.XPathSelectElement($"/doc/members/member[@name='{xmlKey}']");
+            //        string summary;
+            //        if (doc != null)
+            //            summary = doc.Element("summary")?.Value ?? "";
+            //        else
+            //            summary = "";
+            //        await file.WriteLineAsync($"* `{memberKey.Path}`");
+            //        await file.WriteLineAsync($"  " + Trim(summary));
+            //        await file.WriteLineAsync();
+            //    }
+            //}
         }
 
-        string Trim(string summary) => Regex.Replace(summary.Trim(), @"\s{2,}", " ");
-
-        readonly HashSet<char> _invalidCharacters = new HashSet<char>(Path.GetInvalidFileNameChars());
+        string Trim(string summary)
+        {
+            return Regex.Replace(summary.Trim(), @"\s{2,}", " ");
+        }
 
         string ToMdFileName(string path)
         {
             var builder = new StringBuilder(path);
             for (var i = 0; i < builder.Length; i++)
-            {
                 if (_invalidCharacters.Contains(builder[i]))
                     builder[i] = '_';
-            }
 
             builder.Append(".md");
             return builder.ToString();
