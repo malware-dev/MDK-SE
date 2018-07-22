@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="MDK.Morten Aune Lyrstad.e02b602e-3099-44a5-88c6-cb30cab978f6" Version="1.1.11" Language="en-US" Publisher="Morten Aune Lyrstad" />
+    <Identity Id="MDK.Morten Aune Lyrstad.e02b602e-3099-44a5-88c6-cb30cab978f6" Version="1.1.12" Language="en-US" Publisher="Morten Aune Lyrstad" />
     <DisplayName>MDK/SE</DisplayName>
     <Description xml:space="preserve">A toolkit to help with ingame script (programmable block) development for Keen Software House's space sandbox Space Engineers.
 
@@ -26,8 +26,8 @@ Space Engineers is trademarked to Keen Software House. This toolkit is fan-made,
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="MDK" Path="|MDK|" AssemblyName="|MDK;AssemblyName|" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="MDKWhitelistExtractor" Path="|MDKWhitelistExtractor|" AssemblyName="|MDKWhitelistExtractor;AssemblyName|" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="MDKUtilities" Path="|MDKUtilities|" AssemblyName="|MDKUtilities;AssemblyName|" />
-    <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="MDKAnalyzer" d:VsixSubPath="Analyzers" Path="|MDKAnalyzer|"/>
-    <Asset Type="Microsoft.VisualStudio.Analyzer" d:Source="Project" d:ProjectName="MDKAnalyzer" d:VsixSubPath="Analyzers" Path="|MDKAnalyzer|"/>
+    <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="MDKAnalyzer" d:VsixSubPath="Analyzers" Path="|MDKAnalyzer|" />
+    <Asset Type="Microsoft.VisualStudio.Analyzer" d:Source="Project" d:ProjectName="MDKAnalyzer" d:VsixSubPath="Analyzers" Path="|MDKAnalyzer|" />
   </Assets>
   <Prerequisites>
     <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0,16.0)" DisplayName="Visual Studio core editor" />
