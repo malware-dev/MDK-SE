@@ -10,13 +10,13 @@ namespace DocGen
 {
     public class Program
     {
-        public static int Main()
+        public static async Task<int> Main()
         {
             var commandLine = new CommandLine(Environment.CommandLine);
             try
             {
                 var program = new Program();
-                return Task.Run(async () => await program.Run(commandLine).ConfigureAwait(false)).GetAwaiter().GetResult();
+                return await program.Run(commandLine);
             }
             catch (Exception e)
             {
@@ -38,11 +38,13 @@ namespace DocGen
             var pluginPath = Path.GetFullPath("MDKWhitelistExtractor.dll");
             var whitelistTarget = path;
             var terminalTarget = path;
+            var apiTarget = path;
             var directoryInfo = new DirectoryInfo(whitelistTarget);
             if (!directoryInfo.Exists)
                 directoryInfo.Create();
             whitelistTarget = Path.Combine(whitelistTarget, "whitelist.cache");
             terminalTarget = Path.Combine(terminalTarget, "terminal.cache");
+            apiTarget = Path.Combine(apiTarget, "api.cache");
 
             var args = new List<string>
             {
@@ -52,7 +54,9 @@ namespace DocGen
                 "-whitelistcaches",
                 $"\"{whitelistTarget}\"",
                 "-terminalcaches",
-                $"\"{terminalTarget}\""
+                $"\"{terminalTarget}\"",
+                "-pbapi",
+                $"\"{apiTarget}\""
             };
 
             var process = new Process
@@ -121,13 +125,17 @@ namespace DocGen
             if (outputIndex >= 0)
                 output = Path.GetFullPath(commandLine[outputIndex + 1]);
             if (output != null)
-                GenerateDocs(path, output);
+                await GenerateDocs(path, output);
 
             return 0;
         }
 
-        void GenerateDocs(string path, string output)
+        async Task GenerateDocs(string path, string output)
         {
+            var api = new ProgrammableBlockApi();
+            await api.Scan(Path.Combine(path, "whitelist.cache"));
+            await api.SaveAsync(Path.Combine(output, "api"));
+
             //var whitelistTarget = path;
             var terminalTarget = path;
             //whitelistTarget = Path.Combine(whitelistTarget, "whitelist.cache");

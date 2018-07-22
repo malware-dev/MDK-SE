@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
@@ -30,6 +29,7 @@ namespace DocGen
                 return;
             var blocks = root.Elements("block").OrderBy(block => GetBlockName((string)block.Attribute("type"))).ToArray();
             _document.AppendLine($"## Overview");
+            _document.AppendLine("**Note: Terminal actions and properties are for all intents and purposes obsolete since all vanilla block interfaces now contain proper API access to all this information. It is highly recommended you use those for less overhead.**");
             _document.AppendLine();
             foreach (var block in blocks)
             {
@@ -50,9 +50,7 @@ namespace DocGen
                     _document.AppendLine("|Name|Description|");
                     _document.AppendLine("|-|-|");
                     foreach (var action in elements)
-                    {
                         _document.AppendLine($"|{(string)action.Attribute("name")}|{(string)action.Attribute("text")}|");
-                    }
                     _document.AppendLine();
                 }
                 elements = block.Elements("property").OrderBy(e => (string)e.Attribute("name")).ToArray();
@@ -63,9 +61,7 @@ namespace DocGen
                     _document.AppendLine("|Name|Type|");
                     _document.AppendLine("|-|-|");
                     foreach (var action in elements)
-                    {
                         _document.AppendLine($"|{(string)action.Attribute("name")}|{TranslateType((string)action.Attribute("type"))}|");
-                    }
                     _document.AppendLine();
                 }
             }
