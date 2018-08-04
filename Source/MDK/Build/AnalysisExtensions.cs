@@ -133,6 +133,14 @@ namespace MDK.Build
                 return eventDeclaration.Identifier.ToString();
             }
 
+            if (declaration is DelegateDeclarationSyntax delegateDeclaration)
+            {
+                var parentName = GetFullName(delegateDeclaration.Parent as MemberDeclarationSyntax);
+                if (parentName != null)
+                    return $"{parentName}.{delegateDeclaration.Identifier}";
+                return delegateDeclaration.Identifier.ToString();
+            }
+
             throw new ArgumentException("Do not understand the declaration type", nameof(declaration));
         }
 
