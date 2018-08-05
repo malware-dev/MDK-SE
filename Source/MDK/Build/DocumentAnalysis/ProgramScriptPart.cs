@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -24,7 +25,32 @@ namespace MDK.Build.DocumentAnalysis
         /// Retrieves the leading trivia of this part.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<SyntaxTrivia> GetLeadingTrivia() => ((ClassDeclarationSyntax)PartRoot).OpenBraceToken.TrailingTrivia;
+        public IEnumerable<SyntaxTrivia> GetLeadingTrivia() => SkipFirstTriviaLine(((ClassDeclarationSyntax)PartRoot).OpenBraceToken.TrailingTrivia);
+
+        IEnumerable<SyntaxTrivia> SkipFirstTriviaLine(SyntaxTriviaList triviaList)
+        {
+            var skipCount = FindTriviaSkipCount(triviaList);
+            return triviaList.Skip(skipCount);
+        }
+
+        static int FindTriviaSkipCount(SyntaxTriviaList triviaList)
+        {
+            for (var index = 0; index < triviaList.Count; index++)
+            {
+                var trivia = triviaList[index];
+                switch (trivia.Kind())
+                {
+                    case SyntaxKind.WhitespaceTrivia:
+                        continue;
+                    case SyntaxKind.EndOfLineTrivia:
+                        return index + 1;
+                    default:
+                        return 0;
+                }
+            }
+
+            return triviaList.Count;
+        }
 
         /// <summary>
         /// Gets the content of this part.
@@ -69,20 +95,22 @@ namespace MDK.Build.DocumentAnalysis
         {
             var classDeclaration = (ClassDeclarationSyntax)PartRoot;
             var buffer = new StringBuilder();
-            // Write opening brace trailing trivia
-            if (classDeclaration.OpenBraceToken.HasTrailingTrivia)
-            {
-                var trailingTrivia = classDeclaration.OpenBraceToken.TrailingTrivia;
+            foreach (var trivia in GetLeadingTrivia())
+                buffer.Append(trivia.ToFullString());
+            //// Write opening brace trailing trivia
+            //if (classDeclaration.OpenBraceToken.HasTrailingTrivia)
+            //{
+            //    var trailingTrivia = classDeclaration.OpenBraceToken.TrailingTrivia;
 
-                // Skip the whitespace and line the brace itself is on
-                var i = 0;
-                while (i < trailingTrivia.Count && trailingTrivia[i].Kind() == SyntaxKind.WhitespaceTrivia)
-                    i++;
-                if (i < trailingTrivia.Count && trailingTrivia[i].Kind() == SyntaxKind.EndOfLineTrivia)
-                    i++;
-                for (; i < trailingTrivia.Count; i++)
-                    buffer.Append(trailingTrivia[i].ToFullString());
-            }
+            //    // Skip the whitespace and line the brace itself is on
+            //    var i = 0;
+            //    while (i < trailingTrivia.Count && trailingTrivia[i].Kind() == SyntaxKind.WhitespaceTrivia)
+            //        i++;
+            //    if (i < trailingTrivia.Count && trailingTrivia[i].Kind() == SyntaxKind.EndOfLineTrivia)
+            //        i++;
+            //    for (; i < trailingTrivia.Count; i++)
+            //        buffer.Append(trailingTrivia[i].ToFullString());
+            //}
 
             // Write general content
             foreach (var node in PartRoot.ChildNodes())
@@ -109,13 +137,16 @@ namespace MDK.Build.DocumentAnalysis
                 }
             }
 
-            // Write closing brace opening trivia
-            // Write opening brace trailing trivia
-            if (classDeclaration.CloseBraceToken.HasLeadingTrivia)
-            {
-                foreach (var trivia in classDeclaration.CloseBraceToken.LeadingTrivia)
-                    buffer.Append(trivia.ToFullString());
-            }
+            foreach (var trivia in GetTrailingTrivia())
+                buffer.Append(trivia.ToFullString());
+
+            //// Write closing brace opening trivia
+            //// Write opening brace trailing trivia
+            //if (classDeclaration.CloseBraceToken.HasLeadingTrivia)
+            //{
+            //    foreach (var trivia in classDeclaration.CloseBraceToken.LeadingTrivia)
+            //        buffer.Append(trivia.ToFullString());
+            //}
 
             return buffer.ToString();
         }

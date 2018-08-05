@@ -100,7 +100,7 @@ namespace Malware.MDKUtilities
 
         /// <summary>
         ///     Runs the Save method of the given program, if there is any.
-        /// </summary>
+        /// </summary> 
         /// <param name="gridProgram"></param>
         /// <returns></returns>
         public static string Save(IMyGridProgram gridProgram)
