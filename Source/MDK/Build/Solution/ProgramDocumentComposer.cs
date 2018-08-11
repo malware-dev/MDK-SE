@@ -153,15 +153,10 @@ namespace MDK.Build.Solution
                         }
                     }
 
-                    members.AddRange(nodes.Select(node => node/*.Unindented(2)*/));
+                    members.AddRange(nodes.Select(node => node.Unindented(2)));
                 }
 
                 programDeclaration = programDeclaration.WithMembers(new SyntaxList<MemberDeclarationSyntax>().AddRange(members));
-                if (pendingTrivia.Count > 0)
-                {
-                    programDeclaration = programDeclaration.WithCloseBraceToken(programDeclaration.CloseBraceToken.WithLeadingTrivia(SyntaxFactory.TriviaList(pendingTrivia)));
-                    programDeclaration = programDeclaration.WithCloseBraceToken(programDeclaration.CloseBraceToken.Unindented(2));
-                }
 
                 var extensionDeclarations = content.Parts
                     .OfType<ExtensionScriptPart>()

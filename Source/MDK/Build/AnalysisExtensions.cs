@@ -45,45 +45,6 @@ namespace MDK.Build
         }
 
         /// <summary>
-        /// Removes indentations from the given node if they are equal to or larger than the indicated number of indentations.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="node"></param>
-        /// <param name="indentations"></param>
-        /// <returns></returns>
-        public static SyntaxToken Unindented(this SyntaxToken node, int indentations)
-        {
-            var rewriter = new UnindentRewriter(indentations);
-            return rewriter.VisitToken(node);
-        }
-
-        /// <summary>
-        /// Removes indentations from the given node if they are equal to or larger than the indicated number of indentations.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="node"></param>
-        /// <param name="indentations"></param>
-        /// <returns></returns>
-        public static SyntaxTrivia Unindented(this SyntaxTrivia node, int indentations) 
-        {
-            var rewriter = new UnindentRewriter(indentations);
-            return rewriter.VisitTrivia(node);
-        }
-
-        /// <summary>
-        /// Removes indentations from the given node if they are equal to or larger than the indicated number of indentations.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="node"></param>
-        /// <param name="indentations"></param>
-        /// <returns></returns>
-        public static SyntaxTriviaList Unindented(this SyntaxTriviaList node, int indentations) 
-        {
-            var rewriter = new UnindentRewriter(indentations);
-            return SyntaxFactory.TriviaList(node.Select(rewriter.VisitTrivia));
-        }
-
-        /// <summary>
         /// Retrieves the fully qualified name of the given symbol.
         /// </summary>
         /// <param name="symbol"></param>
