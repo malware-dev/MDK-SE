@@ -4,6 +4,9 @@
 ----
 
 ### MDK is currently NOT compatible with VS 15.8 since they haven't released a nuget package with the applicable Roslyn yet.
+An emergency prerelease of MDK has been released. _Only install that prerelease if you have Visual Studio 2017 V15.8._
+
+----
 
 A toolkit to help with ingame script (programmable block) development for Keen Software House's space sandbox Space Engineers. It helps you create a ready-to-code project for writing ingame scripts, and provides an analyzer which warns you if you're trying to use something that is not allowed in Space Engineers.
 
