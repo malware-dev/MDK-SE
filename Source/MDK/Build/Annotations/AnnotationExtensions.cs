@@ -48,8 +48,7 @@ namespace MDK.Build.Annotations
         /// <returns></returns>
         public static T TransformAndAnnotate<T>(this T node, IDictionary<string, string> macros = null) where T: SyntaxNode
         {
-            var symbolDeclarations = new List<SyntaxNode>();
-            var rewriter = new MdkAnnotationRewriter(macros, symbolDeclarations);
+            var rewriter = new MdkAnnotationRewriter(macros);
             var root = (T)rewriter.Visit(node);
             return root;
         }

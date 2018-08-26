@@ -131,27 +131,33 @@ namespace Malware.MDKAnalyzer
 
                 _basePath = new Uri(basePath);
                 _namespaceName = (string)document.Element("mdk")?.Element("namespace") ?? DefaultNamespaceName;
-                _ignoredFolders.Clear();
-                _ignoredFiles.Clear();
-                if (ignoredFolders != null)
+                lock (_ignoredFolders)
+                lock (_ignoredFiles)
                 {
-                    foreach (var folderElement in ignoredFolders)
+                    _ignoredFolders.Clear();
+                    _ignoredFiles.Clear();
+                    if (ignoredFolders != null)
                     {
-                        var folder = folderElement.Value;
-                        if (!folder.EndsWith("\\"))
-                            _ignoredFolders.Add(new Uri(_basePath, new Uri(folder + "\\", UriKind.RelativeOrAbsolute)));
-                        else
-                            _ignoredFolders.Add(new Uri(_basePath, new Uri(folder, UriKind.RelativeOrAbsolute)));
+                        foreach (var folderElement in ignoredFolders)
+                        {
+                            var folder = folderElement.Value;
+                            if (!folder.EndsWith("\\"))
+                                _ignoredFolders.Add(new Uri(_basePath, new Uri(folder + "\\", UriKind.RelativeOrAbsolute)));
+                            else
+                                _ignoredFolders.Add(new Uri(_basePath, new Uri(folder, UriKind.RelativeOrAbsolute)));
+                        }
+                    }
+
+                    if (ignoredFiles != null)
+                    {
+                        foreach (var fileElement in ignoredFiles)
+                        {
+                            var file = fileElement.Value;
+                            _ignoredFiles.Add(new Uri(_basePath, new Uri(file, UriKind.RelativeOrAbsolute)));
+                        }
                     }
                 }
-                if (ignoredFiles != null)
-                {
-                    foreach (var fileElement in ignoredFiles)
-                    {
-                        var file = fileElement.Value;
-                        _ignoredFiles.Add(new Uri(_basePath, new Uri(file, UriKind.RelativeOrAbsolute)));
-                    }
-                }
+
                 return true;
             }
             catch (Exception)
@@ -272,16 +278,22 @@ namespace Malware.MDKAnalyzer
                 return false;
 
             var uri = new Uri(_basePath, new Uri(context.Node.SyntaxTree.FilePath, UriKind.RelativeOrAbsolute));
-            foreach (var ignoredUri in _ignoredFiles)
+            lock (_ignoredFiles)
             {
-                if (string.Equals(uri.AbsolutePath, ignoredUri.AbsolutePath, StringComparison.CurrentCultureIgnoreCase))
-                    return true;
+                foreach (var ignoredUri in _ignoredFiles)
+                {
+                    if (string.Equals(uri.AbsolutePath, ignoredUri.AbsolutePath, StringComparison.CurrentCultureIgnoreCase))
+                        return true;
+                }
             }
 
-            foreach (var ignoredUri in _ignoredFolders)
+            lock (_ignoredFolders)
             {
-                if (uri.AbsolutePath.StartsWith(ignoredUri.AbsolutePath, StringComparison.CurrentCultureIgnoreCase))
-                    return true;
+                foreach (var ignoredUri in _ignoredFolders)
+                {
+                    if (uri.AbsolutePath.StartsWith(ignoredUri.AbsolutePath, StringComparison.CurrentCultureIgnoreCase))
+                        return true;
+                }
             }
 
             return false;

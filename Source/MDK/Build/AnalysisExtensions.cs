@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
@@ -179,8 +180,14 @@ namespace MDK.Build
         /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
-        public static bool IsSymbolDeclaration(this SyntaxNode node)
+        public static bool IsSymbolDeclaration(this SyntaxNode node, bool dump = false)
         {
+            if (dump)
+            {
+                Debug.WriteLine(node.Kind());
+                Debug.WriteLine(node.ToString());
+            }
+
             return node is ClassDeclarationSyntax
                    || node is PropertyDeclarationSyntax
                    || node is EventDeclarationSyntax
@@ -194,7 +201,8 @@ namespace MDK.Build
                    || node is InterfaceDeclarationSyntax
                    || node is TypeParameterSyntax
                    || node is ParameterSyntax
-                   || node is AnonymousObjectMemberDeclaratorSyntax;
+                   || node is AnonymousObjectMemberDeclaratorSyntax
+                   || node is ForEachStatementSyntax;
         }
 
         /// <summary>

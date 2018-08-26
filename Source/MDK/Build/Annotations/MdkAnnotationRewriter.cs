@@ -12,15 +12,13 @@ namespace MDK.Build.Annotations
     {
         static readonly char[] TagSeparators = { ' ' };
 
-        List<SyntaxNode> _symbolDeclarations;
         readonly IDictionary<string, string> _macros;
         Regex _regionRegex = new Regex(@"\s*#region\s+mdk\s+([^\r\n]*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         Stack<RegionInfo> _stack = new Stack<RegionInfo>();
         Regex _macroRegex = new Regex(@"\$\w+\$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-        public MdkAnnotationRewriter(IDictionary<string, string> macros, List<SyntaxNode> symbolDeclarations) : base(true)
+        public MdkAnnotationRewriter(IDictionary<string, string> macros) : base(true)
         {
-            _symbolDeclarations = symbolDeclarations;
             _macros = macros;
             _stack.Push(new RegionInfo());
         }
@@ -43,9 +41,6 @@ namespace MDK.Build.Annotations
             var region = _stack.Peek();
             if (region.Annotation != null)
                 return node.WithAdditionalAnnotations(region.Annotation);
-
-            if (node.IsSymbolDeclaration())
-                _symbolDeclarations.Add(node);
             return node;
         }
 
