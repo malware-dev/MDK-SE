@@ -47,6 +47,12 @@
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
                     <Setter Property="Padding" Value="1" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsSignificant}" Value="True">
+                            <Setter Property="Foreground" 
+                                    Value="{StaticResource {x:Static SystemColors.InfoTextBrushKey}}" />
+                        </DataTrigger>
+                    </Style.Triggers>
                 </Style>
             </ListBox.ItemContainerStyle>
             <ListBox.InputBindings>
