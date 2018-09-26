@@ -220,24 +220,21 @@ namespace MDK.Build
             }
         }
 
-        string ExpandMacros(Project project, string input)
-        {
-            return Regex.Replace(input, @"\$\(ProjectName\)|%([^%]+)%", match =>
-            {
-                if (match.Value.StartsWith("%") && match.Value.EndsWith("%")) 
-                { 
-                    return Environment.ExpandEnvironmentVariables(match.Value); 
-                } 
-                
-                switch (match.Value.ToUpper())
-                {
-                    case "$(PROJECTNAME)":
-                        return project.Name;
-                    default:
-                        return match.Value;
-                }
-            }, RegexOptions.IgnoreCase);
-        }
+		string ExpandMacros(Project project, string input)
+		{
+			var replacements = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
+			replacements["$(projectname)"] = project.Name ?? "";
+			foreach (DictionaryEntry envVar in Environment.GetEnvironmentVariables())
+				replacements[$"%{envVar.Key}%"] = (string)envVar.Value;
+			return Regex.Replace(input, @"\$\(ProjectName\)|%[^%]+%", match =>
+			{
+				string value;
+				if (replacements.TryGetValue(match.Value, out value)) {
+					return value;
+				}
+				return match.Value;
+			}, RegexOptions.IgnoreCase);
+		}
 
         /// <summary>
         /// Called when the current build progress changes.
