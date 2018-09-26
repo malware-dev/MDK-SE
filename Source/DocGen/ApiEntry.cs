@@ -4,12 +4,25 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
+using System.Xml.XPath;
 
 namespace DocGen
 {
     class ApiEntry
     {
         public static ApiEntry Create(MemberInfo memberInfo, XDocument documentation)
+        {
+            var instance = CreateInstance(memberInfo);
+            if (instance == null)
+                return null;
+            var doc = documentation?.XPathSelectElement($"/doc/members/member[@name='{instance.XmlDocKey}']");
+            instance.Documentation = XmlDoc.Generate(doc);
+            return instance;
+        }
+
+        public XmlDoc Documentation { get; set; }
+
+        static ApiEntry CreateInstance(MemberInfo memberInfo)
         {
             switch (memberInfo)
             {
@@ -183,6 +196,10 @@ namespace DocGen
             return prefix + ForType(type).XmlDocKey.Substring(2);
         }
 
+        List<ApiEntry> _inheritedEntries = new List<ApiEntry>();
+        List<ApiEntry> _inheritorEntries = new List<ApiEntry>();
+        List<ApiEntry> _memberEntries = new List<ApiEntry>();
+
         public ApiEntry(MemberInfo member, string assemblyName, string namespaceName, string name, string signature, string whitelistKey, string xmlDocKey)
         {
             Member = member;
@@ -199,12 +216,11 @@ namespace DocGen
             MemberEntries = new ReadOnlyCollection<ApiEntry>(_memberEntries);
         }
 
-        List<ApiEntry> _inheritedEntries = new List<ApiEntry>();
-        List<ApiEntry> _inheritorEntries = new List<ApiEntry>();
-        List<ApiEntry> _memberEntries = new List<ApiEntry>();
+        public XElement DocumentationElement { get; private set; }
 
         public MemberInfo Member { get; }
         public ApiEntry DeclaringEntry { get; private set; }
+        public ApiEntry BaseEntry { get; private set; }
         public ReadOnlyCollection<ApiEntry> MemberEntries { get; }
         public ReadOnlyCollection<ApiEntry> InheritedEntries { get; }
         public ReadOnlyCollection<ApiEntry> InheritorEntries { get; }
@@ -225,7 +241,7 @@ namespace DocGen
                 var entry = entries.FirstOrDefault(e => e.Member == type.BaseType);
                 if (entry != null)
                 {
-                    _inheritedEntries.Add(entry);
+                    BaseEntry = entry;
                     entry._inheritorEntries.Add(this);
                 }
 

@@ -179,6 +179,7 @@ namespace MDK.Build
         /// Determines whether the given syntax node is a symbol declaration.
         /// </summary>
         /// <param name="node"></param>
+        /// <param name="dump">Optional argument. If true, dumps the node kind and content to the debug console</param>
         /// <returns></returns>
         public static bool IsSymbolDeclaration(this SyntaxNode node, bool dump = false)
         {

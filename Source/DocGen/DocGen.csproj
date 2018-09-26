@@ -46,12 +46,14 @@
   <ItemGroup>
     <Compile Include="ApiEntry.cs" />
     <Compile Include="MDKUtilityFramework.cs" />
+    <Compile Include="MemberDescriptionGenerator.cs" />
     <Compile Include="ProgrammableBlockApi.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Terminals.cs" />
     <Compile Include="Whitelist.cs" />
     <Compile Include="WhitelistKey.cs" />
+    <Compile Include="XmlDoc.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

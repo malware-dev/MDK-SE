@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -220,21 +222,24 @@ namespace MDK.Build
             }
         }
 
-		string ExpandMacros(Project project, string input)
-		{
-			var replacements = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
-			replacements["$(projectname)"] = project.Name ?? "";
-			foreach (DictionaryEntry envVar in Environment.GetEnvironmentVariables())
-				replacements[$"%{envVar.Key}%"] = (string)envVar.Value;
-			return Regex.Replace(input, @"\$\(ProjectName\)|%[^%]+%", match =>
-			{
-				string value;
-				if (replacements.TryGetValue(match.Value, out value)) {
-					return value;
-				}
-				return match.Value;
-			}, RegexOptions.IgnoreCase);
-		}
+        string ExpandMacros(Project project, string input)
+        {
+            var replacements = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase)
+            {
+                ["$(projectname)"] = project.Name ?? ""
+            };
+            foreach (DictionaryEntry envVar in Environment.GetEnvironmentVariables())
+                replacements[$"%{envVar.Key}%"] = (string)envVar.Value;
+            return Regex.Replace(input, @"\$\(ProjectName\)|%[^%]+%", match =>
+            {
+                if (replacements.TryGetValue(match.Value, out var value))
+                {
+                    return value;
+                }
+
+                return match.Value;
+            }, RegexOptions.IgnoreCase);
+        }
 
         /// <summary>
         /// Called when the current build progress changes.

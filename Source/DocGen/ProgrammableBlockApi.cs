@@ -126,7 +126,7 @@ namespace DocGen
                         }
 
                         await file.WriteLineAsync();
-                        //await WriteTypeFileAsync(typeGroup, Path.Combine(directory.FullName, mdPath), documentation);
+                        await WriteTypeFileAsync(typeGroup, Path.Combine(directory.FullName, mdPath));
                     }
                 }
 
@@ -134,28 +134,50 @@ namespace DocGen
             }
         }
 
-        async Task WriteTypeFileAsync(IGrouping<Type, MemberInfo> typeGroup, string fileName, XDocument documentation)
+        async Task WriteTypeFileAsync(IGrouping<ApiEntry, ApiEntry> typeGroup, string fileName)
         {
             //using (var file = File.CreateText(fileName))
             //{
-            //    var typeKey = WhitelistKey.ForType(typeGroup.Key);
-            //    await file.WriteLineAsync($"#{typeKey.Path}");
+            //    var entry = typeGroup.Key;
+            //    var type = (Type)entry.Member;
+            //    await file.WriteLineAsync($"#{entry.Signature}");
             //    await file.WriteLineAsync();
-            //    foreach (var member in typeGroup.OrderBy(m => m.Name))
+
+            //    var summary = entry.DocumentationElement?.Element("Summary");
+            //    var remarks = entry.DocumentationElement?.Element("Remarks");
+
+            //    if (summary != null)
             //    {
-            //        var fullMemberKey = WhitelistKey.ForMember(member);
-            //        var xmlKey = fullMemberKey.ToXmlDoc();
-            //        var memberKey = WhitelistKey.ForMember(member, false);
-            //        var doc = documentation?.XPathSelectElement($"/doc/members/member[@name='{xmlKey}']");
-            //        string summary;
-            //        if (doc != null)
-            //            summary = doc.Element("summary")?.Value ?? "";
-            //        else
-            //            summary = "";
-            //        await file.WriteLineAsync($"* `{memberKey.Path}`");
-            //        await file.WriteLineAsync($"  " + Trim(summary));
+            //        await file.WriteLineAsync(summary.Value);
             //        await file.WriteLineAsync();
             //    }
+
+            //    if (remarks != null)
+            //    {
+            //        var lines = Regex.Split(summary.Value, @"\r\n|\n|\r");
+            //        await file.WriteLineAsync($"> {string.Join("\r\n> ", lines)}");
+            //        await file.WriteLineAsync();
+            //    }
+
+            //    if (type.IsInterface)
+            //    //    var typeKey = WhitelistKey.ForType(typeGroup.Key);
+            //    //    await file.WriteLineAsync($"#{typeKey.Path}");
+            //    //    await file.WriteLineAsync();
+            //    //    foreach (var member in typeGroup.OrderBy(m => m.Name))
+            //    //    {
+            //    //        var fullMemberKey = WhitelistKey.ForMember(member);
+            //    //        var xmlKey = fullMemberKey.ToXmlDoc();
+            //    //        var memberKey = WhitelistKey.ForMember(member, false);
+            //    //        var doc = documentation?.XPathSelectElement($"/doc/members/member[@name='{xmlKey}']");
+            //    //        string summary;
+            //    //        if (doc != null)
+            //    //            summary = doc.Element("summary")?.Value ?? "";
+            //    //        else
+            //    //            summary = "";
+            //    //        await file.WriteLineAsync($"* `{memberKey.Path}`");
+            //    //        await file.WriteLineAsync($"  " + Trim(summary));
+            //    //        await file.WriteLineAsync();
+            //    //    }
             //}
         }
 
