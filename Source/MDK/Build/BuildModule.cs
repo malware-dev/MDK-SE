@@ -222,8 +222,13 @@ namespace MDK.Build
 
         string ExpandMacros(Project project, string input)
         {
-            return Regex.Replace(input, @"\$\(ProjectName\)|%APPDATA%", match =>
+            return Regex.Replace(input, @"\$\(ProjectName\)|%([^%]+)%", match =>
             {
+                if (match.Value.StartsWith("%") && match.Value.EndsWith("%")) 
+                { 
+                    return Environment.ExpandEnvironmentVariables(match.Value); 
+                } 
+                
                 switch (match.Value.ToUpper())
                 {
                     case "$(PROJECTNAME)":
