@@ -24,7 +24,9 @@ namespace MDK.Build.UsageAnalysis
 
         public HashSet<string> ProtectedNames { get; } = new HashSet<string>
         {
-            ".ctor"
+            ".ctor",
+            ".cctor",
+            "Finalize",
         };
 
         public ImmutableArray<SymbolDefinitionInfo> FindSymbols(ProgramComposition composition, ProjectScriptInfo config)
