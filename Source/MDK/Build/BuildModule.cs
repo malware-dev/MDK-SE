@@ -233,8 +233,6 @@ namespace MDK.Build
                 {
                     case "$(PROJECTNAME)":
                         return project.Name;
-                    case "%APPDATA%":
-                        return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
                     default:
                         return match.Value;
                 }
