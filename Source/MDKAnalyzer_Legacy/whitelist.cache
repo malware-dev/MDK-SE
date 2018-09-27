@@ -1,0 +1,224 @@
+System.Collections.*, mscorlib
+System.Collections.Generic.*, mscorlib
+System.Collections.Generic.*, System.Core
+System.Collections.Generic.*, System
+System.Collections.Concurrent.*, mscorlib
+System.Collections.Concurrent.*, System
+System.Linq.*, System.Core
+System.Text.*, mscorlib
+System.Text.RegularExpressions.*, System
+System.Globalization.*, mscorlib
+object+*, mscorlib
+System.IDisposable+*, mscorlib
+string+*, mscorlib
+System.StringComparison+*, mscorlib
+System.Math+*, mscorlib
+System.Enum+*, mscorlib
+int+*, mscorlib
+short+*, mscorlib
+long+*, mscorlib
+uint+*, mscorlib
+ushort+*, mscorlib
+ulong+*, mscorlib
+double+*, mscorlib
+float+*, mscorlib
+bool+*, mscorlib
+char+*, mscorlib
+byte+*, mscorlib
+sbyte+*, mscorlib
+decimal+*, mscorlib
+System.DateTime+*, mscorlib
+System.TimeSpan+*, mscorlib
+System.Array+*, mscorlib
+System.Xml.Serialization.XmlElementAttribute+*, System.Xml
+System.Xml.Serialization.XmlAttributeAttribute+*, System.Xml
+System.Xml.Serialization.XmlArrayAttribute+*, System.Xml
+System.Xml.Serialization.XmlArrayItemAttribute+*, System.Xml
+System.Xml.Serialization.XmlAnyAttributeAttribute+*, System.Xml
+System.Xml.Serialization.XmlAnyElementAttribute+*, System.Xml
+System.Xml.Serialization.XmlAnyElementAttributes+*, System.Xml
+System.Xml.Serialization.XmlArrayItemAttributes+*, System.Xml
+System.Xml.Serialization.XmlAttributeEventArgs+*, System.Xml
+System.Xml.Serialization.XmlAttributeOverrides+*, System.Xml
+System.Xml.Serialization.XmlAttributes+*, System.Xml
+System.Xml.Serialization.XmlChoiceIdentifierAttribute+*, System.Xml
+System.Xml.Serialization.XmlElementAttributes+*, System.Xml
+System.Xml.Serialization.XmlElementEventArgs+*, System.Xml
+System.Xml.Serialization.XmlEnumAttribute+*, System.Xml
+System.Xml.Serialization.XmlIgnoreAttribute+*, System.Xml
+System.Xml.Serialization.XmlIncludeAttribute+*, System.Xml
+System.Xml.Serialization.XmlRootAttribute+*, System.Xml
+System.Xml.Serialization.XmlTextAttribute+*, System.Xml
+System.Xml.Serialization.XmlTypeAttribute+*, System.Xml
+System.Runtime.CompilerServices.RuntimeHelpers+*, mscorlib
+System.IO.Stream+*, mscorlib
+System.IO.TextWriter+*, mscorlib
+System.IO.TextReader+*, mscorlib
+System.IO.BinaryReader+*, mscorlib
+System.IO.BinaryWriter+*, mscorlib
+System.NullReferenceException+*, mscorlib
+System.ArgumentException+*, mscorlib
+System.ArgumentNullException+*, mscorlib
+System.InvalidOperationException+*, mscorlib
+System.FormatException+*, mscorlib
+System.Exception+*, mscorlib
+System.DivideByZeroException+*, mscorlib
+System.InvalidCastException+*, mscorlib
+System.IO.FileNotFoundException+*, mscorlib
+System.NotSupportedException+*, mscorlib
+System.Nullable<T>+*, mscorlib
+System.StringComparer+*, mscorlib
+System.IEquatable<T>+*, mscorlib
+System.IComparable+*, mscorlib
+System.IComparable<T>+*, mscorlib
+System.BitConverter+*, mscorlib
+System.FlagsAttribute+*, mscorlib
+System.IO.Path+*, mscorlib
+System.Random+*, mscorlib
+System.Convert+*, mscorlib
+System.StringSplitOptions+*, mscorlib
+System.DateTimeKind+*, mscorlib
+System.MidpointRounding+*, mscorlib
+System.EventArgs+*, mscorlib
+System.Buffer+*, mscorlib
+System.Reflection.MemberInfo, mscorlib
+System.Reflection.MemberInfo.Name, mscorlib
+System.Type, mscorlib
+System.Type.FullName, mscorlib
+System.Type.GetTypeFromHandle(System.RuntimeTypeHandle), mscorlib
+System.Type.GetFields(System.Reflection.BindingFlags), mscorlib
+System.Type.IsEquivalentTo(System.Type), mscorlib
+System.Type.operator ==(System.Type, System.Type), mscorlib
+System.Type.ToString(), mscorlib
+System.ValueType, mscorlib
+System.ValueType.Equals(object), mscorlib
+System.ValueType.GetHashCode(), mscorlib
+System.ValueType.ToString(), mscorlib
+System.Environment, mscorlib
+System.Environment.CurrentManagedThreadId, mscorlib
+System.Environment.NewLine, mscorlib
+System.Environment.ProcessorCount, mscorlib
+System.RuntimeType, mscorlib
+System.RuntimeType.operator !=(System.RuntimeType, System.RuntimeType), mscorlib
+System.RuntimeType.GetFields(System.Reflection.BindingFlags), mscorlib
+System.Delegate, mscorlib
+System.Delegate.DynamicInvoke(params object[]), mscorlib
+System.Delegate.Equals(object), mscorlib
+System.Delegate.GetHashCode(), mscorlib
+System.Delegate.Combine(System.Delegate, System.Delegate), mscorlib
+System.Delegate.Combine(params System.Delegate[]), mscorlib
+System.Delegate.GetInvocationList(), mscorlib
+System.Delegate.Remove(System.Delegate, System.Delegate), mscorlib
+System.Delegate.RemoveAll(System.Delegate, System.Delegate), mscorlib
+System.Delegate.Clone(), mscorlib
+System.Delegate.operator ==(System.Delegate, System.Delegate), mscorlib
+System.Delegate.operator !=(System.Delegate, System.Delegate), mscorlib
+System.Delegate.GetObjectData(System.Runtime.Serialization.SerializationInfo, System.Runtime.Serialization.StreamingContext), mscorlib
+System.Delegate.Method, mscorlib
+System.Delegate.Target, mscorlib
+System.Action+*, mscorlib
+System.Action<T>+*, mscorlib
+System.Action<T1, T2>+*, mscorlib
+System.Action<T1, T2, T3>+*, mscorlib
+System.Action<T1, T2, T3, T4>+*, mscorlib
+System.Action<T1, T2, T3, T4, T5>+*, mscorlib
+System.Action<T1, T2, T3, T4, T5, T6>+*, mscorlib
+System.Action<T1, T2, T3, T4, T5, T6, T7>+*, mscorlib
+System.Action<T1, T2, T3, T4, T5, T6, T7, T8>+*, mscorlib
+System.Action<T1, T2, T3, T4, T5, T6, T7, T8, T9>+*, System.Core
+System.Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>+*, System.Core
+System.Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>+*, System.Core
+System.Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>+*, System.Core
+System.Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>+*, System.Core
+System.Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>+*, System.Core
+System.Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>+*, System.Core
+System.Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>+*, System.Core
+System.Func<TResult>+*, mscorlib
+System.Func<T, TResult>+*, mscorlib
+System.Func<T1, T2, TResult>+*, mscorlib
+System.Func<T1, T2, T3, TResult>+*, mscorlib
+System.Func<T1, T2, T3, T4, TResult>+*, mscorlib
+System.Func<T1, T2, T3, T4, T5, TResult>+*, mscorlib
+System.Func<T1, T2, T3, T4, T5, T6, TResult>+*, mscorlib
+System.Func<T1, T2, T3, T4, T5, T6, T7, TResult>+*, mscorlib
+System.Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult>+*, mscorlib
+System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult>+*, System.Core
+System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>+*, System.Core
+System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult>+*, System.Core
+System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult>+*, System.Core
+System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult>+*, System.Core
+System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult>+*, System.Core
+System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult>+*, System.Core
+System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult>+*, System.Core
+SpaceEngineers.Game.ModAPI.Ingame.*, SpaceEngineers.Game
+SpaceEngineers.Game.ModAPI.Ingame.*, SpaceEngineers.ObjectBuilders
+System.Collections.Generic.*, VRage.Library
+VRage.Game.ModAPI.Ingame.*, VRage.Game
+VRage.Game.ModAPI.Ingame.Utilities.*, VRage.Game
+Sandbox.ModAPI.Ingame.*, Sandbox.Common
+VRageMath.*, VRage.Math
+Sandbox.Game.Gui.TerminalActionExtensions+*, Sandbox.Game
+Sandbox.ModAPI.Interfaces.ITerminalAction+*, Sandbox.Common
+Sandbox.ModAPI.Interfaces.ITerminalProperty+*, Sandbox.Common
+Sandbox.ModAPI.Interfaces.ITerminalProperty<TValue>+*, Sandbox.Common
+Sandbox.ModAPI.Interfaces.TerminalPropertyExtensions+*, Sandbox.Common
+Sandbox.Game.Localization.MySpaceTexts+*, Sandbox.Game
+VRage.MyFixedPoint+*, VRage.Library
+VRage.MyTuple+*, VRage.Library
+VRage.MyTuple<T1>+*, VRage.Library
+VRage.MyTuple<T1, T2>+*, VRage.Library
+VRage.MyTuple<T1, T2, T3>+*, VRage.Library
+VRage.MyTuple<T1, T2, T3, T4>+*, VRage.Library
+VRage.MyTuple<T1, T2, T3, T4, T5>+*, VRage.Library
+VRage.MyTuple<T1, T2, T3, T4, T5, T6>+*, VRage.Library
+VRage.MyTupleComparer<T1, T2>+*, VRage.Library
+VRage.MyTupleComparer<T1, T2, T3>+*, VRage.Library
+VRage.MyTexts, VRage
+VRage.MyTexts.GetString(string), VRage
+VRage.MyTexts.GetString(VRage.Utils.MyStringId), VRage
+VRage.MyTexts.Exists(VRage.Utils.MyStringId), VRage
+VRage.MyTexts.Get(VRage.Utils.MyStringId), VRage
+VRage.MyTexts.AppendFormat(System.Text.StringBuilder, VRage.Utils.MyStringId, object), VRage
+VRage.MyTexts.Languages, VRage
+VRage.MyTexts.LanguageDescription+*, VRage
+VRage.MyLanguagesEnum+*, VRage
+VRage.Game.Components.MyComponentContainer, VRage.Game
+VRage.Game.Components.MyComponentContainer.TryGet<T>(out T), VRage.Game
+VRage.Game.Components.MyComponentContainer.Has<T>(), VRage.Game
+VRage.Game.Components.MyComponentContainer.Get<T>(), VRage.Game
+VRage.Game.Components.MyComponentContainer.TryGet(System.Type, out VRage.Game.Components.MyComponentBase), VRage.Game
+VRage.Collections.ListReader<T>+*, VRage.Library
+VRage.Game.MyDefinitionId+*, VRage.Game
+VRage.Game.MyRelationsBetweenPlayerAndBlock+*, VRage.Game
+VRage.Game.MyRelationsBetweenPlayerAndBlockExtensions+*, VRage.Game
+VRage.Game.Components.MyResourceSourceComponentBase+*, VRage.Game
+VRage.Game.ObjectBuilders.Definitions.MyObjectBuilder_GasProperties+*, VRage.Game
+VRage.Game.Components.MyComponentBase+*, VRage.Game
+VRage.ObjectBuilders.SerializableDefinitionId+*, VRage.Game
+VRage.Game.MyCubeSize+*, VRage.Game
+VRage.ObjectBuilders.MyObjectBuilder_Base, VRage.Game
+VRage.ObjectBuilders.MyObjectBuilder_Base.TypeId, VRage.Game
+VRage.ObjectBuilders.MyObjectBuilder_Base.SubtypeId, VRage.Game
+Sandbox.Game.EntityComponents.MyResourceSourceComponent, Sandbox.Game
+Sandbox.Game.EntityComponents.MyResourceSourceComponent.CurrentOutput, Sandbox.Game
+Sandbox.Game.EntityComponents.MyResourceSourceComponent.MaxOutput, Sandbox.Game
+Sandbox.Game.EntityComponents.MyResourceSourceComponent.DefinedOutput, Sandbox.Game
+Sandbox.Game.EntityComponents.MyResourceSourceComponent.ProductionEnabled, Sandbox.Game
+Sandbox.Game.EntityComponents.MyResourceSourceComponent.RemainingCapacity, Sandbox.Game
+Sandbox.Game.EntityComponents.MyResourceSourceComponent.HasCapacityRemaining, Sandbox.Game
+Sandbox.Game.EntityComponents.MyResourceSinkComponent, Sandbox.Game
+Sandbox.Game.EntityComponents.MyResourceSinkComponent.AcceptedResources, Sandbox.Game
+Sandbox.Game.EntityComponents.MyResourceSinkComponent.RequiredInput, Sandbox.Game
+Sandbox.Game.EntityComponents.MyResourceSinkComponent.SuppliedRatio, Sandbox.Game
+Sandbox.Game.EntityComponents.MyResourceSinkComponent.CurrentInput, Sandbox.Game
+Sandbox.Game.EntityComponents.MyResourceSinkComponent.IsPowered, Sandbox.Game
+VRage.Game.Components.MyResourceSinkComponentBase, VRage.Game
+VRage.Game.Components.MyResourceSinkComponentBase.AcceptedResources, VRage.Game
+VRage.Game.Components.MyResourceSinkComponentBase.CurrentInputByType(VRage.Game.MyDefinitionId), VRage.Game
+VRage.Game.Components.MyResourceSinkComponentBase.IsPowerAvailable(VRage.Game.MyDefinitionId, float), VRage.Game
+VRage.Game.Components.MyResourceSinkComponentBase.IsPoweredByType(VRage.Game.MyDefinitionId), VRage.Game
+VRage.Game.Components.MyResourceSinkComponentBase.MaxRequiredInputByType(VRage.Game.MyDefinitionId), VRage.Game
+VRage.Game.Components.MyResourceSinkComponentBase.RequiredInputByType(VRage.Game.MyDefinitionId), VRage.Game
+VRage.Game.Components.MyResourceSinkComponentBase.SuppliedRatioByType(VRage.Game.MyDefinitionId), VRage.Game
+System.ArrayExtensions, VRage.Library
+System.ArrayExtensions.Contains<T>(T[], T), VRage.Library

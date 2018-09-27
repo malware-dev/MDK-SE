@@ -60,6 +60,15 @@ _ReSharper*/
 #Ignore packages directory
 Packages/
 
+#Allow whitelist.cache
+!whitelist.cache
+
+#Allow Release folder
+!/Release
+
+#Ignore built vsix in publish folder
+/Release/Mdk.vsix
+
 #Allow NuGet.exe
 !NuGet.exe
 
