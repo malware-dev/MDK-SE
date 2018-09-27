@@ -65,6 +65,7 @@ Packages/
 
 #Allow Release folder
 !/Release
+!/Release/**/*.exe
 
 #Ignore built vsix in publish folder
 /Release/Mdk.vsix
