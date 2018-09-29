@@ -573,5 +573,14 @@ namespace MDK.Resources {
                 return ResourceManager.GetString("RequestUpgradeDialogModel_OnSave_Error_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to find Program entry point for {0}.
+        /// </summary>
+        internal static string TypeTrimmer_ProcessAsync_NoEntryPoint {
+            get {
+                return ResourceManager.GetString("TypeTrimmer_ProcessAsync_NoEntryPoint", resourceCulture);
+            }
+        }
     }
 }

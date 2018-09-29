@@ -294,4 +294,7 @@
   <data name="BlueprintManagerDialogModel_CopyToClipboard_Copy_Description" xml:space="preserve">
     <value>The blueprint was copied to the clipboard.</value>
   </data>
+  <data name="TypeTrimmer_ProcessAsync_NoEntryPoint" xml:space="preserve">
+    <value>Unable to find Program entry point for {0}</value>
+  </data>
 </root>

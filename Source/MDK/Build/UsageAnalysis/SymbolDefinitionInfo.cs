@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Immutable;
-using System.Linq;
+﻿using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.FindSymbols;
 
@@ -85,16 +83,9 @@ namespace MDK.Build.UsageAnalysis
             return new SymbolDefinitionInfo(Symbol, SyntaxNode, IsProtected, usage);
         }
 
-        /// <summary>
-        /// Determines if this symbol is in use.
-        /// </summary>
-        /// <exception cref="InvalidOperationException">No usage data available</exception>
-        /// <returns></returns>
-        public bool HasUsage()
-        {
-            if (!HasUsageData)
-                throw new InvalidOperationException("No usage data available");
-            return Usage.Sum(u => u.Locations.Count()) > 0;
-        }
+        /// <summary>Returns a string that represents the current object.</summary>
+        /// <returns>A string that represents the current object.</returns>
+        /// <filterpriority>2</filterpriority>
+        public override string ToString() => FullName ?? "";
     }
 }
