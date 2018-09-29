@@ -1,4 +1,6 @@
-﻿using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.FindSymbols;
 
@@ -16,7 +18,7 @@ namespace MDK.Build.UsageAnalysis
         /// <param name="syntaxNode"></param>
         /// <param name="isProtected"></param>
         /// <param name="usage"></param>
-        public SymbolDefinitionInfo(ISymbol symbol, SyntaxNode syntaxNode, bool isProtected = false, ImmutableArray<ReferencedSymbol> usage = default(ImmutableArray<ReferencedSymbol>))
+        public SymbolDefinitionInfo(ISymbol symbol, SyntaxNode syntaxNode, bool isProtected = false, ImmutableArray<ReferencedSymbol> usage = default)
         {
             FullName = symbol.GetFullName(DeclarationFullNameFlags.WithoutNamespaceName);
             Symbol = symbol;
@@ -51,6 +53,11 @@ namespace MDK.Build.UsageAnalysis
         public ImmutableArray<ReferencedSymbol> Usage { get; }
 
         /// <summary>
+        /// Determines if this symbol definition contains <see cref="Usage"/> data
+        /// </summary>
+        public bool HasUsageData => !Usage.IsDefault;
+
+        /// <summary>
         /// Creates a protected copy of this symbol definition
         /// </summary>
         /// <returns></returns>
@@ -76,6 +83,18 @@ namespace MDK.Build.UsageAnalysis
         public SymbolDefinitionInfo WithUsageData(ImmutableArray<ReferencedSymbol> usage)
         {
             return new SymbolDefinitionInfo(Symbol, SyntaxNode, IsProtected, usage);
+        }
+
+        /// <summary>
+        /// Determines if this symbol is in use.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">No usage data available</exception>
+        /// <returns></returns>
+        public bool HasUsage()
+        {
+            if (!HasUsageData)
+                throw new InvalidOperationException("No usage data available");
+            return Usage.Sum(u => u.Locations.Count()) > 0;
         }
     }
 }

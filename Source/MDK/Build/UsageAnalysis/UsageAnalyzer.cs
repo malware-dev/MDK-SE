@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Malware.MDKServices;
 using MDK.Build.Solution;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.FindSymbols;
 
 namespace MDK.Build.UsageAnalysis
@@ -25,7 +26,19 @@ namespace MDK.Build.UsageAnalysis
         {
             var references = (await SymbolFinder.FindReferencesAsync(definition.Symbol, composition.Document.Project.Solution))
                 .ToImmutableArray();
-            return definition.WithUsageData(references);
+            definition = definition.WithUsageData(references);
+
+            // Check for extension class usage
+            var symbol = definition.Symbol;
+            if (symbol.IsDefinition && symbol is ITypeSymbol typeSymbol && typeSymbol.TypeKind == TypeKind.Class && typeSymbol.IsStatic && typeSymbol.ContainingType == null)
+            {
+                var members = typeSymbol.GetMembers().Where(m => m is IMethodSymbol methodSymbol && methodSymbol.IsStatic && methodSymbol.IsExtensionMethod).ToArray();
+                foreach (var member in members)
+                    references = references.AddRange((await SymbolFinder.FindReferencesAsync(member, composition.Document.Project.Solution)));
+                definition = definition.WithUsageData(references);
+            }
+
+            return definition;
         }
     }
 }
