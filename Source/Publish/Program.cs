@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Xml;
@@ -20,13 +19,13 @@ namespace Malware.BuildForPublish
                 Console.WriteLine("No solution specified");
                 return;
             }
-            
+
             var releaseType = GetReleaseType();
             if (releaseType == ReleaseType.None)
                 return;
             Console.WriteLine();
             // Ugh. So a Visual Studio update made the call above stop working, even after updating the nuget package. Thanks, MS.
-            var msbuildExe = @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\MSBuild.exe"; 
+            var msbuildExe = @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\MSBuild.exe";
             var solutionPath = Path.GetFullPath(args[0]);
             var manifestPath = Path.Combine(Path.GetDirectoryName(solutionPath), @"MDK\source.extension.vsixmanifest");
             var appConfigPath = Path.Combine(Path.GetDirectoryName(solutionPath), @"MDK\other.xml");
@@ -36,6 +35,7 @@ namespace Malware.BuildForPublish
                 UpdateManifestVersion(manifestPath, releaseType);
                 UpdateAppConfigVersion(appConfigPath, releaseType);
             }
+
             Build(msbuildExe, solutionPath);
         }
 
@@ -98,6 +98,7 @@ namespace Malware.BuildForPublish
                 default:
                     throw new ArgumentOutOfRangeException(nameof(releaseType), releaseType, null);
             }
+
             versionAttribute.Value = newVersion.ToString();
             document.Save(manifestPath);
         }
@@ -119,9 +120,14 @@ namespace Malware.BuildForPublish
                 {
                     FileName = msbuildExe,
                     Arguments = $"\"{Path.GetFileName(solutionPath)}\" /t:Rebuild /p:Configuration=Release /p:Platform=\"Any Cpu\"",
-                    WorkingDirectory = Path.GetDirectoryName(solutionPath)
+                    WorkingDirectory = Path.GetDirectoryName(solutionPath),
+                    UseShellExecute = false
                 }
             };
+            process.OutputDataReceived += OnProcessOutputDataReceived;
+            process.ErrorDataReceived += OnProcessErrorDataReceived;
+
+            Console.Clear();
             process.Start();
             process.WaitForExit();
             if (process.ExitCode != 0)
@@ -130,6 +136,16 @@ namespace Malware.BuildForPublish
                 Console.WriteLine("Press Any Key...");
                 Console.ReadKey();
             }
+        }
+
+        static void OnProcessErrorDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            Console.Write(e.Data);
+        }
+
+        static void OnProcessOutputDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            Console.Write(e.Data);
         }
 
         enum ReleaseType
