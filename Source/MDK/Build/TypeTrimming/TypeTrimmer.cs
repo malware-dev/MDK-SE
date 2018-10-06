@@ -71,7 +71,7 @@ namespace MDK.Build.TypeTrimming
             var nodes = new Dictionary<ISymbol, Node>();
             var analyzer = new UsageAnalyzer();
             var symbolDefinitions = await analyzer.FindUsagesAsync(composition, config);
-            var symbolLookup = symbolDefinitions.ToDictionary(d => d.Symbol);
+            var symbolLookup = symbolDefinitions.GroupBy(d => d.Symbol).ToDictionary(g => g.Key, g => g.ToList());
             var rootNode = composition.RootNode;
             foreach (var definition in symbolDefinitions)
             {
@@ -79,16 +79,20 @@ namespace MDK.Build.TypeTrimming
                     continue;
                 if (typeSymbol.TypeKind == TypeKind.TypeParameter)
                     continue;
+
                 if (!nodes.TryGetValue(definition.Symbol, out var node))
                     nodes[definition.Symbol] = node = new Node(definition);
-                foreach (var usage in node.Definition.Usage)
+                else
+                    node.Definitions.Add(definition);
+
+                foreach (var usage in definition.Usage)
                 {
                     foreach (var location in usage.Locations)
                     {
                         var enclosingSymbol = await FindTypeSymbolAsync(rootNode, location);
-                        var enclosingSymbolDefinition = symbolLookup[enclosingSymbol];
+                        var enclosingSymbolDefinitions = symbolLookup[enclosingSymbol];
                         if (!nodes.TryGetValue(enclosingSymbol, out var referencingNode))
-                            nodes[enclosingSymbol] = referencingNode = new Node(enclosingSymbolDefinition);
+                            nodes[enclosingSymbol] = referencingNode = new Node(enclosingSymbolDefinitions);
                         if (node != referencingNode)
                             referencingNode.References.Add(node);
                     }
@@ -115,7 +119,7 @@ namespace MDK.Build.TypeTrimming
                     queue.Enqueue(reference);
             }
 
-            var usedSymbolDefinitions = usedNodes.Select(n => n.Definition).ToImmutableHashSet();
+            var usedSymbolDefinitions = usedNodes.SelectMany(n => n.Definitions).ToImmutableHashSet();
             var unusedSymbolDefinitions = symbolDefinitions.Where(definition => IsEligibleForRemoval(definition) && !usedSymbolDefinitions.Contains(definition)).ToList();
             var nodesToRemove = unusedSymbolDefinitions.Select(definition => definition.FullName).ToImmutableHashSet();
 
@@ -178,14 +182,22 @@ namespace MDK.Build.TypeTrimming
         {
             public Node(SymbolDefinitionInfo definition)
             {
-                Definition = definition;
+                Definitions = new HashSet<SymbolDefinitionInfo>()
+                {
+                    definition
+                };
             }
 
-            public SymbolDefinitionInfo Definition { get; }
+            public Node(IEnumerable<SymbolDefinitionInfo> definitions)
+            {
+                Definitions = new HashSet<SymbolDefinitionInfo>(definitions);
+            }
+
+            public HashSet<SymbolDefinitionInfo> Definitions { get; }
 
             public HashSet<Node> References { get; } = new HashSet<Node>();
 
-            public override string ToString() => Definition.FullName ?? "";
+            public override string ToString() => Definitions.FirstOrDefault()?.FullName ?? "";
         }
     }
 }
