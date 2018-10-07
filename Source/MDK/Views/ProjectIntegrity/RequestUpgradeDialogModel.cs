@@ -13,6 +13,8 @@ namespace MDK.Views.ProjectIntegrity
     /// </summary>
     public class RequestUpgradeDialogModel : DialogViewModel
     {
+        string _message = "The following MDK projects must be upgraded in order to function correctly. Do you wish to do this now?";
+
         /// <summary>
         /// Creates a new instance of this view model.
         /// </summary>
@@ -26,7 +28,33 @@ namespace MDK.Views.ProjectIntegrity
             if (analysisResults.BadProjects.IsDefaultOrEmpty)
                 Projects = new ReadOnlyCollection<ProjectScriptInfo>(new List<ProjectScriptInfo>());
             else
-                Projects = new ReadOnlyCollection<ProjectScriptInfo>(analysisResults.BadProjects.Select(p => p.ProjectInfo).ToArray());
+            {
+                if (analysisResults.BadProjects.Any(p => !p.HasValidGamePath))
+                {
+                    Projects = new ReadOnlyCollection<ProjectScriptInfo>(analysisResults.BadProjects.Where(p => !p.HasValidGamePath) .Select(p => p.ProjectInfo).ToArray());
+                    Message = "The Space Engineers game folder could not be determined. Automatic upgrades cannot be completed. Please verify that the game is installed and that the MDK configuration is correct, and then reload the projects. This affects the following MDK projects:";
+                    SaveAndCloseCommand.IsEnabled = false;
+                }
+                else
+                {
+                    Projects = new ReadOnlyCollection<ProjectScriptInfo>(analysisResults.BadProjects.Select(p => p.ProjectInfo).ToArray());
+                }
+            }
+        }
+
+        /// <summary>
+        /// Contains the message to display in the dialog.
+        /// </summary>
+        public string Message
+        {
+            get => _message;
+            set
+            {
+                if (value == _message)
+                    return;
+                _message = value;
+                OnPropertyChanged();
+            }
         }
 
         /// <summary>
@@ -49,6 +77,8 @@ namespace MDK.Views.ProjectIntegrity
         /// </summary>
         protected override bool OnSave()
         {
+            if (!SaveAndCloseCommand.IsEnabled)
+                return false;
             try
             {
                 Package.ScriptUpgrades.Repair(AnalysisResults);

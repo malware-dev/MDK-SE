@@ -11,7 +11,7 @@ namespace Malware.MDKServices
         /// <summary>
         /// Represents the results of an analysis which was ignored and should be disregarded.
         /// </summary>
-        public static readonly ScriptProjectAnalysisResult NonScriptProjectResult = new ScriptProjectAnalysisResult(null, null, null, default(WhitelistReference), ImmutableArray<BadReference>.Empty);
+        public static readonly ScriptProjectAnalysisResult NonScriptProjectResult = new ScriptProjectAnalysisResult(null, null, null, default(WhitelistReference), ImmutableArray<BadReference>.Empty, true);
 
         /// <summary>
         /// Creates a new instance of <see cref="ScriptProjectAnalysisResult"/>
@@ -21,7 +21,7 @@ namespace Malware.MDKServices
         /// <param name="projectDocument">The source XML document of the project file</param>
         /// <param name="whitelist">Whitelist verification results</param>
         /// <param name="badReferences">A list of bad file- or assembly references</param>
-        public ScriptProjectAnalysisResult(EnvDTE.Project project, ProjectScriptInfo projectInfo, XDocument projectDocument, WhitelistReference whitelist, ImmutableArray<BadReference> badReferences)
+        public ScriptProjectAnalysisResult(EnvDTE.Project project, ProjectScriptInfo projectInfo, XDocument projectDocument, WhitelistReference whitelist, ImmutableArray<BadReference> badReferences, bool hasValidGamePath)
         {
             Project = project;
             ProjectInfo = projectInfo;
@@ -29,7 +29,8 @@ namespace Malware.MDKServices
             BadReferences = badReferences;
             Whitelist = whitelist;
             IsScriptProject = projectInfo != null;
-            IsValid = BadReferences.Length == 0 && whitelist.IsValid;
+            HasValidGamePath = hasValidGamePath;
+            IsValid = BadReferences.Length == 0 && whitelist.IsValid && hasValidGamePath;
         }
 
         /// <summary>
@@ -56,6 +57,11 @@ namespace Malware.MDKServices
         /// Returns a list of bad file- or assembly references.
         /// </summary>
         public ImmutableArray<BadReference> BadReferences { get; }
+
+        /// <summary>
+        /// Determines whether the registered game path is valid.
+        /// </summary>
+        public bool HasValidGamePath { get; }
 
         /// <summary>
         /// Whitelist verification result

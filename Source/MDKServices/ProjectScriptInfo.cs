@@ -396,8 +396,10 @@ namespace Malware.MDKServices
         /// <returns></returns>
         public string GetActualGameBinPath(string defaultPath)
         {
-            if (UseManualGameBinPath)
-                return Path.GetFullPath(string.IsNullOrEmpty(GameBinPath) ? defaultPath : GameBinPath);
+            if (UseManualGameBinPath && !string.IsNullOrEmpty(GameBinPath))
+                return Path.GetFullPath(GameBinPath);
+            if (defaultPath == null)
+                throw new GamePathUnavailableException();
             return Path.GetFullPath(defaultPath);
         }
 

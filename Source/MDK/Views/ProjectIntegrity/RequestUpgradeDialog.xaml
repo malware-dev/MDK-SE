@@ -27,7 +27,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" TextWrapping="Wrap">The following MDK projects must be upgraded in order to function correctly. Do you wish to do this now?</TextBlock>
+        <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="{Binding Message}" />
 
         <ScrollViewer Grid.Row="1" MaxHeight="128" Margin="0,8,0,0">
             <ItemsControl ItemsSource="{Binding Projects}" MaxHeight="128" />

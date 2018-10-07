@@ -143,7 +143,18 @@ namespace Malware.MDKServices
             var projectInfo = ProjectScriptInfo.Load(project.FullName, project.Name);
             if (!projectInfo.IsValid)
                 return ScriptProjectAnalysisResult.NonScriptProjectResult;
-            var expectedGamePath = projectInfo.GetActualGameBinPath(options.DefaultGameBinPath).TrimEnd('\\');
+            var hasValidGamePath = true;
+            string expectedGamePath;
+            try
+            {
+                expectedGamePath = projectInfo.GetActualGameBinPath(options.DefaultGameBinPath)?.TrimEnd('\\');
+            }
+            catch (GamePathUnavailableException)
+            {
+                hasValidGamePath = false;
+                expectedGamePath = null;
+            }
+
             var expectedInstallPath = options.InstallPath.TrimEnd('\\');
 
             var badReferences = ImmutableArray.CreateBuilder<BadReference>();
@@ -157,7 +168,7 @@ namespace Malware.MDKServices
             AnalyzeFiles(options, document, xmlns, projectDir, expectedGamePath, expectedInstallPath, badReferences);
             var whitelist = VerifyWhitelist(document, projectDir, expectedInstallPath);
 
-            return new ScriptProjectAnalysisResult(project, projectInfo, document, whitelist, badReferences.ToImmutable());
+            return new ScriptProjectAnalysisResult(project, projectInfo, document, whitelist, badReferences.ToImmutable(), hasValidGamePath);
         }
 
         WhitelistReference VerifyWhitelist(XDocument document, DirectoryInfo projectDir, string expectedInstallPath)
@@ -182,7 +193,7 @@ namespace Malware.MDKServices
                 var include = (string)element.Attribute("Include");
                 var file = ResolvePath(projectDir, include);
                 var gameFile = options.GameFiles.FirstOrDefault(fileName => file.EndsWith(fileName, StringComparison.CurrentCultureIgnoreCase));
-                if (gameFile != null)
+                if (gameFile != null && expectedGamePath != null)
                     CheckFileReference(element, expectedGamePath, file, gameFile, badReferences);
                 var utilityFile = options.UtilityFiles.FirstOrDefault(fileName => file.EndsWith(fileName, StringComparison.CurrentCultureIgnoreCase));
                 if (utilityFile != null)
@@ -204,7 +215,7 @@ namespace Malware.MDKServices
                 var include = (string)element.Attribute("Include");
                 var hintPath = (string)element.Element(XName.Get("HintPath", Xmlns));
                 var gameAssemblyName = options.GameAssemblyNames.FirstOrDefault(dll => dll == include);
-                if (gameAssemblyName != null)
+                if (gameAssemblyName != null && expectedGamePath != null)
                     CheckAssemblyReference(projectDir, element, expectedGamePath, hintPath, gameAssemblyName, badReferences);
                 var utilityAssemblyName = options.UtilityAssemblyNames.FirstOrDefault(dll => dll == include);
                 if (utilityAssemblyName != null)

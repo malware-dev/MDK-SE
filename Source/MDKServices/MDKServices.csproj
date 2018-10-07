@@ -183,6 +183,7 @@
     <Compile Include="BadReference.cs" />
     <Compile Include="BadReferenceType.cs" />
     <Compile Include="DTEExtensions.cs" />
+    <Compile Include="GamePathUnavailableException.cs" />
     <Compile Include="GitHub.cs" />
     <Compile Include="GitHubRelease.cs" />
     <Compile Include="ProjectScriptInfo.cs" />
