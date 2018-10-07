@@ -15,6 +15,9 @@ namespace MDK.Build.Composers.Minifying
     class CodeSimplifier : ProgramRewriter
     {
         HashSet<string> _externallyReferencedMembers = new HashSet<string>();
+
+        public CodeSimplifier() : base(true)
+        { }
         //bool HasAdvancedUsage(ClassDeclarationSyntax classDeclaration)
         //{
         //    throw new System.NotImplementedException();

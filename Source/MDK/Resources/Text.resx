@@ -169,7 +169,7 @@
     <value>No MDK Projects</value>
   </data>
   <data name="IngameScriptWizard_TryGetProperties_MDKSettingsNotFoundDescription" xml:space="preserve">
-    <value>Cannot find the MDK/SE settings. The install might be corrupted. Please reinstall the extension.</value>
+    <value>Cannot find the MDK/SE settings. Make sure your Visual Studio is up to date. If this does not work, the install might be corrupted and might need reinstalling.</value>
   </data>
   <data name="IngameScriptWizard_TryGetProperties_MDKSettingsNotFound" xml:space="preserve">
     <value>Cannot Find MDK Settings</value>

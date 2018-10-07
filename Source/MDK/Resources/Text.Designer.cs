@@ -350,7 +350,7 @@ namespace MDK.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot find the MDK/SE settings. The install might be corrupted. Please reinstall the extension..
+        ///   Looks up a localized string similar to Cannot find the MDK/SE settings. Make sure your Visual Studio is up to date. If this does not work, the install might be corrupted and might need reinstalling..
         /// </summary>
         internal static string IngameScriptWizard_TryGetProperties_MDKSettingsNotFoundDescription {
             get {

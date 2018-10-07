@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Malware.MDKServices;
 using MDK.Build.Annotations;
@@ -10,16 +12,24 @@ namespace MDK.Build.Composers.Minifying
 {
     class WhitespaceCompactor : ProgramRewriter
     {
+        public override SyntaxTrivia VisitTrivia(SyntaxTrivia trivia)
+        {
+            trivia = base.VisitTrivia(trivia);
+            if (trivia.Kind() == SyntaxKind.EndOfLineTrivia && trivia.ToString() == "\r\n")
+                trivia = trivia.CopyAnnotationsTo(SyntaxFactory.EndOfLine("\n"));
+
+            return trivia;
+        }
+
         public override SyntaxToken VisitToken(SyntaxToken currentToken)
         {
-            currentToken = base.VisitToken(currentToken);
-
             var previousToken = currentToken.GetPreviousToken();
+            currentToken = base.VisitToken(currentToken);
 
             currentToken = currentToken.WithLeadingTrivia(currentToken.LeadingTrivia.Where(t => t.ShouldBePreserved()));
             currentToken = currentToken.WithTrailingTrivia(currentToken.TrailingTrivia.Where(t => t.ShouldBePreserved()));
 
-            if (currentToken.LeadingTrivia.Sum(t => t.FullSpan.Length) == 0)
+            if (currentToken.LeadingTrivia.Sum(t => t.FullSpan.Length) + previousToken.TrailingTrivia.Where(t => t.ShouldBePreserved()).Sum(t => t.FullSpan.Length) == 0)
             {
                 if (IsColliding(previousToken.Kind(), currentToken.Kind()))
                     currentToken = currentToken.WithLeadingTrivia(SyntaxFactory.Whitespace(" "));
@@ -27,7 +37,7 @@ namespace MDK.Build.Composers.Minifying
 
             return currentToken;
         }
-
+       
         bool IsColliding(SyntaxKind firstKind, SyntaxKind secondKind)
         {
             if (IsWord(firstKind) && IsWord(secondKind))
@@ -40,7 +50,6 @@ namespace MDK.Build.Composers.Minifying
             switch (kind)
             {
                 case SyntaxKind.NumericLiteralToken:
-
                 case SyntaxKind.BoolKeyword:
                 case SyntaxKind.ByteKeyword:
                 case SyntaxKind.SByteKeyword:
@@ -184,5 +193,8 @@ namespace MDK.Build.Composers.Minifying
             root = Visit(root);
             return await composition.WithNewDocumentRootAsync(root);
         }
+
+        public WhitespaceCompactor() : base(false)
+        { }
     }
 }

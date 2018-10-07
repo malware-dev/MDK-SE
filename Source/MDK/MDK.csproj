@@ -62,6 +62,7 @@
     <Compile Include="Build\BuildModule.cs" />
     <Compile Include="Build\Composers\Default\NewlineCleaner.cs" />
     <Compile Include="Build\Composers\Minifying\ModifierProtector.cs" />
+    <Compile Include="Build\Annotations\PreserveDebugDumper.cs" />
     <Compile Include="Build\DocumentAnalysis\DocumentAnalysisResult.cs" />
     <Compile Include="Build\DocumentAnalysis\DocumentAnalyzer.cs" />
     <Compile Include="Build\DocumentAnalysis\ExtensionScriptPart.cs" />

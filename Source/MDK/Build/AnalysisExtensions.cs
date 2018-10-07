@@ -250,17 +250,17 @@ namespace MDK.Build
                 var triviaString = triv.ToFullString();
                 if (triviaString.Equals(_tabs) || triviaString.Equals(_spaces))
                 {
-                    return SyntaxFactory.Whitespace("");
+                    return triv.CopyAnnotationsTo(SyntaxFactory.Whitespace(""));
                 }
 
                 if (triviaString.StartsWith(_tabs))
                 {
-                    return SyntaxFactory.Whitespace(triviaString.Substring(_tabs.Length));
+                    return triv.CopyAnnotationsTo(SyntaxFactory.Whitespace(triviaString.Substring(_tabs.Length)));
                 }
 
                 if (triviaString.StartsWith(_spaces))
                 {
-                    return SyntaxFactory.Whitespace(triviaString.Substring(_spaces.Length));
+                    return triv.CopyAnnotationsTo(SyntaxFactory.Whitespace(triviaString.Substring(_spaces.Length)));
                 }
 
                 return triv;

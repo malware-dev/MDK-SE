@@ -1,14 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Malware.MDKServices;
+using MDK.Build.Annotations;
 using MDK.Build.DocumentAnalysis;
 using MDK.Build.Solution;
-using MDK.Build.UsageAnalysis;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.FindSymbols;
 
 namespace MDK.Build.Composers.Minifying
 {
@@ -26,19 +22,28 @@ namespace MDK.Build.Composers.Minifying
         /// <returns></returns>
         public override async Task<string> GenerateAsync(ProgramComposition composition, ProjectScriptInfo config)
         {
+            //var dumper = new PreserveDebugDumper(@"e:\dump0.txt");
+            //dumper.Visit(await composition.Document.GetSyntaxRootAsync());
+
             var simplifier = new CodeSimplifier();
             composition = await simplifier.ProcessAsync(composition, config);
+            //dumper = new PreserveDebugDumper(@"e:\dump1.txt");
+            //dumper.Visit(await composition.Document.GetSyntaxRootAsync());
 
             var renamer = new SymbolRenamer();
             composition = await renamer.ProcessAsync(composition, config);
+            //dumper = new PreserveDebugDumper(@"e:\dump2.txt");
+            //dumper.Visit(await composition.Document.GetSyntaxRootAsync());
 
             var compactor = new WhitespaceCompactor();
             composition = await compactor.ProcessAsync(composition, config);
+            //dumper = new PreserveDebugDumper(@"e:\dump3.txt");
+            //dumper.Visit(await composition.Document.GetSyntaxRootAsync());
 
             var lineWrapper = new LineWrapper();
             composition = await lineWrapper.ProcessAsync(composition, config);
-
-            // return (await composition.Document.GetTextAsync()).ToString();
+            //dumper = new PreserveDebugDumper(@"e:\dump4.txt");
+            //dumper.Visit(await composition.Document.GetSyntaxRootAsync());
 
             return await GenerateScriptAsync(composition);
         }

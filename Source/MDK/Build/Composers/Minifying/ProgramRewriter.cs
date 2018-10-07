@@ -8,7 +8,7 @@ namespace MDK.Build.Composers.Minifying
 {
     abstract class ProgramRewriter : CSharpSyntaxRewriter
     {
-        protected ProgramRewriter(): base(true) { }
+        protected ProgramRewriter(bool visitIntoStructuredTrivia): base(visitIntoStructuredTrivia) { }
 
         public sealed override SyntaxNode VisitCompilationUnit(CompilationUnitSyntax node)
         {
