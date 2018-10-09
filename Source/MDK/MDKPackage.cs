@@ -413,7 +413,7 @@ namespace MDK
             }
         }
 
-        string FormattedPath(string scriptOutputPath) => Path.GetFullPath(scriptOutputPath).TrimEnd('\\').ToUpper();
+        string FormattedPath(string scriptOutputPath) => Path.GetFullPath(Environment.ExpandEnvironmentVariables(scriptOutputPath)).TrimEnd('\\').ToUpper();
 
         /// <summary>
         ///     Displays an error dialog
