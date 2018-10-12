@@ -26,7 +26,7 @@ namespace MDK.Commands
             }
             var model = new BlueprintManagerDialogModel
             {
-                BlueprintPath = projectInfo.OutputPath
+                BlueprintPath = Environment.ExpandEnvironmentVariables(projectInfo.OutputPath)
             };
             BlueprintManagerDialog.ShowDialog(model);
         }
