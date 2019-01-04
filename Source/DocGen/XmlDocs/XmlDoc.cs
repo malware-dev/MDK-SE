@@ -1,29 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Xml.Linq;
 
-namespace DocGen
+namespace DocGen.XmlDocs
 {
-    class MemberParagraph : Paragraph
-    {
-        public MemberParagraph(IEnumerable<XmlDoc> content) : base(ParagraphType.Member, content)
-        { }
-    }
-
     class XmlDoc
     {
+        MemberParagraph _root;
+
         public static XmlDoc Generate(XElement doc)
         {
             if (doc == null)
                 return null;
             var root = new XmlDoc();
-            var summary = Decode(root, doc);
-            return summary;
+            root.Root = (MemberParagraph)Decode(root, doc);
+            return root;
         }
 
-        public static XmlDoc Decode(XmlDoc root, XNode node)
+        public static XmlDocNode Decode(XmlDoc root, XNode node)
         {
             if (node == null)
                 return null;
@@ -49,7 +44,7 @@ namespace DocGen
                         case "remarks":
                             return new Paragraph(ParagraphType.Remarks, element.Nodes().Select(n => Decode(root, n)).Where(n => n != null));
                         case "returns":
-                            return new Paragraph(ParagraphType.Remarks, element.Nodes().Select(n => Decode(root, n)).Where(n => n != null));
+                            return new Paragraph(ParagraphType.Returns, element.Nodes().Select(n => Decode(root, n)).Where(n => n != null));
                         case "see":
                             return new TypeRefSpan((string)element.Attribute("cref"));
                         case "seealso":
@@ -81,90 +76,31 @@ namespace DocGen
             return null;
         }
 
+        public MemberParagraph Root
+        {
+            get => _root;
+            private set
+            {
+                _root = value;
+                Summary = _root?.Content.FirstOrDefault(n => n is Paragraph paragraph && paragraph.Type == ParagraphType.Summary);
+                Example = _root?.Content.FirstOrDefault(n => n is Paragraph paragraph && paragraph.Type == ParagraphType.Example);
+                Remarks = _root?.Content.FirstOrDefault(n => n is Paragraph paragraph && paragraph.Type == ParagraphType.Remarks);
+                Returns = _root?.Content.FirstOrDefault(n => n is Paragraph paragraph && paragraph.Type == ParagraphType.Returns);
+                Value = _root?.Content.FirstOrDefault(n => n is Paragraph paragraph && paragraph.Type == ParagraphType.Value);
+                //Exception = _root?.Content.FirstOrDefault(n => n is Paragraph paragraph && paragraph.Type == ParagraphType.Ex);
+            }
+        }
+
+        public XmlDocNode Value { get; set; }
+
+        public XmlDocNode Returns { get; set; }
+
+        public XmlDocNode Remarks { get; set; }
+
+        public XmlDocNode Example { get; set; }
+
+        public XmlDocNode Summary { get; private set; }
+
         public List<TypeRefSpan> SeeAlso { get; } = new List<TypeRefSpan>();
-    }
-
-    class TypeRefSpan : Span
-    {
-        public TypeRefSpan(string textValue) : base(textValue)
-        { }
-    }
-
-    class ParamRefSpan : Span
-    {
-        public ParamRefSpan(string textValue) : base(textValue)
-        { }
-    }
-
-    class TypeParamRefSpan : Span
-    {
-        public TypeParamRefSpan(string textValue) : base(textValue)
-        { }
-    }
-
-    class ParamParagraph : Paragraph
-    {
-        public ParamParagraph(string name, IEnumerable<XmlDoc> content) : base(ParagraphType.Param, content)
-        {
-            Name = name;
-        }
-
-        public string Name { get; }
-    }
-
-    class TypeParamParagraph : Paragraph
-    {
-        public TypeParamParagraph(string name, IEnumerable<XmlDoc> content) : base(ParagraphType.Param, content)
-        {
-            Name = name;
-        }
-
-        public string Name { get; }
-    }
-
-    class CodeSpan : Span
-    {
-        public CodeSpan(string textValue) : base(textValue)
-        { }
-    }
-
-    class CodeParagraph : Paragraph
-    {
-        public CodeParagraph(string content) : base(ParagraphType.Code, new[] {new Span(content)})
-        { }
-    }
-
-    class Span : XmlDoc
-    {
-        public Span(string textValue) => TextValue = textValue;
-
-        public string TextValue { get; }
-
-        public override string ToString() => TextValue;
-    }
-
-    public enum ParagraphType
-    {
-        Default,
-        Example,
-        Param,
-        Code,
-        Remarks,
-        Summary,
-        Value,
-        Member
-    }
-
-    class Paragraph : XmlDoc
-    {
-        public ParagraphType Type { get; }
-
-        public Paragraph(ParagraphType type, IEnumerable<XmlDoc> content)
-        {
-            Type = type;
-            Content = new ReadOnlyCollection<XmlDoc>(content?.Where(n => n != null).ToList() ?? new List<XmlDoc>());
-        }
-
-        public ReadOnlyCollection<XmlDoc> Content { get; }
     }
 }

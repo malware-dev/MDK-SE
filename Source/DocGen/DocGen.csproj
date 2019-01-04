@@ -36,6 +36,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -45,15 +46,40 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApiEntry.cs" />
+    <Compile Include="ApiEntryStringFlags.cs" />
+    <Compile Include="LocalizationTexts.cs" />
+    <Compile Include="MarkdownGenerators\NamespaceIndexGenerator.cs" />
+    <Compile Include="MarkdownGenerators\BlockGroupName.cs" />
+    <Compile Include="MarkdownGenerators\NamespaceGenerator.cs" />
+    <Compile Include="MarkdownGenerators\ApiIndexGenerator.cs" />
+    <Compile Include="MarkdownGenerators\DocumentGenerator.cs" />
+    <Compile Include="MarkdownGenerators\MemberGenerator.cs" />
+    <Compile Include="MarkdownGenerators\TypeGenerator.cs" />
+    <Compile Include="Markdown\MarkdownInline.cs" />
+    <Compile Include="Markdown\MarkdownWriter.cs" />
     <Compile Include="MDKUtilityFramework.cs" />
-    <Compile Include="MemberDescriptionGenerator.cs" />
     <Compile Include="ProgrammableBlockApi.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Terminals.cs" />
+    <Compile Include="TypeExtensions.cs" />
     <Compile Include="Whitelist.cs" />
-    <Compile Include="WhitelistKey.cs" />
-    <Compile Include="XmlDoc.cs" />
+    <Compile Include="WhitelistAndTerminalCaches.cs" />
+    <Compile Include="WhitelistRule.cs" />
+    <Compile Include="XmlDocs\CodeParagraph.cs" />
+    <Compile Include="XmlDocs\CodeSpan.cs" />
+    <Compile Include="XmlDocs\MemberParagraph.cs" />
+    <Compile Include="XmlDocs\Paragraph.cs" />
+    <Compile Include="XmlDocs\ParagraphType.cs" />
+    <Compile Include="XmlDocs\ParamParagraph.cs" />
+    <Compile Include="XmlDocs\ParamRefSpan.cs" />
+    <Compile Include="XmlDocs\Span.cs" />
+    <Compile Include="XmlDocs\TypeParamParagraph.cs" />
+    <Compile Include="XmlDocs\TypeParamRefSpan.cs" />
+    <Compile Include="XmlDocs\TypeRefSpan.cs" />
+    <Compile Include="XmlDocs\XmlDoc.cs" />
+    <Compile Include="XmlDocs\XmlDocNode.cs" />
+    <Compile Include="XmlDocs\XmlDocWriteContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -64,6 +90,7 @@
       <Name>MDKWhitelistExtractor</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="..\SteamAndSE\SteamAndSE.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

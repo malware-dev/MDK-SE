@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
-using Malware.MDKUtilities;
 using Malware.MDKWhitelistExtractor;
 
 namespace DocGen
@@ -28,126 +26,71 @@ namespace DocGen
             }
         }
 
-        async Task UpdateCaches(string path)
-        {
-            var steam = new Steam();
-            if (!steam.Exists)
-                throw new InvalidOperationException("Cannot find Steam");
-
-            var appId = SpaceEngineers.SteamAppId;
-            var pluginPath = Path.GetFullPath("MDKWhitelistExtractor.dll");
-            var whitelistTarget = path;
-            var terminalTarget = path;
-            var apiTarget = path;
-            var directoryInfo = new DirectoryInfo(whitelistTarget);
-            if (!directoryInfo.Exists)
-                directoryInfo.Create();
-            whitelistTarget = Path.Combine(whitelistTarget, "whitelist.cache");
-            terminalTarget = Path.Combine(terminalTarget, "terminal.cache");
-            apiTarget = Path.Combine(apiTarget, "api.cache");
-
-            var args = new List<string>
-            {
-                $"-applaunch {appId}",
-                $"-plugin \"{pluginPath}\"",
-                "-nosplash",
-                "-whitelistcaches",
-                $"\"{whitelistTarget}\"",
-                "-terminalcaches",
-                $"\"{terminalTarget}\"",
-                "-pbapi",
-                $"\"{apiTarget}\""
-            };
-
-            var process = new Process
-            {
-                StartInfo =
-                {
-                    FileName = steam.ExePath,
-                    Arguments = string.Join(" ", args)
-                }
-            };
-            process.Start();
-            if (await ForProcess("SpaceEngineers", TimeSpan.FromSeconds(60)))
-            {
-                await ForProcessToEnd("SpaceEngineers", TimeSpan.MaxValue);
-            }
-        }
-
-        async Task<bool> ForProcess(string processName, TimeSpan timeout)
-        {
-            return await Task.Run(async () =>
-            {
-                var stopwatch = Stopwatch.StartNew();
-                while (true)
-                {
-                    if (stopwatch.Elapsed >= timeout)
-                        return false;
-                    foreach (var process in Process.GetProcesses())
-                        Debug.WriteLine(process.ProcessName);
-                    if (Process.GetProcessesByName(processName).Length > 0)
-                        return true;
-                    await Task.Delay(1000);
-                }
-            }).ConfigureAwait(false);
-        }
-
-        async Task<bool> ForProcessToEnd(string processName, TimeSpan timeout)
-        {
-            return await Task.Run(async () =>
-            {
-                var stopwatch = Stopwatch.StartNew();
-                while (true)
-                {
-                    if (stopwatch.Elapsed >= timeout)
-                        return false;
-                    if (Process.GetProcessesByName(processName).Length == 0)
-                        return true;
-                    await Task.Delay(1000);
-                }
-            }).ConfigureAwait(false);
-        }
-
         async Task<int> Run(CommandLine commandLine)
         {
-            var path = Environment.CurrentDirectory;
-            var cacheIndex = commandLine.IndexOf("-cache");
-            if (cacheIndex >= 0)
-                path = Path.GetFullPath(commandLine[cacheIndex + 1]);
+            var cts = new CancellationTokenSource();
+            var spinTask = Spin(cts.Token);
+            try
+            {
+                var path = Environment.CurrentDirectory;
+                var cacheIndex = commandLine.IndexOf("-cache");
+                if (cacheIndex >= 0)
+                    path = Path.GetFullPath(commandLine[cacheIndex + 1]);
 
-            var update = commandLine.IndexOf("-update") >= 0;
+                var update = commandLine.IndexOf("-update") >= 0;
 
-            if (update)
-                await UpdateCaches(path);
+                if (update)
+                    await WhitelistAndTerminalCaches.Update(path);
 
-            string output = null;
-            var outputIndex = commandLine.IndexOf("-output");
-            if (outputIndex >= 0)
-                output = Path.GetFullPath(commandLine[outputIndex + 1]);
-            if (output != null)
-                await GenerateDocs(path, output);
+                string output = null;
+                var outputIndex = commandLine.IndexOf("-output");
+                if (outputIndex >= 0)
+                    output = Path.GetFullPath(commandLine[outputIndex + 1]);
+                if (output != null)
+                    await GenerateDocs(path, output);
 
-            return 0;
+                return 0;
+            }
+            finally
+            {
+                cts.Cancel();
+                await spinTask;
+            }
         }
 
         async Task GenerateDocs(string path, string output)
         {
-            var api = new ProgrammableBlockApi();
-            await api.Scan(Path.Combine(path, "whitelist.cache"));
-            await api.SaveAsync(Path.Combine(output, "api"));
+            //var whitelist = Whitelist.Load(Path.Combine(path, "whitelist.cache"));
+            await ProgrammableBlockApi.Update(Path.Combine(path, "whitelist.cache"), Path.Combine(output, "api"));
 
-            //var whitelistTarget = path;
-            var terminalTarget = path;
-            //whitelistTarget = Path.Combine(whitelistTarget, "whitelist.cache");
-            terminalTarget = Path.Combine(terminalTarget, "terminal.cache");
+            Terminals.Update(Path.Combine(path, "terminal.cache"), Path.Combine(output, "List-Of-Terminal-Properties-And-Actions.md"));
+        }
 
-            var terminals = Terminals.Load(terminalTarget);
-            terminals.Save(Path.Combine(output, "List-Of-Terminal-Properties-And-Actions.md"));
+        async Task Spin(CancellationToken cancellationToken)
+        {
+            var l = Console.CursorLeft;
+            var t = Console.CursorTop;
 
-            //var directoryInfo = new DirectoryInfo(output);
-            //if (!directoryInfo.Exists)
-            //    directoryInfo.Create();
-
+            var animations = new[] { '|', '/', '-', '\\' };
+            long i = 0;
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                var rl = Console.CursorLeft;
+                var rt = Console.CursorTop;
+                Console.SetCursorPosition(l, t);
+                Console.Write(animations[i % animations.Length]);
+                i++;
+                Console.SetCursorPosition(rl, rt);
+                try
+                {
+                    // ReSharper disable once MethodSupportsCancellation
+                    await Task.Delay(250);
+                }
+                catch (TaskCanceledException)
+                {
+                    return;
+                }
+            }
         }
     }
 }

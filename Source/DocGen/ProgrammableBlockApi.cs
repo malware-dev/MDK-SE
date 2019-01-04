@@ -1,78 +1,101 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using Malware.MDKUtilities;
+using System.Xml.XPath;
+using DocGen.MarkdownGenerators;
+using DocGen.XmlDocs;
 
 namespace DocGen
 {
     class ProgrammableBlockApi
     {
-        List<MemberInfo> _members = new List<MemberInfo>();
-        List<ApiEntry> _entries = new List<ApiEntry>();
-        readonly HashSet<char> _invalidCharacters = new HashSet<char>(Path.GetInvalidFileNameChars());
-
-        public async Task Scan(string whitelistCacheFileName)
+        static Assembly LoadAssembly(string dllFile)
         {
+            try
+            {
+                var assemblyName = AssemblyName.GetAssemblyName(dllFile);
+                return Assembly.Load(assemblyName);
+            }
+            catch (FileLoadException)
+            {
+                return null;
+            }
+            catch (BadImageFormatException)
+            {
+                return null;
+            }
+        }
+
+        public static async Task Update(string whitelistCacheFileName, string output)
+        {
+            var api = await LoadAsync(whitelistCacheFileName);
+            await api.SaveAsync(output);
+        }
+
+        public static async Task<ProgrammableBlockApi> LoadAsync(string whitelistCacheFileName)
+        {
+            var api = new ProgrammableBlockApi();
             await Task.Run(() =>
             {
-                var whitelist = Whitelist.Load(whitelistCacheFileName);
+                var members = new List<MemberInfo>();
                 var spaceEngineers = new SpaceEngineers();
                 var installPath = Path.Combine(spaceEngineers.GetInstallPath(), "bin64");
                 MDKUtilityFramework.Load(installPath);
                 var dllFiles = Directory.EnumerateFiles(installPath, "*.dll", SearchOption.TopDirectoryOnly)
                     .ToList();
+                foreach (var file in dllFiles)
+                    LoadAssembly(file);
+                //var assemblies = dllFiles.Select(LoadAssembly).Where(a => a != null).ToList();
+                var assemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
+                var whitelist = Whitelist.Load(whitelistCacheFileName);
+                api._whitelist = whitelist;
 
-                foreach (var dllFile in dllFiles)
-                    Visit(whitelist, dllFile);
+                foreach (var assembly in assemblies)
+                    Visit(whitelist, assembly, members);
 
-                foreach (var assemblyGroup in _members.GroupBy(m => m.DeclaringType.Assembly))
+                // Hack. I'm getting duplicated entries and atm I cannot be bothered to do a proper check
+                // for why...
+                HashSet<MemberInfo> visitedMembers = new HashSet<MemberInfo>();
+
+                foreach (var assemblyGroup in members.GroupBy(m => m.GetAssembly()))
                 {
-                    var assemblyPath = new Uri(assemblyGroup.Key.CodeBase).LocalPath;
-                    var xmlFileName = Path.ChangeExtension(assemblyPath, "xml");
-                    XDocument documentation;
-                    if (File.Exists(xmlFileName))
-                        documentation = XDocument.Load(xmlFileName);
-                    else
-                        documentation = null;
                     foreach (var typeGroup in assemblyGroup.GroupBy(m => m.DeclaringType))
                     {
-                        var typeEntry = ApiEntry.Create(typeGroup.Key, documentation);
-                        _entries.Add(typeEntry);
-                        foreach (var member in typeGroup)
+                        var typeEntry = api.GetEntry(typeGroup.Key);
+                        if (typeEntry != null)
                         {
-                            var entry = ApiEntry.Create(member, documentation);
-                            _entries.Add(entry);
+                            if (!visitedMembers.Add(typeEntry.Member))
+                                continue;
+                            api._entries.Add(typeEntry);
+                            foreach (var member in typeGroup)
+                            {
+                                var entry = api.GetEntry(member);
+                                if (entry != null)
+                                {
+                                    if (!visitedMembers.Add(member))
+                                        continue;
+                                    api._entries.Add(entry);
+                                }
+                            }
                         }
                     }
                 }
 
-                foreach (var entry in _entries)
-                    entry.ResolveLinks(_entries);
+                foreach (var entry in api.Entries)
+                    entry.ResolveLinks();
             });
+
+            return api;
         }
 
-        void Visit(Whitelist whitelist, string dllFile)
-        {
-            try
-            {
-                var assemblyName = AssemblyName.GetAssemblyName(dllFile);
-                var assembly = Assembly.Load(assemblyName);
-                Visit(whitelist, assembly);
-            }
-            catch (FileLoadException e)
-            { }
-            catch (BadImageFormatException e)
-            { }
-        }
-
-        void Visit(Whitelist whitelist, Assembly assembly)
+        static void Visit(Whitelist whitelist, Assembly assembly, List<MemberInfo> members)
         {
             if (!whitelist.IsWhitelisted(assembly))
                 return;
@@ -83,118 +106,124 @@ namespace DocGen
                 return;
             var types = assembly.GetExportedTypes();
             foreach (var type in types)
-                Visit(whitelist, type);
+                Visit(whitelist, type, members);
         }
 
-        void Visit(Whitelist whitelist, Type type)
+        static void Visit(Whitelist whitelist, Type type, List<MemberInfo> members)
         {
-            if (!type.IsPublic)
+            if (!type.IsPublic() || !whitelist.IsWhitelisted(type))
                 return;
-            var members = type.GetMembers(BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-            foreach (var member in members)
-                Visit(whitelist, member);
+            var typeMembers = type.GetMembers(BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+            foreach (var member in typeMembers)
+                Visit(whitelist, member, members);
+            //var nestedTypes = type.GetNestedTypes(BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+            //foreach (var nestedType in nestedTypes)
+            //    Visit(whitelist, nestedType, members);
         }
 
-        void Visit(Whitelist whitelist, MemberInfo member)
+        static void Visit(Whitelist whitelist, MemberInfo member, List<MemberInfo> members)
         {
-            if (!whitelist.IsWhitelisted(member))
+            if (member is Type type)
+            {
+                Visit(whitelist, type, members);
                 return;
-            _members.Add(member);
+            }
+            if (!member.IsPublic() || !whitelist.IsWhitelisted(member))
+                return;
+            members.Add(member);
+        }
+
+        Whitelist _whitelist;
+        List<ApiEntry> _entries = new List<ApiEntry>();
+        Dictionary<MemberInfo, ApiEntry> _entryLookup = new Dictionary<MemberInfo, ApiEntry>();
+        Dictionary<MemberInfo, ApiEntry> _blacklistedEntryLookup = new Dictionary<MemberInfo, ApiEntry>();
+        Dictionary<string, XDocument> _documentationCache = new Dictionary<string, XDocument>(StringComparer.CurrentCultureIgnoreCase);
+
+        ProgrammableBlockApi()
+        {
+            Entries = new ReadOnlyCollection<ApiEntry>(_entries);
+        }
+
+        public ReadOnlyCollection<ApiEntry> Entries { get; }
+
+        ApiEntry CreateEntry(MemberInfo memberInfo)
+        {
+            var entry = ApiEntry.Create(this, _whitelist, memberInfo);
+            if (entry == null)
+                return null;
+
+            string docFileName = null;
+            if (memberInfo is Type type)
+                docFileName = Path.ChangeExtension(new Uri(type.Assembly.CodeBase).LocalPath, "xml");
+            else
+            {
+                var codeBase = memberInfo.DeclaringType?.Assembly.CodeBase;
+                if (codeBase != null)
+                    docFileName = Path.ChangeExtension(new Uri(codeBase).LocalPath, "xml");
+            }
+
+            if (docFileName != null)
+            {
+                if (!_documentationCache.TryGetValue(docFileName, out var documentation))
+                    _documentationCache[docFileName] = documentation = File.Exists(docFileName) ? XDocument.Load(docFileName) : null;
+                var doc = documentation?.XPathSelectElement($"/doc/members/member[@name='{entry.XmlDocKey}']");
+                entry.Documentation = XmlDoc.Generate(doc);
+            }
+
+            return entry;
+        }
+
+        public ApiEntry GetEntry(MemberInfo memberInfo, bool includeBlacklisted = false)
+        {
+            if (memberInfo is Type type && type.IsGenericType)
+            {
+                memberInfo = type.GetGenericTypeDefinition();
+            }
+
+            if (_entryLookup.TryGetValue(memberInfo, out var entry))
+            {
+                if (entry != null || includeBlacklisted && _blacklistedEntryLookup.TryGetValue(memberInfo, out entry))
+                    return entry;
+                return null;
+            }
+
+            entry = CreateEntry(memberInfo);
+            if (entry == null)
+            {
+                _entryLookup[memberInfo] = null;
+                return null;
+            }
+
+            if (_whitelist.IsWhitelisted(memberInfo))
+            {
+                _entryLookup[memberInfo] = entry;
+                return entry;
+            }
+
+            _blacklistedEntryLookup[memberInfo] = null;
+            return includeBlacklisted ? entry : null;
         }
 
         public async Task SaveAsync(string path)
         {
-            var directory = new DirectoryInfo(Path.Combine(path, "api"));
+            var generators = new DocumentGenerator[]
+            {
+                new ApiIndexGenerator(),
+                new TypeGenerator(),
+                new MemberGenerator(),
+                new NamespaceIndexGenerator(),
+                new NamespaceGenerator()
+            };
+
+            var directory = new DirectoryInfo(path);
             if (!directory.Exists)
                 directory.Create();
-            var fileName = Path.Combine(directory.FullName, "index.md");
-            using (var file = File.CreateText(fileName))
-            {
-                await file.WriteLineAsync("#Index");
-                await file.WriteLineAsync();
-
-                foreach (var assemblyGroup in _entries.GroupBy(e => e.AssemblyName).OrderBy(e => e.Key))
-                {
-                    await file.WriteLineAsync($"##{assemblyGroup.Key}");
-                    foreach (var typeGroup in assemblyGroup.GroupBy(e => e.DeclaringEntry ?? e).OrderBy(g => g.Key.FullName))
-                    {
-                        var mdPath = ToMdFileName(typeGroup.Key.FullName);
-                        await file.WriteLineAsync($"**[`{typeGroup.Key.Signature}`]({mdPath})**");
-                        foreach (var member in typeGroup.OrderBy(m => m.Name))
-                        {
-                            await file.WriteLineAsync($"* [`{member.Signature}`]({mdPath})");
-                        }
-
-                        await file.WriteLineAsync();
-                        await WriteTypeFileAsync(typeGroup, Path.Combine(directory.FullName, mdPath));
-                    }
-                }
-
-                file.Flush();
-            }
+            await Task.WhenAll(generators.Select(g => g.Generate(directory, this)));
         }
 
-        async Task WriteTypeFileAsync(IGrouping<ApiEntry, ApiEntry> typeGroup, string fileName)
+        public bool IsAdditionalEntry(ApiEntry entry)
         {
-            //using (var file = File.CreateText(fileName))
-            //{
-            //    var entry = typeGroup.Key;
-            //    var type = (Type)entry.Member;
-            //    await file.WriteLineAsync($"#{entry.Signature}");
-            //    await file.WriteLineAsync();
-
-            //    var summary = entry.DocumentationElement?.Element("Summary");
-            //    var remarks = entry.DocumentationElement?.Element("Remarks");
-
-            //    if (summary != null)
-            //    {
-            //        await file.WriteLineAsync(summary.Value);
-            //        await file.WriteLineAsync();
-            //    }
-
-            //    if (remarks != null)
-            //    {
-            //        var lines = Regex.Split(summary.Value, @"\r\n|\n|\r");
-            //        await file.WriteLineAsync($"> {string.Join("\r\n> ", lines)}");
-            //        await file.WriteLineAsync();
-            //    }
-
-            //    if (type.IsInterface)
-            //    //    var typeKey = WhitelistKey.ForType(typeGroup.Key);
-            //    //    await file.WriteLineAsync($"#{typeKey.Path}");
-            //    //    await file.WriteLineAsync();
-            //    //    foreach (var member in typeGroup.OrderBy(m => m.Name))
-            //    //    {
-            //    //        var fullMemberKey = WhitelistKey.ForMember(member);
-            //    //        var xmlKey = fullMemberKey.ToXmlDoc();
-            //    //        var memberKey = WhitelistKey.ForMember(member, false);
-            //    //        var doc = documentation?.XPathSelectElement($"/doc/members/member[@name='{xmlKey}']");
-            //    //        string summary;
-            //    //        if (doc != null)
-            //    //            summary = doc.Element("summary")?.Value ?? "";
-            //    //        else
-            //    //            summary = "";
-            //    //        await file.WriteLineAsync($"* `{memberKey.Path}`");
-            //    //        await file.WriteLineAsync($"  " + Trim(summary));
-            //    //        await file.WriteLineAsync();
-            //    //    }
-            //}
-        }
-
-        string Trim(string summary)
-        {
-            return Regex.Replace(summary.Trim(), @"\s{2,}", " ");
-        }
-
-        string ToMdFileName(string path)
-        {
-            var builder = new StringBuilder(path);
-            for (var i = 0; i < builder.Length; i++)
-                if (_invalidCharacters.Contains(builder[i]))
-                    builder[i] = '_';
-
-            builder.Append(".md");
-            return builder.ToString();
+            return _entries.Contains(entry);
         }
     }
 }

@@ -15,19 +15,20 @@ namespace DocGen
             return new Whitelist(lines);
         }
 
-        List<WhitelistKey> _entries;
+        List<WhitelistRule> _entries;
         HashSet<string> _assemblyNames;
 
         Whitelist(List<string> lines)
         {
-            _entries = lines.Select(line =>
-                {
-                    if (WhitelistKey.TryParse(line, out var entry))
-                        return entry;
-                    return null;
-                }).Where(entry => entry != null)
-                .ToList();
-            _assemblyNames = new HashSet<string>(_entries.Select(e => e.AssemblyName).Distinct(StringComparer.OrdinalIgnoreCase), StringComparer.OrdinalIgnoreCase);
+            _entries = new List<WhitelistRule>();
+            foreach (var entry in lines.Where(line => !string.IsNullOrWhiteSpace(line)).Select(WhitelistRule.Parse))
+            {
+                if (entry is MemberRule memberRule && !_entries.Any(e => e is TypeRule typeRule && typeRule.Type == memberRule.MemberInfo.DeclaringType))
+                    _entries.Add(new TypeRule(memberRule.MemberInfo.DeclaringType, false));
+                _entries.Add(entry);
+            }
+
+            _assemblyNames = new HashSet<string>(_entries.Select(e => e.Assembly.GetName().Name).Distinct(StringComparer.OrdinalIgnoreCase), StringComparer.OrdinalIgnoreCase);
         }
 
         public bool IsWhitelisted(Assembly assembly)
@@ -42,18 +43,19 @@ namespace DocGen
 
         public bool IsWhitelisted(Type type)
         {
-            var typeKey = ApiEntry.Create(type, null);
-            if (typeKey == null)
+            if (!IsWhitelisted(type.Assembly))
                 return false;
-            return _entries.Any(key => key.IsMatchFor(typeKey));
+            return _entries.Any(key => key.IsMatch(type));
         }
 
         public bool IsWhitelisted(MemberInfo memberInfo)
         {
+            if (memberInfo is Type type)
+                return IsWhitelisted(type);
+            Debug.Assert(memberInfo.DeclaringType != null, "memberInfo.DeclaringType != null");
             if (!IsWhitelisted(memberInfo.DeclaringType.Assembly))
                 return false;
-            var typeKey = ApiEntry.Create(memberInfo, null);
-            return _entries.Any(key => key.IsMatchFor(typeKey));
+            return _entries.Any(key => key.IsMatch(memberInfo));
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace DocGen
@@ -8,6 +9,12 @@ namespace DocGen
     public class Terminals
     {
         StringBuilder _document;
+
+        public static void Update(string fileName, string output)
+        {
+            var terminals = Terminals.Load(fileName);
+            terminals.Save(output);
+        }
 
         public static Terminals Load(string fileName)
         {
