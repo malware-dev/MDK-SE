@@ -11,6 +11,7 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 using DocGen.MarkdownGenerators;
 using DocGen.XmlDocs;
+using Malware.MDKUtilities;
 
 namespace DocGen
 {
