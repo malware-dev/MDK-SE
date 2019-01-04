@@ -13,7 +13,7 @@ namespace MDK.Build.Composers.Minifying
     {
         HashSet<string> _externallyReferencedTypes = new HashSet<string>();
 
-        public async Task<ProgramComposition> ProcessAsync(ProgramComposition composition, ProjectScriptInfo config)
+        public async Task<ProgramComposition> ProcessAsync(ProgramComposition composition, MDKProjectProperties config)
         {
             _externallyReferencedTypes.Clear();
             var usageAnalyzer = new UsageAnalyzer();

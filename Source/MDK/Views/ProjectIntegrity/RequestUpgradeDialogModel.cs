@@ -26,18 +26,18 @@ namespace MDK.Views.ProjectIntegrity
 
             AnalysisResults = analysisResults ?? throw new ArgumentNullException(nameof(analysisResults));
             if (analysisResults.BadProjects.IsDefaultOrEmpty)
-                Projects = new ReadOnlyCollection<ProjectScriptInfo>(new List<ProjectScriptInfo>());
+                Projects = new ReadOnlyCollection<MDKProjectProperties>(new List<MDKProjectProperties>());
             else
             {
                 if (analysisResults.BadProjects.Any(p => !p.HasValidGamePath))
                 {
-                    Projects = new ReadOnlyCollection<ProjectScriptInfo>(analysisResults.BadProjects.Where(p => !p.HasValidGamePath) .Select(p => p.ProjectInfo).ToArray());
+                    Projects = new ReadOnlyCollection<MDKProjectProperties>(analysisResults.BadProjects.Where(p => !p.HasValidGamePath) .Select(p => p.ProjectProperties).ToArray());
                     Message = "The Space Engineers game folder could not be determined. Automatic upgrades cannot be completed. Please verify that the game is installed and that the MDK configuration is correct, and then reload the projects. This affects the following MDK projects:";
                     SaveAndCloseCommand.IsEnabled = false;
                 }
                 else
                 {
-                    Projects = new ReadOnlyCollection<ProjectScriptInfo>(analysisResults.BadProjects.Select(p => p.ProjectInfo).ToArray());
+                    Projects = new ReadOnlyCollection<MDKProjectProperties>(analysisResults.BadProjects.Select(p => p.ProjectProperties).ToArray());
                 }
             }
         }
@@ -70,7 +70,7 @@ namespace MDK.Views.ProjectIntegrity
         /// <summary>
         /// Contains the list of projects to examine.
         /// </summary>
-        public ReadOnlyCollection<ProjectScriptInfo> Projects { get; }
+        public ReadOnlyCollection<MDKProjectProperties> Projects { get; }
 
         /// <summary>
         /// Upgrades the projects.

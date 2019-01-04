@@ -9,24 +9,24 @@ namespace MDK.Views.Options
     /// </summary>
     public class ScriptOptionsDialogModel : DialogViewModel
     {
-        ProjectScriptInfo _activeProject;
+        MDKProjectProperties _activeProject;
 
         /// <summary>
         /// Creates a new instance of <see cref="ScriptOptionsDialogModel"/>
         /// </summary>
         /// <param name="package"></param>
-        /// <param name="projectScriptInfo"></param>
-        public ScriptOptionsDialogModel([NotNull] MDKPackage package, [NotNull] ProjectScriptInfo projectScriptInfo)
+        /// <param name="projectProperties"></param>
+        public ScriptOptionsDialogModel([NotNull] MDKPackage package, [NotNull] MDKProjectProperties projectProperties)
         {
             if (package == null)
                 throw new ArgumentNullException(nameof(package));
-            ActiveProject = projectScriptInfo ?? throw new ArgumentNullException(nameof(projectScriptInfo));
+            ActiveProject = projectProperties ?? throw new ArgumentNullException(nameof(projectProperties));
         }
 
         /// <summary>
         /// The currently selected project
         /// </summary>
-        public ProjectScriptInfo ActiveProject
+        public MDKProjectProperties ActiveProject
         {
             get => _activeProject;
             set

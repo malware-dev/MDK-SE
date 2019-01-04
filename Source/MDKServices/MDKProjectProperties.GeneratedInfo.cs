@@ -2,11 +2,11 @@ using System;
 
 namespace Malware.MDKServices 
 {
-	partial class ProjectScriptInfo 
+	partial class MDKProjectProperties 
     {
 	    /// <summary>
 		/// The current package version this utility assembly targets
 		/// </summary>
-		public static readonly Version TargetPackageVersion = new Version("1.1.29");
+		public static readonly Version TargetPackageVersion = new Version("1.2.0");
 	}
 }

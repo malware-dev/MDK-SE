@@ -13,7 +13,7 @@
     TextOptions.TextFormattingMode="Display"
     TextOptions.TextHintingMode="Auto"
     TextOptions.TextRenderingMode="Auto"
-    Title="Script Blueprint Manager"
+    Title="Script Manager"
     MinWidth="100"
     MinHeight="100"
     Width="500"

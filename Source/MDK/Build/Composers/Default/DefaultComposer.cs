@@ -19,7 +19,7 @@ namespace MDK.Build.Composers.Default
         /// <param name="composition"></param>
         /// <param name="config"></param>
         /// <returns></returns>
-        public override async Task<string> GenerateAsync(ProgramComposition composition, ProjectScriptInfo config)
+        public override async Task<string> GenerateAsync(ProgramComposition composition, MDKProjectProperties config)
         {
             var analyzer = new DocumentAnalyzer();
             var result = await analyzer.AnalyzeAsync(composition.Document);

@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <!-- 
+    You can safely exclude this file from code repositories and use different 
+    user settings per machine.
+    -->
+    <MDKVersion>$mdkversion$</MDKVersion>
+    <MDKUseGameBinPath>$mdkusemanualgamebinpath$</MDKUseGameBinPath>
+    <MDKGameBinPath>$mdkgamebinpath$</MDKGameBinPath>
+    <MDKInstallPath>$mdkinstallpath$</MDKInstallPath>
+    <MDKOutputPath>$mdkoutputpath$</MDKOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Sandbox.Common">
+      <HintPath>$(MDKGameBinPath)\Sandbox.Common.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Sandbox.Game">
+      <HintPath>$(MDKGameBinPath)\Sandbox.Game.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Sandbox.Graphics">
+      <HintPath>$(MDKGameBinPath)\Sandbox.Graphics.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SpaceEngineers.Game">
+      <HintPath>$(MDKGameBinPath)\SpaceEngineers.Game.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SpaceEngineers.ObjectBuilders">
+      <HintPath>$(MDKGameBinPath)\SpaceEngineers.ObjectBuilders.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="VRage">
+      <HintPath>$(MDKGameBinPath)\VRage.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="VRage.Audio">
+      <HintPath>$(MDKGameBinPath)\VRage.Audio.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="VRage.Game">
+      <HintPath>$(MDKGameBinPath)\VRage.Game.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="VRage.Input">
+      <HintPath>$(MDKGameBinPath)\VRage.Input.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="VRage.Library">
+      <HintPath>$(MDKGameBinPath)\VRage.Library.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="VRage.Math">
+      <HintPath>$(MDKGameBinPath)\VRage.Math.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="VRage.Render">
+      <HintPath>$(MDKGameBinPath)\VRage.Render.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="VRage.Render11">
+      <HintPath>$(MDKGameBinPath)\VRage.Render11.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="VRage.Scripting">
+      <HintPath>$(MDKGameBinPath)\VRage.Scripting.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MDKUtilities">
+      <HintPath>$(MDKInstallPath)\MDKUtilities.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Analyzer Include="$(MDKInstallPath)\Analyzers\MDKAnalyzer.dll" />
+  </ItemGroup>
+</Project>

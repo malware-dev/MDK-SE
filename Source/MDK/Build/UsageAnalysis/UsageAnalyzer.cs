@@ -12,7 +12,7 @@ namespace MDK.Build.UsageAnalysis
     {
         SymbolAnalyzer _symbolAnalyzer = new SymbolAnalyzer();
 
-        public async Task<ImmutableArray<SymbolDefinitionInfo>> FindUsagesAsync(ProgramComposition composition, ProjectScriptInfo config)
+        public async Task<ImmutableArray<SymbolDefinitionInfo>> FindUsagesAsync(ProgramComposition composition, MDKProjectProperties config)
         {
             var symbolDefinitions = _symbolAnalyzer.FindSymbols(composition, config).ToArray();
 

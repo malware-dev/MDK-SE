@@ -359,7 +359,7 @@ namespace MDK
                     title = string.Format(Text.MDKPackage_Deploy_DeployingSingleScript, Path.GetFileName(project.FullName));
                 else
                     title = Text.MDKPackage_Deploy_DeployingAllScripts;
-                ProjectScriptInfo[] deployedScripts;
+                MDKProjectProperties[] deployedScripts;
                 using (var statusBar = new StatusBarProgressBar(ServiceProvider, title, 100))
                 using (new StatusBarAnimation(ServiceProvider, Animation.Deploy))
                 {
@@ -371,7 +371,7 @@ namespace MDK
                 {
                     if (!nonBlocking && Options.ShowBlueprintManagerOnDeploy)
                     {
-                        var distinctPaths = deployedScripts.Select(script => FormattedPath(script.OutputPath)).Distinct().ToArray();
+                        var distinctPaths = deployedScripts.Select(script => FormattedPath(script.Paths.OutputPath)).Distinct().ToArray();
                         if (distinctPaths.Length == 1)
                         {
                             var model = new BlueprintManagerDialogModel(Text.MDKPackage_Deploy_Description,

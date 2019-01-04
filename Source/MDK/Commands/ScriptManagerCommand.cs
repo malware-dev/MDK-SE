@@ -19,14 +19,14 @@ namespace MDK.Commands
 
         protected override void OnExecute()
         {
-            if (!TryGetValidProject(out ProjectScriptInfo projectInfo))
+            if (!TryGetValidProject(out MDKProjectProperties projectInfo))
             {
                 VsShellUtilities.ShowMessageBox(ServiceProvider, Text.BlueprintManagerCommand_OnExecute_NoMDKProjectsDescription, Text.BlueprintManagerCommand_OnExecute_NoMDKProjects, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
                 return;
             }
             var model = new BlueprintManagerDialogModel
             {
-                BlueprintPath = Environment.ExpandEnvironmentVariables(projectInfo.OutputPath)
+                BlueprintPath = Environment.ExpandEnvironmentVariables(projectInfo.Paths.OutputPath)
             };
             BlueprintManagerDialog.ShowDialog(model);
         }

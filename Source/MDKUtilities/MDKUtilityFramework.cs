@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Xml.Linq;
+using Malware.MDKServices;
 
 namespace Malware.MDKUtilities
 {
@@ -22,26 +23,13 @@ namespace Malware.MDKUtilities
         ///     Initializes the mock system. Pass in the path to the Space Engineers Bin64 folder.
         /// </summary>
         /// <param name="mdkOptionsPath">The path to the MDK options file</param>
-        public static void Load(string mdkOptionsPath = @"mdk\mdk.options")
+        public static void Load(string mdkOptionsPath = @"mdk\mdk.paths.props")
         {
             if (string.IsNullOrEmpty(mdkOptionsPath))
                 throw new ArgumentException(Resources.MDK_Load_EmptyPath, nameof(mdkOptionsPath));
 
-            var document = XDocument.Load(mdkOptionsPath);
-            var root = document.Element("mdk");
-            if (root == null)
-                throw new InvalidOperationException(Resources.MDK_Load_InvalidOptions);
-            var gameBinPathElement = root.Element("gamebinpath");
-            if (gameBinPathElement == null)
-                throw new InvalidOperationException(Resources.MDK_Load_InvalidOptions);
-            var gameBinPath = (string)gameBinPathElement;
-            var useManualGameBinPath = ((string)gameBinPathElement.Attribute("enabled") ?? "no").Trim().Equals("yes", StringComparison.CurrentCultureIgnoreCase);
-
-            if (!useManualGameBinPath)
-            {
-                var spaceEngineers = new SpaceEngineers();
-                gameBinPath = spaceEngineers.GetInstallPath("Bin64");
-            }
+            var props = MDKProjectPaths.Load(mdkOptionsPath);
+            var gameBinPath = props.GameBinPath;
 
             var directory = new DirectoryInfo(gameBinPath);
             if (!directory.Exists)

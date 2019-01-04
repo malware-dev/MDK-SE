@@ -187,7 +187,7 @@ namespace MDK.Build.Composers.Minifying
             return false;
         }
 
-        public async Task<ProgramComposition> ProcessAsync(ProgramComposition composition, ProjectScriptInfo config)
+        public async Task<ProgramComposition> ProcessAsync(ProgramComposition composition, MDKProjectProperties config)
         {
             var root = composition.RootNode;
             root = Visit(root);

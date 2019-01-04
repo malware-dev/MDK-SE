@@ -20,6 +20,7 @@ namespace Malware.MDKServices
         const string SourceWhitelistSubPath = @"Analyzers\whitelist.cache";
         const string TargetWhitelistSubPath = @"MDK\whitelist.cache";
         const string TargetOptionsSubPath = @"MDK\MDK.options";
+        const string TargetPropsSubPath = @"MDK\MDK.props";
 
         /// <summary>
         /// Makes sure the provided path is correctly related to the base directory and not the current environment directory.
@@ -140,14 +141,15 @@ namespace Malware.MDKServices
         {
             if (!project.IsLoaded())
                 return ScriptProjectAnalysisResult.NonScriptProjectResult;
-            var projectInfo = ProjectScriptInfo.Load(project.FullName, project.Name);
+            var projectInfo = MDKProjectProperties.Load(project.FullName, project.Name);
             if (!projectInfo.IsValid)
                 return ScriptProjectAnalysisResult.NonScriptProjectResult;
+
             var hasValidGamePath = true;
             string expectedGamePath;
             try
             {
-                expectedGamePath = projectInfo.GetActualGameBinPath(options.DefaultGameBinPath)?.TrimEnd('\\');
+                expectedGamePath = projectInfo.Paths.GameBinPath?.TrimEnd('\\');
             }
             catch (GamePathUnavailableException)
             {
@@ -158,17 +160,17 @@ namespace Malware.MDKServices
             var expectedInstallPath = options.InstallPath.TrimEnd('\\');
 
             var badReferences = ImmutableArray.CreateBuilder<BadReference>();
-            var projectFile = new FileInfo(projectInfo.FileName);
+            var projectFile = new FileInfo(projectInfo.Paths.FileName);
             var projectDir = projectFile.Directory;
-            var document = XDocument.Load(projectInfo.FileName);
+            var propsDocument = XDocument.Load(projectInfo.FileName);
             var xmlns = new XmlNamespaceManager(new NameTable());
             xmlns.AddNamespace("ms", Xmlns);
 
-            AnalyzeReferences(options, document, xmlns, projectDir, expectedGamePath, expectedInstallPath, badReferences);
-            AnalyzeFiles(options, document, xmlns, projectDir, expectedGamePath, expectedInstallPath, badReferences);
-            var whitelist = VerifyWhitelist(document, projectDir, expectedInstallPath);
+            AnalyzeReferences(options, propsDocument, xmlns, projectDir, expectedGamePath, expectedInstallPath, badReferences);
+            AnalyzeFiles(options, propsDocument, xmlns, projectDir, expectedGamePath, expectedInstallPath, badReferences);
+            var whitelist = VerifyWhitelist(propsDocument, projectDir, expectedInstallPath);
 
-            return new ScriptProjectAnalysisResult(project, projectInfo, document, whitelist, badReferences.ToImmutable(), hasValidGamePath);
+            return new ScriptProjectAnalysisResult(project, projectInfo, propsDocument, whitelist, badReferences.ToImmutable(), hasValidGamePath);
         }
 
         WhitelistReference VerifyWhitelist(XDocument document, DirectoryInfo projectDir, string expectedInstallPath)
@@ -254,18 +256,20 @@ namespace Malware.MDKServices
             RepairBadReferences(projectResult);
             RepairWhitelist(projectResult);
             RepairOptions(projectResult);
-            projectResult.ProjectDocument.Save(projectResult.ProjectInfo.FileName, SaveOptions.OmitDuplicateNamespaces);
+            var projectFileInfo = new FileInfo(projectResult.ProjectProperties.FileName);
+            var targetPropsFileInfo = new FileInfo(Path.Combine(projectFileInfo.Directory.FullName, TargetPropsSubPath));
+            projectResult.PropsDocument.Save(targetPropsFileInfo.FullName, SaveOptions.OmitDuplicateNamespaces);
         }
 
         void RepairOptions(ScriptProjectAnalysisResult projectResult)
         {
-            var projectFileInfo = new FileInfo(projectResult.ProjectInfo.FileName);
+            var projectFileInfo = new FileInfo(projectResult.ProjectProperties.FileName);
             var targetOptionsFileInfo = new FileInfo(Path.Combine(projectFileInfo.Directory.FullName, TargetOptionsSubPath));
             var document = XDocument.Load(targetOptionsFileInfo.FullName);
             var attribute = document.Element("mdk")?.Attribute("version");
             if (attribute != null)
             {
-                attribute.Value = ProjectScriptInfo.TargetPackageVersion.ToString();
+                attribute.Value = MDKProjectProperties.TargetPackageVersion.ToString();
                 document.Save(targetOptionsFileInfo.FullName, SaveOptions.OmitDuplicateNamespaces);
             }
         }
@@ -275,7 +279,7 @@ namespace Malware.MDKServices
             var whitelist = projectResult.Whitelist;
             if (!whitelist.HasValidWhitelistFile)
             {
-                var projectFileInfo = new FileInfo(projectResult.ProjectInfo.FileName);
+                var projectFileInfo = new FileInfo(projectResult.ProjectProperties.FileName);
                 var targetWhitelistFileInfo = new FileInfo(Path.Combine(projectFileInfo.Directory.FullName, TargetWhitelistSubPath));
                 if (!targetWhitelistFileInfo.Directory.Exists)
                     targetWhitelistFileInfo.Directory.Create();
@@ -284,14 +288,14 @@ namespace Malware.MDKServices
 
             if (!whitelist.HasValidWhitelistElement)
             {
-                var projectElement = projectResult.ProjectDocument
+                var projectElement = projectResult.PropsDocument
                     .Element($"{{{Xmlns}}}Project");
                 if (projectElement == null)
                     throw new InvalidOperationException("Bad MDK project");
                 var badElements = projectElement
                     .Elements($"{{{Xmlns}}}ItemGroup")
                     .Elements()
-                    .Where(e => 
+                    .Where(e =>
                         string.Equals((string)e.Attribute("Include"), TargetWhitelistSubPath, StringComparison.CurrentCultureIgnoreCase)
                         || string.Equals((string)e.Element($"{{{Xmlns}}}Link"), TargetWhitelistSubPath, StringComparison.CurrentCultureIgnoreCase))
                     .ToArray();

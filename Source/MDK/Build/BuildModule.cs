@@ -87,7 +87,7 @@ namespace MDK.Build
         /// </summary>
         protected int TotalSteps { get; private set; }
 
-        async Task<ProgramComposition> ComposeDocumentAsync(Project project, ProjectScriptInfo config)
+        async Task<ProgramComposition> ComposeDocumentAsync(Project project, MDKProjectProperties config)
         {
             try
             {
@@ -110,7 +110,7 @@ namespace MDK.Build
         /// Starts the build.
         /// </summary>
         /// <returns>The number of deployed projects</returns>
-        public Task<ProjectScriptInfo[]> RunAsync()
+        public Task<MDKProjectProperties[]> RunAsync()
         {
             return Task.Run(async () =>
             {
@@ -139,7 +139,7 @@ namespace MDK.Build
             }
         }
 
-        async Task<ProjectScriptInfo> BuildAsync(Project project)
+        async Task<MDKProjectProperties> BuildAsync(Project project)
         {
             var config = LoadConfig(project);
             if (!config.IsValid)
@@ -154,13 +154,13 @@ namespace MDK.Build
             var composition = await ComposeDocumentAsync(project, config);
             Steps++;
 
-            if (config.TrimTypes)
+            if (config.Options.TrimTypes)
             {
                 var processor = new TypeTrimmer();
                 composition = await processor.ProcessAsync(composition, config);
             }
 
-            var composer = config.Minify ? (ScriptComposer)new MinifyingComposer() : new DefaultComposer();
+            var composer = config.Options.Minify ? (ScriptComposer)new MinifyingComposer() : new DefaultComposer();
             var script = await ComposeScriptAsync(composition, composer, config).ConfigureAwait(false);
             Steps++;
 
@@ -169,12 +169,12 @@ namespace MDK.Build
                 script = composition.Readme + script;
             }
 
-            WriteScript(project, config.OutputPath, script);
+            WriteScript(project, config.Paths.OutputPath, script);
             Steps++;
             return config;
         }
 
-        async Task<string> ComposeScriptAsync(ProgramComposition composition, ScriptComposer composer, ProjectScriptInfo config)
+        async Task<string> ComposeScriptAsync(ProgramComposition composition, ScriptComposer composer, MDKProjectProperties config)
         {
             try
             {
@@ -210,11 +210,11 @@ namespace MDK.Build
             }
         }
 
-        ProjectScriptInfo LoadConfig(Project project)
+        MDKProjectProperties LoadConfig(Project project)
         {
             try
             {
-                return ProjectScriptInfo.Load(project.FilePath, project.Name);
+                return MDKProjectProperties.Load(project.FilePath, project.Name);
             }
             catch (Exception e)
             {

@@ -18,7 +18,7 @@ namespace MDK.Commands
             OleCommand.Visible = package.IsEnabled && TryGetValidProject(out _);
         }
 
-        protected bool TryGetValidProject(out Project project, out ProjectScriptInfo projectInfo)
+        protected bool TryGetValidProject(out Project project, out MDKProjectProperties projectProperties)
         {
             var dte2 = (EnvDTE80.DTE2)Package.DTE;
             project = ((IEnumerable)dte2.ToolWindows.SolutionExplorer.SelectedItems)
@@ -28,14 +28,14 @@ namespace MDK.Commands
                 .FirstOrDefault();
             if (project == null)
             {
-                projectInfo = null;
+                projectProperties = null;
                 return false;
             }
-            projectInfo = ProjectScriptInfo.Load(project.FullName, project.Name);
-            return projectInfo.IsValid;
+            projectProperties = MDKProjectProperties.Load(project.FullName, project.Name);
+            return projectProperties.IsValid;
         }
 
-        protected bool TryGetValidProject(out ProjectScriptInfo projectInfo)
-            => TryGetValidProject(out _, out projectInfo);
+        protected bool TryGetValidProject(out MDKProjectProperties projectProperties)
+            => TryGetValidProject(out _, out projectProperties);
     }
 }

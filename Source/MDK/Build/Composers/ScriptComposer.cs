@@ -16,7 +16,7 @@ namespace MDK.Build.Composers
         /// <param name="composition"></param>
         /// <param name="config"></param>
         /// <returns></returns>
-        public abstract Task<string> GenerateAsync(ProgramComposition composition, ProjectScriptInfo config);
+        public abstract Task<string> GenerateAsync(ProgramComposition composition, MDKProjectProperties config);
 
         /// <summary>
         /// Trims trailing whitespace from lines and before the end of the string.

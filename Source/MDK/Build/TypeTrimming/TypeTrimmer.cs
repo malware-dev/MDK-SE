@@ -62,7 +62,7 @@ namespace MDK.Build.TypeTrimming
             return FindTypeSymbol(semanticModel.GetEnclosingSymbol(location.Location.SourceSpan.Start));
         }
 
-        public async Task<ProgramComposition> ProcessAsync([NotNull] ProgramComposition composition, [NotNull] ProjectScriptInfo config)
+        public async Task<ProgramComposition> ProcessAsync([NotNull] ProgramComposition composition, [NotNull] MDKProjectProperties config)
         {
             if (composition == null)
                 throw new ArgumentNullException(nameof(composition));

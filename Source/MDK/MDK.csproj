@@ -87,7 +87,7 @@
     <Compile Include="Build\Solution\UsingDirectiveComparer.cs" />
     <Compile Include="Build\DocumentAnalysis\WeightedPartSorter.cs" />
     <Compile Include="Commands\GlobalBlueprintManagerCommand.cs" />
-    <Compile Include="Commands\BlueprintManagerCommand.cs" />
+    <Compile Include="Commands\ScriptManagerCommand.cs" />
     <Compile Include="Commands\CommandGroups.cs" />
     <Compile Include="Commands\CheckForUpdatesCommand.cs" />
     <Compile Include="Commands\CommandIds.cs" />
@@ -236,6 +236,22 @@
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <TemplateType>Project</TemplateType>
+    </ProjectReference>
+    <ProjectReference Include="..\MixinProjectTemplate\MixinProjectTemplate.csproj">
+      <Project>{8ca02c1a-1c6a-4460-a9e5-2f7911db0aaa}</Project>
+      <Name>MixinProjectTemplate</Name>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <TemplateType>Project</TemplateType>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+    </ProjectReference>
+    <ProjectReference Include="..\ReadMe\ReadMe.csproj">
+      <Project>{a880b15f-be25-4aa1-abe1-b80b968017cb}</Project>
+      <Name>ReadMe</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <TemplateType>Item</TemplateType>
+      <VSIXSubPath>ItemTemplates</VSIXSubPath>
     </ProjectReference>
     <ProjectReference Include="..\UtilityClass\UtilityClass.csproj">
       <Project>{B4C863E7-1671-45E5-80FE-7CF98E42A941}</Project>

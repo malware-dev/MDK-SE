@@ -8,7 +8,7 @@ namespace MDK
 	    /// <summary>
 		/// The current package version
 		/// </summary>
-		public static readonly Version Version = new Version("1.1.29");
+		public static readonly Version Version = new Version("1.2.0");
 
         /// <summary>
 		/// The required IDE version
@@ -40,20 +40,7 @@ namespace MDK
         /// </summary>
         public static readonly ImmutableArray<string> GameAssemblyNames = new string[] 
         {
-            "Sandbox.Common",
-            "Sandbox.Game",
-            "Sandbox.Graphics",
-            "SpaceEngineers.Game",
-            "SpaceEngineers.ObjectBuilders",
-            "VRage",
-            "VRage.Audio",
-            "VRage.Game",
-            "VRage.Input",
-            "VRage.Library",
-            "VRage.Math",
-            "VRage.Render",
-            "VRage.Render11",
-            "VRage.Scripting"
+            
         }.ToImmutableArray();
 
         /// <summary>
@@ -61,7 +48,7 @@ namespace MDK
         /// </summary>
         public static readonly ImmutableArray<string> UtilityAssemblyNames = new string[] 
         {
-            "MDKUtilities"
+            
         }.ToImmutableArray();
 
         /// <summary>
@@ -77,7 +64,7 @@ namespace MDK
         /// </summary>
         public static readonly ImmutableArray<string> UtilityFiles = new string[] 
         {
-            "\\Analyzers\\MDKAnalyzer.dll"
+            
         }.ToImmutableArray();
 	}
 }

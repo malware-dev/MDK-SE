@@ -33,7 +33,7 @@ namespace MDK.Build
         public ImmutableArray<ScriptPart> Parts { get; }
 
         /// <summary>
-        /// The content of the ReadMe.cs file, if it exists
+        /// The content of the readme file, if it exists
         /// </summary>
         public string Readme { get; }
     }

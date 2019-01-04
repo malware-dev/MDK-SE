@@ -79,7 +79,7 @@ namespace MDK.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Are you sure you want to delete the blueprint {0}?.
+        ///   Looks up a localized string similar to Are you sure you want to delete the script {0}?.
         /// </summary>
         internal static string BlueprintManagerDialog_OnDeletingBlueprint_Description {
             get {
@@ -88,7 +88,7 @@ namespace MDK.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Delete Blueprint.
+        ///   Looks up a localized string similar to Delete Script.
         /// </summary>
         internal static string BlueprintManagerDialog_OnDeletingBlueprint_Title {
             get {
@@ -106,7 +106,7 @@ namespace MDK.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The blueprint was copied to the clipboard..
+        ///   Looks up a localized string similar to The script was copied to the clipboard..
         /// </summary>
         internal static string BlueprintManagerDialogModel_CopyToClipboard_Copy_Description {
             get {
@@ -124,7 +124,7 @@ namespace MDK.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An unexpected error occurred during the attempt to copy the blueprint.
+        ///   Looks up a localized string similar to An unexpected error occurred during the attempt to copy the script.
         ///
         ///{0}.
         /// </summary>
@@ -135,7 +135,7 @@ namespace MDK.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error Deleting Blueprint.
+        ///   Looks up a localized string similar to Error Deleting Script.
         /// </summary>
         internal static string BlueprintManagerDialogModel_Delete_Error {
             get {
@@ -144,7 +144,7 @@ namespace MDK.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An unexpected error occurred during the attempt to delete the blueprint.
+        ///   Looks up a localized string similar to An unexpected error occurred during the attempt to delete the script.
         ///
         ///{0}.
         /// </summary>
@@ -155,7 +155,7 @@ namespace MDK.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Couldn&apos;t Delete Blueprint.
+        ///   Looks up a localized string similar to Couldn&apos;t Delete Script.
         /// </summary>
         internal static string BlueprintModel_Delete_Error {
             get {
@@ -164,7 +164,7 @@ namespace MDK.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The blueprint {0} could not be deleted:
+        ///   Looks up a localized string similar to The script {0} could not be deleted:
         ///
         ///{1}.
         /// </summary>
@@ -431,7 +431,7 @@ namespace MDK.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The emphasized blueprints are the ones that were just deployed..
+        ///   Looks up a localized string similar to The emphasized scripts are the ones that were just deployed..
         /// </summary>
         internal static string MDKPackage_Deploy_Description {
             get {

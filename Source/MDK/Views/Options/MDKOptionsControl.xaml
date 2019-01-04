@@ -82,7 +82,7 @@
 
             <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" IsChecked="{Binding ShowBlueprintManagerOnDeploy}"
                       VerticalAlignment="Center" VerticalContentAlignment="Center">
-                <Label>Show blueprint manager on deploy</Label>
+                <Label>Show script manager on deploy</Label>
             </CheckBox>
 
             <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="5" IsChecked="{Binding PromoteMDK}"

@@ -67,7 +67,7 @@
         <CommandFlag>DynamicVisibility</CommandFlag>
         <!--<Icon guid="guidImages" id="bmpPic1" />-->
         <Strings>
-          <ButtonText>Deploy All MDK Scripts</ButtonText>
+          <ButtonText>Deploy All Scripts</ButtonText>
         </Strings>
       </Button>
       <Button guid="guidMDKCmdSet" id="GlobalBlueprintManagerCommandId" priority="0x0101" type="Button">
@@ -75,7 +75,7 @@
         <CommandFlag>DynamicVisibility</CommandFlag>
         <!--<Icon guid="guidImages" id="bmpPic1" />-->
         <Strings>
-          <ButtonText>Blueprint Manager</ButtonText>
+          <ButtonText>Script Manager</ButtonText>
         </Strings>
       </Button>
       <Button guid="guidMDKCmdSet" id="RefreshWhitelistCacheCommandId" priority="0x0102" type="Button">
@@ -98,7 +98,7 @@
         <CommandFlag>DynamicVisibility</CommandFlag>
         <!--<Icon guid="guidImages" id="bmpPic1" />-->
         <Strings>
-          <ButtonText>Deploy All MDK Scripts</ButtonText>
+          <ButtonText>MDK Deploy All Scripts</ButtonText>
         </Strings>
       </Button>
       <Button guid="guidMDKCmdSet" id="GlobalBlueprintManagerCommandId" priority="0x0400" type="Button">
@@ -106,7 +106,7 @@
         <CommandFlag>DynamicVisibility</CommandFlag>
         <!--<Icon guid="guidImages" id="bmpPic1" />-->
         <Strings>
-          <ButtonText>Blueprint Manager</ButtonText>
+          <ButtonText>MDK Script Manager</ButtonText>
         </Strings>
       </Button>
       <Button guid="guidMDKCmdSet" id="DeployProjectCommandId" priority="0x0300" type="Button">
@@ -114,7 +114,7 @@
         <CommandFlag>DynamicVisibility</CommandFlag>
         <!--<Icon guid="guidImages" id="bmpPic1" />-->
         <Strings>
-          <ButtonText>Deploy MDK Script</ButtonText>
+          <ButtonText>MDK Deploy Script</ButtonText>
         </Strings>
       </Button>
       <Button guid="guidMDKCmdSet" id="BlueprintManagerCommandId" priority="0x0101" type="Button">
@@ -122,7 +122,7 @@
         <CommandFlag>DynamicVisibility</CommandFlag>
         <!--<Icon guid="guidImages" id="bmpPic1" />-->
         <Strings>
-          <ButtonText>Blueprint Manager</ButtonText>
+          <ButtonText>MDK Script Manager</ButtonText>
         </Strings>
       </Button>
       <Button guid="guidMDKCmdSet" id="ProjectOptionsCommandId" priority="0x0102" type="Button">

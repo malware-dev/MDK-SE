@@ -7,7 +7,7 @@ namespace Malware.MDKServices
     /// Exception which occurs when trying to access game information, and the game path cannot be reached.
     /// </summary>
     [Serializable]
-    public class GamePathUnavailableException : ProjectScriptInfoException
+    public class GamePathUnavailableException : MDKProjectPropertiesException
     {
         //
         // For guidelines regarding the creation of new exception types, see

@@ -17,18 +17,19 @@ namespace Malware.MDKServices
         /// Creates a new instance of <see cref="ScriptProjectAnalysisResult"/>
         /// </summary>
         /// <param name="project"></param>
-        /// <param name="projectInfo">Basic information about the analyzed project</param>
-        /// <param name="projectDocument">The source XML document of the project file</param>
+        /// <param name="projectProperties">Basic information about the analyzed project</param>
+        /// <param name="propsDocument">The source XML document of the MDK props file</param>
         /// <param name="whitelist">Whitelist verification results</param>
         /// <param name="badReferences">A list of bad file- or assembly references</param>
-        public ScriptProjectAnalysisResult(EnvDTE.Project project, ProjectScriptInfo projectInfo, XDocument projectDocument, WhitelistReference whitelist, ImmutableArray<BadReference> badReferences, bool hasValidGamePath)
+        /// <param name="hasValidGamePath"></param>
+        public ScriptProjectAnalysisResult(EnvDTE.Project project, MDKProjectProperties projectProperties, XDocument propsDocument, WhitelistReference whitelist, ImmutableArray<BadReference> badReferences, bool hasValidGamePath)
         {
             Project = project;
-            ProjectInfo = projectInfo;
-            ProjectDocument = projectDocument;
+            ProjectProperties = projectProperties;
+            PropsDocument = propsDocument;
             BadReferences = badReferences;
             Whitelist = whitelist;
-            IsScriptProject = projectInfo != null;
+            IsScriptProject = projectProperties != null;
             HasValidGamePath = hasValidGamePath;
             IsValid = BadReferences.Length == 0 && whitelist.IsValid && hasValidGamePath;
         }
@@ -46,12 +47,12 @@ namespace Malware.MDKServices
         /// <summary>
         /// Basic information about the analyzed project.
         /// </summary>
-        public ProjectScriptInfo ProjectInfo { get; }
+        public MDKProjectProperties ProjectProperties { get; }
 
         /// <summary>
         /// The source XML document of the project file.
         /// </summary>
-        public XDocument ProjectDocument { get; }
+        public XDocument PropsDocument { get; }
 
         /// <summary>
         /// Returns a list of bad file- or assembly references.

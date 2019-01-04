@@ -189,8 +189,8 @@ namespace MDK.Services
         /// Whether script projects should default to generating minified scripts.
         /// </summary>
         [Category("MDK/SE")]
-        [DisplayName("Show blueprint manager on deploy")]
-        [Description("Whether the blueprint manager is shown when a deployment is complete.")]
+        [DisplayName("Show script manager on deploy")]
+        [Description("Whether the script manager is shown when a deployment is complete.")]
         public bool ShowBlueprintManagerOnDeploy
         {
             get => _showBlueprintManagerOnDeploy;

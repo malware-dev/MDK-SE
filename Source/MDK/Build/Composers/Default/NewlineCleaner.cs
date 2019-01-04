@@ -22,7 +22,7 @@ namespace MDK.Build.Composers.Default
             return trivia;
         }
 
-        public async Task<ProgramComposition> ProcessAsync(ProgramComposition composition, ProjectScriptInfo config)
+        public async Task<ProgramComposition> ProcessAsync(ProgramComposition composition, MDKProjectProperties config)
         {
             var root = composition.RootNode;
             root = Visit(root);

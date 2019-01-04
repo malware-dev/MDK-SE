@@ -34,6 +34,11 @@ namespace IngameScript
         // You can also simply create a new utility class manually, you don't
         // have to use the template if you don't want to. Just do so the first
         // time to see what a utility class looks like.
+        // 
+        // Go to:
+        // https://github.com/malware-dev/MDK-SE/wiki/Quick-Introduction-to-Space-Engineers-Ingame-Scripts
+        //
+        // to learn more about ingame scripts.
 
         public Program()
         {

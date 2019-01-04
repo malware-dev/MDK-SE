@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Malware.MDKServices;
 using MDK.Build.Annotations;
@@ -19,14 +20,19 @@ namespace MDK.Build.Solution
     /// </summary>
     public class ProgramDocumentComposer
     {
-        static string DirectoryOf(Document document)
+        static string DirectoryOf(TextDocument document)
         {
             return Path.GetDirectoryName(document.FilePath);
         }
 
-        static string NameOf(Document document)
+        static string NameOf(TextDocument document)
         {
             return Path.GetFileNameWithoutExtension(document.FilePath);
+        }
+
+        static string ExtensionOf(TextDocument document)
+        {
+            return (Path.GetExtension(document.FilePath) ?? "").Trim('.');
         }
 
         readonly DocumentAnalyzer _analyzer = new DocumentAnalyzer();
@@ -49,14 +55,14 @@ namespace MDK.Build.Solution
         /// <param name="project"></param>
         /// <param name="config"></param>
         /// <returns></returns>
-        public async Task<ProgramComposition> ComposeAsync(Project project, ProjectScriptInfo config)
+        public async Task<ProgramComposition> ComposeAsync(Project project, MDKProjectProperties config)
         {
             var content = await LoadContentAsync(project, config).ConfigureAwait(false);
             var document = CreateProgramDocument(project, content);
             return await ProgramComposition.CreateAsync(document, content.Readme).ConfigureAwait(false);
         }
 
-        bool IsDebugDocument(string filePath, ProjectScriptInfo config)
+        bool IsDebugDocument(string filePath, MDKProjectProperties config)
         {
             var fileName = Path.GetFileName(filePath);
             if (string.IsNullOrWhiteSpace(fileName))
@@ -74,7 +80,7 @@ namespace MDK.Build.Solution
             return config.IsIgnoredFilePath(filePath);
         }
 
-        async Task<ProjectContent> LoadContentAsync(Project project, ProjectScriptInfo config)
+        async Task<ProjectContent> LoadContentAsync(Project project, MDKProjectProperties config)
         {
             var usingDirectives = ImmutableArray.CreateBuilder<UsingDirectiveSyntax>();
             var parts = ImmutableArray.CreateBuilder<ScriptPart>();
@@ -82,18 +88,35 @@ namespace MDK.Build.Solution
                 .Where(document => !IsDebugDocument(document.FilePath, config))
                 .ToList();
 
-            var readmeDocument = project.Documents
+            var readmeDocuments = project.AdditionalDocuments
+                .Where(document => DirectoryOf(document)?.Equals(Path.GetDirectoryName(project.FilePath), StringComparison.CurrentCultureIgnoreCase) ?? false)
+                .Where(document => ExtensionOf(document).Equals("readme", StringComparison.CurrentCultureIgnoreCase))
+                .OrderBy(NameOf)
+                .ToList();
+
+            var readMe = new StringBuilder();
+            for (int i = 0, n = readmeDocuments.Count - 1; i <= n; i++)
+            {
+                var document = readmeDocuments[i];
+                if (i > 0)
+                    readMe.Append('\n');
+                readMe.Append(await LoadReadMeContentsAsync(document));
+            }
+            documents.RemoveAll(d => readmeDocuments.Contains(d));
+            WrapAsComment(readMe);
+
+            var legacyReadmeDocument = project.Documents
                 .Where(document => DirectoryOf(document)?.Equals(Path.GetDirectoryName(project.FilePath), StringComparison.CurrentCultureIgnoreCase) ?? false)
                 .FirstOrDefault(document => NameOf(document).Equals("readme", StringComparison.CurrentCultureIgnoreCase));
-
-            string readme = null;
-            if (readmeDocument != null)
+            if (legacyReadmeDocument != null)
             {
-                documents.Remove(readmeDocument);
-                readme = (await readmeDocument.GetTextAsync()).ToString().Replace("\r\n", "\n");
-                if (!readme.EndsWith("\n"))
-                    readme += "\n";
+                documents.Remove(legacyReadmeDocument);
+                if (readMe.Length > 0)
+                    readMe.Append('\n');
+                readMe.Append(await LoadReadMeContentsAsync(legacyReadmeDocument));
             }
+
+            readmeDocuments.Add(legacyReadmeDocument);
 
             for (var index = 0; index < documents.Count; index++)
             {
@@ -106,7 +129,28 @@ namespace MDK.Build.Solution
             }
 
             var comparer = new UsingDirectiveComparer();
-            return new ProjectContent(usingDirectives.Distinct(comparer).ToImmutableArray(), parts.ToImmutable(), readme);
+            return new ProjectContent(usingDirectives.Distinct(comparer).ToImmutableArray(), parts.ToImmutable(), readMe.Length > 0? readMe.ToString() : null);
+        }
+
+        void WrapAsComment(StringBuilder readMe)
+        {
+            if (readMe.Length == 0)
+                return;
+            readMe.Insert(0, "/*\n");
+            readMe.Replace("\n", "\n * ");
+            readMe.Length--;
+            readMe.Append("/\n");
+        }
+
+        async Task<string> LoadReadMeContentsAsync(TextDocument document)
+        {
+            string readme = null;
+            readme = (await document.GetTextAsync()).ToString().Replace("\r\n", "\n").TrimEnd(' ');
+            if (string.IsNullOrWhiteSpace(readme))
+                return null;
+            if (!readme.EndsWith("\n"))
+                readme += "\n";
+            return readme;
         }
 
         Document CreateProgramDocument(Project project, ProjectContent content)

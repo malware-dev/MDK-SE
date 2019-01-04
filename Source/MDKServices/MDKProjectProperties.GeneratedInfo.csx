@@ -19,7 +19,7 @@ Context.Output.WriteLine($@"using System;
 
 namespace {namespaceName} 
 {{
-	partial class ProjectScriptInfo 
+	partial class MDKProjectProperties 
     {{
 	    /// <summary>
 		/// The current package version this utility assembly targets

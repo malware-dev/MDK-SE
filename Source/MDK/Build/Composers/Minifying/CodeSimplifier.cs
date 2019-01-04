@@ -256,7 +256,7 @@ namespace MDK.Build.Composers.Minifying
             return false;
         }
 
-        public async Task<ProgramComposition> ProcessAsync(ProgramComposition composition, ProjectScriptInfo config)
+        public async Task<ProgramComposition> ProcessAsync(ProgramComposition composition, MDKProjectProperties config)
         {
             var newDocument = await Simplifier.ReduceAsync(composition.Document).ConfigureAwait(false);
             composition = await (composition.WithDocumentAsync(newDocument).ConfigureAwait(false));

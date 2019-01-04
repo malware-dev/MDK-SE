@@ -49,9 +49,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\MDKServices\GamePathUnavailableException.cs">
+      <Link>GamePathUnavailableException.cs</Link>
+    </Compile>
+    <Compile Include="..\MDKServices\MDKProjectPaths.cs">
+      <Link>MDKProjectPaths.cs</Link>
+    </Compile>
+    <Compile Include="..\MDKServices\MDKProjectProperties.GeneratedInfo.cs">
+      <Link>MDKProjectProperties.GeneratedInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\MDKServices\MDKProjectPropertiesException.cs">
+      <Link>MDKProjectPropertiesException.cs</Link>
+    </Compile>
     <Compile Include="MDKFactory.cs" />
     <Compile Include="MDKUtilityFramework.cs" />
     <Compile Include="MDK.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources.Designer.cs">
       <DependentUpon>Resources.resx</DependentUpon>

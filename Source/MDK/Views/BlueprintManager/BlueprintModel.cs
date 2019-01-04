@@ -47,7 +47,7 @@ namespace MDK.Views.BlueprintManager
         public DirectoryInfo Directory { get; }
 
         /// <summary>
-        /// Gets the blueprint manager model this blueprint belongs to
+        /// Gets the script blueprint manager model this blueprint belongs to
         /// </summary>
         public BlueprintManagerDialogModel Manager { get; }
 

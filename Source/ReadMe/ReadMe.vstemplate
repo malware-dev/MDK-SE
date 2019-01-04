@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
+  <TemplateData>
+    <Name>ReadMe</Name>
+    <Description>ReadMe</Description>
+    <Icon>ReadMe.ico</Icon>
+    <TemplateID>8ce6c376-3acc-4993-ab91-80d55cdd8ddc</TemplateID>
+    <ProjectType>CSharp</ProjectType>
+    <AppliesTo>CSharp + SharedAssetsProject</AppliesTo>
+    <RequiredFrameworkVersion>2.0</RequiredFrameworkVersion>
+    <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
+    <DefaultName>Instructions.readme</DefaultName>
+  </TemplateData>
+  <TemplateContent>
+    <ProjectItem ReplaceParameters="true" ItemType="AdditionalFiles">Instructions.readme</ProjectItem>
+  </TemplateContent>
+</VSTemplate>

@@ -20,7 +20,7 @@ namespace MDK.Build.Composers.Minifying
         /// <param name="composition"></param>
         /// <param name="config"></param>
         /// <returns></returns>
-        public override async Task<string> GenerateAsync(ProgramComposition composition, ProjectScriptInfo config)
+        public override async Task<string> GenerateAsync(ProgramComposition composition, MDKProjectProperties config)
         {
             //var dumper = new PreserveDebugDumper(@"e:\dump0.txt");
             //dumper.Visit(await composition.Document.GetSyntaxRootAsync());

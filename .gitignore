@@ -106,3 +106,5 @@ _vti_pvt/
 #Ignore private folder
 /Private/
 /Source/UpgradeLog.htm
+/Source/MDKListenerPlugin
+/Source/Pipes

@@ -40,7 +40,7 @@
                          x:Name="OutputPathFolderBox"
                          Margin="2"
                          VerticalAlignment="Center"
-                         SelectedFolder="{Binding ActiveProject.OutputPath}"
+                         SelectedFolder="{Binding ActiveProject.Paths.OutputPath}"
                          ToolTip="The path where the final ingame scripts are generated"
                          DialogTitle="Please select the script output folder" />
 
@@ -51,7 +51,7 @@
             <CheckBox x:Name="TrimTypesCheckBox" 
                       Margin="2,8,2,2"
                       HorizontalAlignment="Left"
-                      IsChecked="{Binding ActiveProject.TrimTypes}">
+                      IsChecked="{Binding ActiveProject.Options.TrimTypes}">
                 <TextBlock TextWrapping="Wrap">Removes type definitions that are not in use.</TextBlock>
             </CheckBox>
         </StackPanel>
@@ -63,7 +63,7 @@
             <CheckBox x:Name="MinifyCheckBox" 
                       Margin="2,8,2,2"
                       HorizontalAlignment="Left"
-                      IsChecked="{Binding ActiveProject.Minify}">
+                      IsChecked="{Binding ActiveProject.Options.Minify}">
                 <TextBlock TextWrapping="Wrap">Deployment will make your code as small as possible at the expense of readability.
                     Use only if you know your code won't fit conventionally. Warning: Slow deployment.</TextBlock>
             </CheckBox>

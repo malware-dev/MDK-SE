@@ -186,11 +186,14 @@
     <Compile Include="GamePathUnavailableException.cs" />
     <Compile Include="GitHub.cs" />
     <Compile Include="GitHubRelease.cs" />
-    <Compile Include="ProjectScriptInfo.cs" />
-    <Compile Include="ProjectScriptInfo.GeneratedInfo.cs">
+    <Compile Include="Legacy\LegacyProjectScriptInfo_1_1.cs" />
+    <Compile Include="MDKProjectOptions.cs" />
+    <Compile Include="MDKProjectPaths.cs" />
+    <Compile Include="MDKProjectProperties.cs" />
+    <Compile Include="MDKProjectProperties.GeneratedInfo.cs">
       <DependsUpon>ProjectScriptInfo.GeneratedInfo.csx</DependsUpon>
     </Compile>
-    <Compile Include="ProjectScriptInfoException.cs" />
+    <Compile Include="MDKProjectPropertiesException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScriptProjectAnalysisResult.cs" />
     <Compile Include="ScriptSolutionAnalysisResult.cs" />
@@ -201,7 +204,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="ProjectScriptInfo.GeneratedInfo.csx" />
+    <None Include="MDKProjectProperties.GeneratedInfo.csx" />
     <None Include="Key.snk" />
     <None Include="packages.config" />
   </ItemGroup>

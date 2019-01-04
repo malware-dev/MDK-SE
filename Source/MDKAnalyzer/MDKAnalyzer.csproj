@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.3</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
@@ -45,6 +45,14 @@
   <ItemGroup>
     <None Remove="terminal.cache" />
     <None Remove="whitelist.cache" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Compile Include="..\MDKServices\GamePathUnavailableException.cs" Link="GamePathUnavailableException.cs" />
+    <Compile Include="..\MDKServices\MDKProjectOptions.cs" Link="MDKProjectOptions.cs" />
+    <Compile Include="..\MDKServices\MDKProjectPaths.cs" Link="MDKProjectPaths.cs" />
+    <Compile Include="..\MDKServices\MDKProjectProperties.GeneratedInfo.cs" Link="MDKProjectProperties.GeneratedInfo.cs" />
+    <Compile Include="..\MDKServices\MDKProjectPropertiesException.cs" Link="MDKProjectPropertiesException.cs" />
   </ItemGroup>
   
   <ItemGroup>

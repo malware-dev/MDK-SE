@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="MDK.Morten Aune Lyrstad.e02b602e-3099-44a5-88c6-cb30cab978f6" Version="1.1.29" Language="en-US" Publisher="Morten Aune Lyrstad" />
+    <Identity Id="MDK.Morten Aune Lyrstad.e02b602e-3099-44a5-88c6-cb30cab978f6" Version="1.2.0" Language="en-US" Publisher="Morten Aune Lyrstad" />
     <DisplayName>MDK/SE</DisplayName>
     <Description xml:space="preserve">A toolkit to help with ingame script (programmable block) development for Keen Software House's space sandbox Space Engineers.
 
@@ -20,9 +20,11 @@ Space Engineers is trademarked to Keen Software House. This toolkit is fan-made,
   </Dependencies>
   <Assets>
     <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="IngameScriptTemplate" d:TargetPath="|IngameScriptTemplate;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
+    <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="MixinProjectTemplate" d:TargetPath="|MixinProjectTemplate;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
     <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="MDK" Path="|MDK;PkgdefProjectOutputGroup|" />
     <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="UtilityClass" d:TargetPath="|UtilityClass;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
     <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="ExtensionClass" d:TargetPath="|ExtensionClass;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="ReadMe" d:TargetPath="|ExtensionClass;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="MDK" Path="|MDK|" AssemblyName="|MDK;AssemblyName|" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="MDKWhitelistExtractor" Path="|MDKWhitelistExtractor|" AssemblyName="|MDKWhitelistExtractor;AssemblyName|" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="MDKUtilities" Path="|MDKUtilities|" AssemblyName="|MDKUtilities;AssemblyName|" />

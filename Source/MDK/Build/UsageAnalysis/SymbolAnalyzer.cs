@@ -29,7 +29,7 @@ namespace MDK.Build.UsageAnalysis
             "Finalize",
         };
 
-        public ImmutableArray<SymbolDefinitionInfo> FindSymbols(ProgramComposition composition, ProjectScriptInfo config)
+        public ImmutableArray<SymbolDefinitionInfo> FindSymbols(ProgramComposition composition, MDKProjectProperties config)
         {
             var root = composition.RootNode;
             var semanticModel = composition.SemanticModel;
