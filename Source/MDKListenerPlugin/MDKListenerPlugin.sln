@@ -1,0 +1,45 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2041
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDKListenerPlugin", "MDKListenerPlugin.csproj", "{47A65F5A-BF97-4601-8660-68024B8EACDB}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Pipes", "..\Pipes\Pipes.shproj", "{E29ECB62-6CA9-4448-A9DB-FDC98DF6A8E0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApp", "TestApp\TestApp.csproj", "{1D7A9923-D327-4A47-9728-816C58B7BE75}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\Pipes\Pipes.projitems*{47a65f5a-bf97-4601-8660-68024b8eacdb}*SharedItemsImports = 4
+		..\Pipes\Pipes.projitems*{e29ecb62-6ca9-4448-a9db-fdc98df6a8e0}*SharedItemsImports = 13
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{47A65F5A-BF97-4601-8660-68024B8EACDB}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{47A65F5A-BF97-4601-8660-68024B8EACDB}.Debug|x64.ActiveCfg = Debug|x64
+		{47A65F5A-BF97-4601-8660-68024B8EACDB}.Debug|x64.Build.0 = Debug|x64
+		{47A65F5A-BF97-4601-8660-68024B8EACDB}.Release|Any CPU.ActiveCfg = Release|x64
+		{47A65F5A-BF97-4601-8660-68024B8EACDB}.Release|x64.ActiveCfg = Release|x64
+		{47A65F5A-BF97-4601-8660-68024B8EACDB}.Release|x64.Build.0 = Release|x64
+		{1D7A9923-D327-4A47-9728-816C58B7BE75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D7A9923-D327-4A47-9728-816C58B7BE75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D7A9923-D327-4A47-9728-816C58B7BE75}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1D7A9923-D327-4A47-9728-816C58B7BE75}.Debug|x64.Build.0 = Debug|Any CPU
+		{1D7A9923-D327-4A47-9728-816C58B7BE75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D7A9923-D327-4A47-9728-816C58B7BE75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D7A9923-D327-4A47-9728-816C58B7BE75}.Release|x64.ActiveCfg = Release|Any CPU
+		{1D7A9923-D327-4A47-9728-816C58B7BE75}.Release|x64.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C11CBC96-FE6B-4FF3-820C-990A8CE3B0B9}
+	EndGlobalSection
+EndGlobal

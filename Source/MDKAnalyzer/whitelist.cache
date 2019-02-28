@@ -1,13 +1,109 @@
 System.Collections.*, mscorlib
-System.Collections.Generic.*, mscorlib
 System.Collections.Generic.*, System.Core
 System.Collections.Generic.*, System
-System.Collections.Concurrent.*, mscorlib
-System.Collections.Concurrent.*, System
-System.Linq.*, System.Core
+System.Collections.Generic.*, mscorlib
 System.Text.*, mscorlib
 System.Text.RegularExpressions.*, System
 System.Globalization.*, mscorlib
+System.Linq.IQueryable+*, System.Core
+System.Linq.IQueryable<T>+*, System.Core
+System.Linq.IQueryProvider+*, System.Core
+System.Linq.IOrderedQueryable+*, System.Core
+System.Linq.IOrderedQueryable<T>+*, System.Core
+System.Linq.Queryable+*, System.Core
+System.Linq.Enumerable+*, System.Core
+System.Linq.EmptyEnumerable<TElement>+*, System.Core
+System.Linq.IdentityFunction<TElement>+*, System.Core
+System.Linq.IOrderedEnumerable<TElement>+*, System.Core
+System.Linq.IGrouping<TKey, TElement>+*, System.Core
+System.Linq.ILookup<TKey, TElement>+*, System.Core
+System.Linq.Lookup<TKey, TElement>+*, System.Core
+System.Linq.Set<TElement>+*, System.Core
+System.Linq.GroupedEnumerable<TSource, TKey, TElement, TResult>+*, System.Core
+System.Linq.GroupedEnumerable<TSource, TKey, TElement>+*, System.Core
+System.Linq.OrderedEnumerable<TElement>+*, System.Core
+System.Linq.OrderedEnumerable<TElement, TKey>+*, System.Core
+System.Linq.EnumerableSorter<TElement>+*, System.Core
+System.Linq.EnumerableSorter<TElement, TKey>+*, System.Core
+System.Linq.Buffer<TElement>+*, System.Core
+System.Linq.SystemCore_EnumerableDebugView<T>+*, System.Core
+System.Linq.SystemCore_EnumerableDebugViewEmptyException+*, System.Core
+System.Linq.SystemCore_EnumerableDebugView+*, System.Core
+System.Linq.IIListProvider<TElement>+*, System.Core
+System.Linq.SingleLinkedNode<TSource>+*, System.Core
+System.Linq.EnumerableQuery+*, System.Core
+System.Linq.EnumerableQuery<T>+*, System.Core
+System.Linq.EnumerableExecutor+*, System.Core
+System.Linq.EnumerableExecutor<T>+*, System.Core
+System.Linq.EnumerableRewriter+*, System.Core
+System.Linq.TypeHelper+*, System.Core
+System.Linq.Strings+*, System.Core
+System.Linq.Error+*, System.Core
+System.Linq.AggregationMinMaxHelpers<T>+*, System.Core
+System.Linq.SRDescriptionAttribute+*, System.Core
+System.Linq.SRCategoryAttribute+*, System.Core
+System.Linq.SR+*, System.Core
+System.Linq.Enumerable.Iterator<TSource>+*, System.Core
+System.Linq.Enumerable.WhereEnumerableIterator<TSource>+*, System.Core
+System.Linq.Enumerable.WhereArrayIterator<TSource>+*, System.Core
+System.Linq.Enumerable.WhereListIterator<TSource>+*, System.Core
+System.Linq.Enumerable.SelectEnumerableIterator<TSource, TResult>+*, System.Core
+System.Linq.Enumerable.WhereSelectEnumerableIterator<TSource, TResult>+*, System.Core
+System.Linq.Enumerable.WhereSelectArrayIterator<TSource, TResult>+*, System.Core
+System.Linq.Enumerable.WhereSelectListIterator<TSource, TResult>+*, System.Core
+System.Linq.Enumerable.AppendPrependIterator<TSource>+*, System.Core
+System.Linq.Enumerable.AppendPrepend1Iterator<TSource>+*, System.Core
+System.Linq.Enumerable.AppendPrependN<TSource>+*, System.Core
+System.Linq.Enumerable.<WhereIterator>d__2<TSource>+*, System.Core
+System.Linq.Enumerable.<SelectIterator>d__5<TSource, TResult>+*, System.Core
+System.Linq.Enumerable.<>c__DisplayClass6_0<TSource>+*, System.Core
+System.Linq.Enumerable.<>c__DisplayClass7_0<TSource, TMiddle, TResult>+*, System.Core
+System.Linq.Enumerable.<SelectManyIterator>d__17<TSource, TResult>+*, System.Core
+System.Linq.Enumerable.<SelectManyIterator>d__19<TSource, TResult>+*, System.Core
+System.Linq.Enumerable.<SelectManyIterator>d__21<TSource, TCollection, TResult>+*, System.Core
+System.Linq.Enumerable.<SelectManyIterator>d__23<TSource, TCollection, TResult>+*, System.Core
+System.Linq.Enumerable.<TakeIterator>d__25<TSource>+*, System.Core
+System.Linq.Enumerable.<TakeWhileIterator>d__27<TSource>+*, System.Core
+System.Linq.Enumerable.<TakeWhileIterator>d__29<TSource>+*, System.Core
+System.Linq.Enumerable.<SkipIterator>d__31<TSource>+*, System.Core
+System.Linq.Enumerable.<SkipWhileIterator>d__33<TSource>+*, System.Core
+System.Linq.Enumerable.<SkipWhileIterator>d__35<TSource>+*, System.Core
+System.Linq.Enumerable.<JoinIterator>d__38<TOuter, TInner, TKey, TResult>+*, System.Core
+System.Linq.Enumerable.<GroupJoinIterator>d__41<TOuter, TInner, TKey, TResult>+*, System.Core
+System.Linq.Enumerable.<ConcatIterator>d__59<TSource>+*, System.Core
+System.Linq.Enumerable.<ZipIterator>d__61<TFirst, TSecond, TResult>+*, System.Core
+System.Linq.Enumerable.<DistinctIterator>d__64<TSource>+*, System.Core
+System.Linq.Enumerable.<UnionIterator>d__67<TSource>+*, System.Core
+System.Linq.Enumerable.<IntersectIterator>d__70<TSource>+*, System.Core
+System.Linq.Enumerable.<ExceptIterator>d__73<TSource>+*, System.Core
+System.Linq.Enumerable.<ReverseIterator>d__75<TSource>+*, System.Core
+System.Linq.Enumerable.<DefaultIfEmptyIterator>d__93<TSource>+*, System.Core
+System.Linq.Enumerable.<OfTypeIterator>d__95<TResult>+*, System.Core
+System.Linq.Enumerable.<CastIterator>d__97<TResult>+*, System.Core
+System.Linq.Enumerable.<RangeIterator>d__113+*, System.Core
+System.Linq.Enumerable.<RepeatIterator>d__115<TResult>+*, System.Core
+System.Linq.IdentityFunction<TElement>.<>c+*, System.Core
+System.Linq.Lookup<TKey, TElement>.Grouping+*, System.Core
+System.Linq.Lookup<TKey, TElement>.<GetEnumerator>d__12+*, System.Core
+System.Linq.Lookup<TKey, TElement>.<ApplyResultSelector>d__13<TResult>+*, System.Core
+System.Linq.Set<TElement>.Slot+*, System.Core
+System.Linq.OrderedEnumerable<TElement>.<GetEnumerator>d__1+*, System.Core
+System.Linq.EnumerableRewriter.<>c__DisplayClass9_0+*, System.Core
+System.Linq.EnumerableRewriter.<>c+*, System.Core
+System.Linq.EnumerableRewriter.<>c__DisplayClass10_0+*, System.Core
+System.Linq.ParallelEnumerable.<>c__10<TSource>+*, System.Core
+System.Linq.ParallelEnumerable.<>c__DisplayClass47_0<TSource, TKey, TResult>+*, System.Core
+System.Linq.ParallelEnumerable.<>c__DisplayClass48_0<TSource, TKey, TResult>+*, System.Core
+System.Linq.ParallelEnumerable.<>c__DisplayClass49_0<TSource, TKey, TElement, TResult>+*, System.Core
+System.Linq.ParallelEnumerable.<>c__DisplayClass50_0<TSource, TKey, TElement, TResult>+*, System.Core
+System.Linq.ParallelEnumerable.<>c__51<T>+*, System.Core
+System.Linq.ParallelEnumerable.<>c__149<TSource>+*, System.Core
+System.Linq.AggregationMinMaxHelpers<T>.<>c__DisplayClass3_0+*, System.Core
+System.Linq.AggregationMinMaxHelpers<T>.<>c__DisplayClass4_0+*, System.Core
+System.Linq.AggregationMinMaxHelpers<T>.<>c+*, System.Core
+System.Linq.ParallelQuery<TSource>.<>c__1<TCastTo>+*, System.Core
+System.Linq.ParallelQuery<TSource>.<>c__2<TCastTo>+*, System.Core
+System.Linq.Lookup<TKey, TElement>.Grouping.<GetEnumerator>d__7+*, System.Core
 object+*, mscorlib
 System.IDisposable+*, mscorlib
 string+*, mscorlib
@@ -51,9 +147,6 @@ System.Xml.Serialization.XmlRootAttribute+*, System.Xml
 System.Xml.Serialization.XmlTextAttribute+*, System.Xml
 System.Xml.Serialization.XmlTypeAttribute+*, System.Xml
 System.Runtime.CompilerServices.RuntimeHelpers+*, mscorlib
-System.IO.Stream+*, mscorlib
-System.IO.TextWriter+*, mscorlib
-System.IO.TextReader+*, mscorlib
 System.IO.BinaryReader+*, mscorlib
 System.IO.BinaryWriter+*, mscorlib
 System.NullReferenceException+*, mscorlib
@@ -163,6 +256,7 @@ Sandbox.ModAPI.Interfaces.ITerminalProperty+*, Sandbox.Common
 Sandbox.ModAPI.Interfaces.ITerminalProperty<TValue>+*, Sandbox.Common
 Sandbox.ModAPI.Interfaces.TerminalPropertyExtensions+*, Sandbox.Common
 Sandbox.Game.Localization.MySpaceTexts+*, Sandbox.Game
+System.Text.StringBuilderExtensions_Format+*, VRage.Library
 VRage.MyFixedPoint+*, VRage.Library
 VRage.MyTuple+*, VRage.Library
 VRage.MyTuple<T1>+*, VRage.Library
@@ -179,6 +273,7 @@ VRage.MyTexts.GetString(VRage.Utils.MyStringId), VRage
 VRage.MyTexts.Exists(VRage.Utils.MyStringId), VRage
 VRage.MyTexts.Get(VRage.Utils.MyStringId), VRage
 VRage.MyTexts.AppendFormat(System.Text.StringBuilder, VRage.Utils.MyStringId, object), VRage
+VRage.MyTexts.AppendFormat(System.Text.StringBuilder, VRage.Utils.MyStringId, VRage.Utils.MyStringId), VRage
 VRage.MyTexts.Languages, VRage
 VRage.MyTexts.LanguageDescription+*, VRage
 VRage.MyLanguagesEnum+*, VRage
@@ -193,9 +288,11 @@ VRage.Game.MyRelationsBetweenPlayerAndBlock+*, VRage.Game
 VRage.Game.MyRelationsBetweenPlayerAndBlockExtensions+*, VRage.Game
 VRage.Game.Components.MyResourceSourceComponentBase+*, VRage.Game
 VRage.Game.ObjectBuilders.Definitions.MyObjectBuilder_GasProperties+*, VRage.Game
-VRage.Game.Components.MyComponentBase+*, VRage.Game
 VRage.ObjectBuilders.SerializableDefinitionId+*, VRage.Game
 VRage.Game.MyCubeSize+*, VRage.Game
+VRage.Game.Components.MyComponentBase, VRage.Game
+VRage.Game.Components.MyComponentBase.GetAs<T>(), VRage.Game
+VRage.Game.Components.MyComponentBase.ContainerBase, VRage.Game
 VRage.ObjectBuilders.MyObjectBuilder_Base, VRage.Game
 VRage.ObjectBuilders.MyObjectBuilder_Base.TypeId, VRage.Game
 VRage.ObjectBuilders.MyObjectBuilder_Base.SubtypeId, VRage.Game
@@ -206,6 +303,7 @@ Sandbox.Game.EntityComponents.MyResourceSourceComponent.DefinedOutput, Sandbox.G
 Sandbox.Game.EntityComponents.MyResourceSourceComponent.ProductionEnabled, Sandbox.Game
 Sandbox.Game.EntityComponents.MyResourceSourceComponent.RemainingCapacity, Sandbox.Game
 Sandbox.Game.EntityComponents.MyResourceSourceComponent.HasCapacityRemaining, Sandbox.Game
+Sandbox.Game.EntityComponents.MyResourceSourceComponent.ResourceTypes, Sandbox.Game
 Sandbox.Game.EntityComponents.MyResourceSinkComponent, Sandbox.Game
 Sandbox.Game.EntityComponents.MyResourceSinkComponent.AcceptedResources, Sandbox.Game
 Sandbox.Game.EntityComponents.MyResourceSinkComponent.RequiredInput, Sandbox.Game
@@ -222,3 +320,5 @@ VRage.Game.Components.MyResourceSinkComponentBase.RequiredInputByType(VRage.Game
 VRage.Game.Components.MyResourceSinkComponentBase.SuppliedRatioByType(VRage.Game.MyDefinitionId), VRage.Game
 System.ArrayExtensions, VRage.Library
 System.ArrayExtensions.Contains<T>(T[], T), VRage.Library
+VRage.Game.ModAPI.Ingame.MyPhysicalInventoryItemExtensions_ModAPI+*, Sandbox.Game
+System.Collections.Immutable.*, System.Collections.Immutable
