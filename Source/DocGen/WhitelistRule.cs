@@ -50,12 +50,14 @@ namespace DocGen
             Type type = null;
             var parts = new Queue<string>(path.Split('.', '+').ToList());
             var name = "";
-            while (type == null && parts.Count > 0)
+            while (parts.Count > 0)
             {
                 if (name.Length > 0)
                     name += ".";
                 name += Translate(parts.Dequeue());
-                type = assembly.GetType(name);
+                var nextType = assembly.GetType(name);
+                if (nextType != null)
+                    type = nextType;
             }
 
             if (type == null)

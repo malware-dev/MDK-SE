@@ -118,7 +118,6 @@ namespace DocGen.MarkdownGenerators
         async Task WriteMembers(ProgrammableBlockApi api, ApiEntry entry, MarkdownWriter writer)
         {
             var memberEntries = AllInheritedEntriesOf(entry).ToList();
-
             await WriteTable("Fields", memberEntries.Where(m => m.Member is FieldInfo), api, entry, writer);
             await WriteTable("Events", memberEntries.Where(m => m.Member is EventInfo), api, entry, writer);
             await WriteTable("Properties", memberEntries.Where(m => m.Member is PropertyInfo), api, entry, writer);

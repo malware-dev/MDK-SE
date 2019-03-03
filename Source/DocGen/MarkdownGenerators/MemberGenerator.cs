@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -212,7 +213,7 @@ namespace DocGen.MarkdownGenerators
                 await writer.WriteHeaderAsync(3, "Parameters");
                 foreach (var parameter in parameters)
                 {
-                    var returnEntry = api.GetEntry(parameter.ParameterType, true);
+                    var returnEntry = api.GetEntry(parameter.GetActualParameterType(), true);
                     await writer.WriteAsync("* ");
                     await writer.WriteAsync(LinkTo(returnEntry.ToString(ApiEntryStringFlags.ShortDisplayName), returnEntry));
                     await writer.WriteAsync(" ");

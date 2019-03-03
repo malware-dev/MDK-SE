@@ -16,6 +16,7 @@ namespace DocGen
         Sealed    = 0b00010000,
         Abstract  = 0b00100000,
         Virtual   = 0b01000000,
+        Static    = 0b10000000
     }
 
     static class TypeExtensions
@@ -50,6 +51,8 @@ namespace DocGen
                 segments.Add("internal");
             if ((modifiers & TypeModifiers.Public) != 0)
                 segments.Add("public");
+            if ((modifiers & TypeModifiers.Static) != 0)
+                segments.Add("static");
             if ((modifiers & TypeModifiers.Abstract) != 0)
                 segments.Add("abstract");
             if ((modifiers & TypeModifiers.Virtual) != 0)
@@ -85,6 +88,8 @@ namespace DocGen
                         modifiers |= TypeModifiers.Sealed;
                     break;
                 case MethodBase methodBase:
+                    if (methodBase.IsStatic)
+                        modifiers |= TypeModifiers.Static;
                     if (methodBase.IsPublic)
                         modifiers |= TypeModifiers.Public;
                     if (methodBase.IsFamily)
@@ -108,6 +113,8 @@ namespace DocGen
 
                     break;
                 case FieldInfo fieldInfo:
+                    if (fieldInfo.IsStatic)
+                        modifiers |= TypeModifiers.Static;
                     if (fieldInfo.IsPublic)
                         modifiers |= TypeModifiers.Public;
                     if (fieldInfo.IsFamily)
