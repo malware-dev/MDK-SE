@@ -170,10 +170,21 @@ namespace DocGen
 
             string docFileName = null;
             if (memberInfo is Type type)
+            {
+                if (type.IsGenericType)
+                {
+                    type = type.GetGenericTypeDefinition();
+                }
                 docFileName = Path.ChangeExtension(new Uri(type.Assembly.CodeBase).LocalPath, "xml");
+            }
             else
             {
-                var codeBase = memberInfo.DeclaringType?.Assembly.CodeBase;
+                type = memberInfo.DeclaringType;
+                if (type?.IsGenericType ?? false)
+                {
+                    type = type.GetGenericTypeDefinition();
+                }
+                var codeBase = type?.Assembly.CodeBase;
                 if (codeBase != null)
                     docFileName = Path.ChangeExtension(new Uri(codeBase).LocalPath, "xml");
             }
@@ -191,11 +202,6 @@ namespace DocGen
 
         public ApiEntry GetEntry(MemberInfo memberInfo, bool includeBlacklisted = false)
         {
-            if (memberInfo is Type type && type.IsGenericType)
-            {
-                memberInfo = type.GetGenericTypeDefinition();
-            }
-
             if (_entryLookup.TryGetValue(memberInfo, out var entry))
             {
                 if (entry != null || includeBlacklisted && _blacklistedEntryLookup.TryGetValue(memberInfo, out entry))

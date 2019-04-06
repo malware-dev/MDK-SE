@@ -15,7 +15,7 @@ namespace Malware.MDKServices
     /// <summary>
     /// Represents a set of general options for an MDK project
     /// </summary>
-    public class MDKProjectOptions: INotifyPropertyChanged
+    public partial class MDKProjectOptions: INotifyPropertyChanged
     {
         const string Xmlns = "http://schemas.microsoft.com/developer/msbuild/2003";
 
@@ -346,7 +346,7 @@ namespace Malware.MDKServices
 
                 if (versionElement == null)
                 {
-                    versionElement = new XElement(XName.Get("Version", Xmlns));
+                    versionElement = new XElement(XName.Get("MDKVersion", Xmlns));
                     groupElement.Add(versionElement);
                 }
 

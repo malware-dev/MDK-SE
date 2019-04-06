@@ -213,10 +213,10 @@
   <data name="MDKPackage_Deploy_Description" xml:space="preserve">
     <value>The emphasized scripts are the ones that were just deployed.</value>
   </data>
-  <data name="RequestUpgradeDialogModel_OnSave_Error" xml:space="preserve">
+  <data name="ProjectHealthDialogModel_OnSave_Error" xml:space="preserve">
     <value>Upgrade Failed</value>
   </data>
-  <data name="RequestUpgradeDialogModel_OnSave_Error_Description" xml:space="preserve">
+  <data name="ProjectHealthDialogModel_OnSave_Error_Description" xml:space="preserve">
     <value>An unexpected error occurred during the attempt to upgrade the project(s).</value>
   </data>
   <data name="BlueprintModel_Delete_Error" xml:space="preserve">
@@ -296,5 +296,14 @@
   </data>
   <data name="TypeTrimmer_ProcessAsync_NoEntryPoint" xml:space="preserve">
     <value>Unable to find Program entry point for {0}</value>
+  </data>
+  <data name="ProjectHealthDialogModel_DefaultMessage" xml:space="preserve">
+    <value>The following MDK projects must be upgraded in order to function correctly. Do you wish to do this now?</value>
+  </data>
+  <data name="ProjectHealthDialogModel_Upgrade_BadUpgradeVersion" xml:space="preserve">
+    <value>Bad Options File - was tagged as outdated, but can't find the right upgrade tool for version {0}</value>
+  </data>
+  <data name="UpgradeFrom1_1_Upgrade_ErrorLoadingProject" xml:space="preserve">
+    <value>Error loading the original project file</value>
   </data>
 </root>

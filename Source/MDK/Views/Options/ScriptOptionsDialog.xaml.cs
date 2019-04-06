@@ -20,7 +20,7 @@ namespace MDK.Views.Options
         }
 
         /// <summary>
-        /// Creates a new instance of the <see cref="ProjectIntegrity.RequestUpgradeDialog"/>
+        /// Creates a new instance of the <see cref="ScriptOptionsDialog"/>
         /// </summary>
         public ScriptOptionsDialog()
         {

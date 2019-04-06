@@ -20,7 +20,7 @@ namespace MDK.Views.UpdateDetection
         }
 
         /// <summary>
-        /// Creates a new instance of the <see cref="ProjectIntegrity.RequestUpgradeDialog"/>
+        /// Creates a new instance of the <see cref="UpdateDetectedDialog"/>
         /// </summary>
         public UpdateDetectedDialog()
         {

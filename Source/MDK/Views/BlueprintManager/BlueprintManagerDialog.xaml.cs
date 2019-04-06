@@ -29,7 +29,7 @@ namespace MDK.Views.BlueprintManager
         }
 
         /// <summary>
-        /// Creates a new instance of the <see cref="ProjectIntegrity.RequestUpgradeDialog"/>
+        /// Creates a new instance of the <see cref="BlueprintManagerDialog"/>
         /// </summary>
         public BlueprintManagerDialog()
         {

@@ -22,7 +22,7 @@ namespace MDK.Views.BugReports
         }
 
         /// <summary>
-        /// Creates a new instance of the <see cref="ProjectIntegrity.RequestUpgradeDialog"/>
+        /// Creates a new instance of the <see cref="ErrorDialog"/>
         /// </summary>
         public ErrorDialog()
         {

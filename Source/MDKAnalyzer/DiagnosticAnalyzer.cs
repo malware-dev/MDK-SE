@@ -20,7 +20,7 @@ namespace Malware.MDKAnalyzer
             = new DiagnosticDescriptor("MissingWhitelistRule", "Missing Or Corrupted Whitelist Cache", "The whitelist cache could not be loaded. Please run Tools | MDK | Refresh Whitelist Cache to attempt repair.", "Whitelist", DiagnosticSeverity.Error, true);
 
         internal static readonly DiagnosticDescriptor NoOptionsRule
-            = new DiagnosticDescriptor("MissingOptionsRule", "Missing Or Corrupted Options", "The MDK.options could not be loaded.", "Whitelist", DiagnosticSeverity.Error, true);
+            = new DiagnosticDescriptor("MissingOptionsRule", "Missing Or Corrupted Options", "The MDK.options.props could not be loaded.", "Whitelist", DiagnosticSeverity.Error, true);
 
         internal static readonly DiagnosticDescriptor ProhibitedMemberRule
             = new DiagnosticDescriptor("ProhibitedMemberRule", "Prohibited Type Or Member", "The type or member '{0}' is prohibited in Space Engineers", "Whitelist", DiagnosticSeverity.Error, true);

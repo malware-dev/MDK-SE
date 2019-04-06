@@ -94,6 +94,7 @@
     <Compile Include="Commands\DeployProjectCommand.cs" />
     <Compile Include="Commands\ProjectDependentCommand.cs" />
     <Compile Include="Commands\ProjectOptionsCommand.cs" />
+    <Compile Include="Debugging\TriggerTracing.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="MDKPackage.GeneratedInfo.cs">
       <DependentUpon>MDKPackage.GeneratedInfo.csx</DependentUpon>
@@ -117,6 +118,11 @@
     <Compile Include="Views\BugReports\ErrorDialogModel.cs" />
     <Compile Include="Views\MessageEventArgs.cs" />
     <Compile Include="Views\MessageEventType.cs" />
+    <Compile Include="Views\ProjectHealth\ProjectHealthDialog.xaml.cs">
+      <DependentUpon>ProjectHealthDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ProjectHealth\ProjectHealthDialogModel.cs" />
+    <Compile Include="Views\ProjectHealth\UpgradeFrom_1_1.cs" />
     <Compile Include="Views\ToBooleanConverter.cs" />
     <Compile Include="Views\DialogClosingEventArgs.cs" />
     <Compile Include="Views\DialogViewModel.cs" />
@@ -129,12 +135,8 @@
     <Compile Include="Views\Whitelist\RefreshWhitelistCacheDialog.xaml.cs">
       <DependentUpon>RefreshWhitelistCacheDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ProjectIntegrity\RequestUpgradeDialogModel.cs" />
     <Compile Include="Views\ButtonBar.xaml.cs">
       <DependentUpon>ButtonBar.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ProjectIntegrity\RequestUpgradeDialog.xaml.cs">
-      <DependentUpon>RequestUpgradeDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Wizard\NewScriptWizardDialog.xaml.cs">
       <DependentUpon>NewScriptWizardDialog.xaml</DependentUpon>
@@ -204,6 +206,7 @@
       <Project>{003de686-c301-430b-b01a-d9a346797e88}</Project>
       <Name>MDKAnalyzer</Name>
       <VSIXSubPath>Analyzers</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\MDKServices\MDKServices.csproj">
       <Project>{b76a0b75-34b1-4110-accd-6cea981fe0d6}</Project>
@@ -212,6 +215,7 @@
     <ProjectReference Include="..\MDKUtilities\MDKUtilities.csproj">
       <Project>{5C6B59B5-82CB-4886-94A7-AD610F75B1A6}</Project>
       <Name>MDKUtilities</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
@@ -489,6 +493,12 @@
       <HintPath>..\packages\System.IO.Compression.4.3.0\lib\net46\System.IO.Compression.dll</HintPath>
       <ForceIncludeInVSIX>true</ForceIncludeInVSIX>
     </Reference>
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.IO.Compression.ZipFile, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.Compression.ZipFile.4.3.0\lib\net46\System.IO.Compression.ZipFile.dll</HintPath>
+      <ForceIncludeInVSIX>true</ForceIncludeInVSIX>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.IO.FileSystem, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.IO.FileSystem.4.3.0\lib\net46\System.IO.FileSystem.dll</HintPath>
       <ForceIncludeInVSIX>true</ForceIncludeInVSIX>
@@ -600,15 +610,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\ProjectHealth\ProjectHealthDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\UpdateDetection\UpdateDetectedDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Whitelist\RefreshWhitelistCacheDialog.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\ProjectIntegrity\RequestUpgradeDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -631,6 +641,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="..\Mixin.SteamAndSE\Mixin.SteamAndSE.projitems" Label="Shared" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
@@ -642,7 +653,6 @@
     <Error Condition="!Exists('..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.11\build\net35\SQLitePCLRaw.lib.e_sqlite3.osx.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.11\build\net35\SQLitePCLRaw.lib.e_sqlite3.osx.targets'))" />
     <Error Condition="!Exists('..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.11\build\net35\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.11\build\net35\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets'))" />
   </Target>
-  <Import Project="..\SteamAndSE\SteamAndSE.projitems" Label="Shared" />
   <PropertyGroup>
     <PostBuildEvent>"$(ProjectDir)deploy.bat" $(ConfigurationName) "$(ProjectDir)..\..\Release" "$(TargetDir)$(TargetName).vsix"</PostBuildEvent>
   </PropertyGroup>

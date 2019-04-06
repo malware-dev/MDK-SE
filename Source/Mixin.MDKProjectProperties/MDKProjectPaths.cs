@@ -15,7 +15,7 @@ namespace Malware.MDKServices
     /// <summary>
     /// Represents a set of important paths for an MDK project
     /// </summary>
-    public class MDKProjectPaths : INotifyPropertyChanged
+    public partial class MDKProjectPaths : INotifyPropertyChanged
     {
         /// <summary>
         /// A list of assembly references which are added to project path options by default.
@@ -125,7 +125,6 @@ namespace Malware.MDKServices
             }
         });
 
-
         const string Xmlns = "http://schemas.microsoft.com/developer/msbuild/2003";
 
         /// <summary>
@@ -180,6 +179,10 @@ namespace Malware.MDKServices
                         OutputPath = outputPath,
                         HasChanges = false
                     };
+                    foreach (var reference in DefaultAssemblyReferences)
+                        paths.AssemblyReferences.Add(reference);
+                    foreach (var reference in DefaultAnalyzerReferences)
+                        paths.AnalyzerReferences.Add(reference);
                     return paths;
                 }
             }
@@ -188,27 +191,6 @@ namespace Malware.MDKServices
                 throw new MDKProjectPropertiesException($"An error occurred while attempting to load project information from {fileName}.", e);
             }
         }
-
-        ///// <summary>
-        ///// Upgrades from a legacy script info format
-        ///// </summary>
-        ///// <param name="legacyScriptInfo"></param>
-        ///// <param name="fileName"></param>
-        ///// <returns></returns>
-        //internal static MDKProjectPaths ImportLegacy(LegacyProjectScriptInfo_1_1 legacyScriptInfo, string fileName)
-        //{
-        //    if (!legacyScriptInfo.IsValid)
-        //        return new MDKProjectPaths(fileName, false);
-
-        //    return new MDKProjectPaths(fileName, true)
-        //    {
-        //        UseCustomGameBinPath = legacyScriptInfo.UseManualGameBinPath,
-        //        GameBinPath = legacyScriptInfo.GameBinPath,
-        //        InstallPath = legacyScriptInfo.InstallPath,
-        //        OutputPath = legacyScriptInfo.OutputPath,
-        //        HasChanges = false
-        //    };
-        //}
 
         bool _hasChanges;
         string _gameBinPath;
@@ -220,8 +202,8 @@ namespace Malware.MDKServices
         {
             FileName = fileName;
             IsValid = isValid;
-            AssemblyReferences = new ObservableCollection<AssemblyReference>(DefaultAssemblyReferences);
-            AnalyzerReferences = new ObservableCollection<AnalyzerReference>(DefaultAnalyzerReferences);
+            AssemblyReferences = new ObservableCollection<AssemblyReference>();
+            AnalyzerReferences = new ObservableCollection<AnalyzerReference>();
         }
 
         /// <inheritdoc />
@@ -426,7 +408,7 @@ namespace Malware.MDKServices
                 if (itemGroupElement == null)
                 {
                     itemGroupElement = new XElement(XName.Get("ItemGroup", Xmlns));
-                    groupElement.Add(itemGroupElement);
+                    rootElement.Add(itemGroupElement);
                 }
 
                 var referenceElements = itemGroupElement.Elements(XName.Get("Reference", Xmlns)).Concat(itemGroupElement.Elements(XName.Get("Analyzer", Xmlns))).ToList();

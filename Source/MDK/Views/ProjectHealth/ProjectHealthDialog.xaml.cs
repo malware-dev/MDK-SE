@@ -1,33 +1,33 @@
 ﻿using Microsoft.VisualStudio.PlatformUI;
 
-namespace MDK.Views.Wizard
+namespace MDK.Views.ProjectHealth
 {
     /// <summary>
-    /// Interaction logic for NewScriptWizardDialog.xaml
+    /// Interaction logic for ProjectHealthDialog.xaml
     /// </summary>
-    public partial class NewScriptWizardDialog : DialogWindow
+    public partial class ProjectHealthDialog : DialogWindow
     {
         /// <summary>
         /// Shows this dialog with the provided view model.
         /// </summary>
         /// <param name="viewModel"></param>
         /// <returns></returns>
-        public static bool? ShowDialog(NewScriptWizardDialogModel viewModel)
+        public static bool? ShowDialog(ProjectHealthDialogModel viewModel)
         {
-            var dialog = new NewScriptWizardDialog();
+            var dialog = new ProjectHealthDialog();
             dialog.SetModel(viewModel);
             return dialog.ShowModal();
         }
 
         /// <summary>
-        /// Creates a new instance of the <see cref="NewScriptWizardDialog"/>
+        /// Creates a new instance of the <see cref="ProjectHealthDialog"/>
         /// </summary>
-        public NewScriptWizardDialog()
+        public ProjectHealthDialog()
         {
             InitializeComponent();
         }
 
-        void SetModel(NewScriptWizardDialogModel viewModel)
+        void SetModel(ProjectHealthDialogModel viewModel)
         {
             Host.DataContext = viewModel;
             viewModel.Closing += OnModelClosing;
@@ -35,7 +35,7 @@ namespace MDK.Views.Wizard
 
         void OnModelClosing(object sender, DialogClosingEventArgs e)
         {
-            ((NewScriptWizardDialogModel)Host.DataContext).Closing += OnModelClosing;
+            ((ProjectHealthDialogModel)Host.DataContext).Closing += OnModelClosing;
             DialogResult = e.State;
             Close();
         }

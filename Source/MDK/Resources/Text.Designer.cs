@@ -539,6 +539,42 @@ namespace MDK.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The following MDK projects must be upgraded in order to function correctly. Do you wish to do this now?.
+        /// </summary>
+        internal static string ProjectHealthDialogModel_DefaultMessage {
+            get {
+                return ResourceManager.GetString("ProjectHealthDialogModel_DefaultMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Upgrade Failed.
+        /// </summary>
+        internal static string ProjectHealthDialogModel_OnSave_Error {
+            get {
+                return ResourceManager.GetString("ProjectHealthDialogModel_OnSave_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An unexpected error occurred during the attempt to upgrade the project(s)..
+        /// </summary>
+        internal static string ProjectHealthDialogModel_OnSave_Error_Description {
+            get {
+                return ResourceManager.GetString("ProjectHealthDialogModel_OnSave_Error_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bad Options File - was tagged as outdated, but can&apos;t find the right upgrade tool for version {0}.
+        /// </summary>
+        internal static string ProjectHealthDialogModel_Upgrade_BadUpgradeVersion {
+            get {
+                return ResourceManager.GetString("ProjectHealthDialogModel_Upgrade_BadUpgradeVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No MDK Projects.
         /// </summary>
         internal static string ProjectOptionsCommand_OnExecute_NoMDKProjects {
@@ -557,29 +593,20 @@ namespace MDK.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Upgrade Failed.
-        /// </summary>
-        internal static string RequestUpgradeDialogModel_OnSave_Error {
-            get {
-                return ResourceManager.GetString("RequestUpgradeDialogModel_OnSave_Error", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to An unexpected error occurred during the attempt to upgrade the project(s)..
-        /// </summary>
-        internal static string RequestUpgradeDialogModel_OnSave_Error_Description {
-            get {
-                return ResourceManager.GetString("RequestUpgradeDialogModel_OnSave_Error_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Unable to find Program entry point for {0}.
         /// </summary>
         internal static string TypeTrimmer_ProcessAsync_NoEntryPoint {
             get {
                 return ResourceManager.GetString("TypeTrimmer_ProcessAsync_NoEntryPoint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error loading the original project file.
+        /// </summary>
+        internal static string UpgradeFrom1_1_Upgrade_ErrorLoadingProject {
+            get {
+                return ResourceManager.GetString("UpgradeFrom1_1_Upgrade_ErrorLoadingProject", resourceCulture);
             }
         }
     }

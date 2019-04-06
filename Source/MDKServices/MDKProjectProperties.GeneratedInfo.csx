@@ -5,6 +5,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
 
+const string OutputFile = @"..\Mixin.MDKProjectProperties\MDKProjectProperties.GeneratedInfo.cs"; 
 const string Xmlns = "http://schemas.microsoft.com/developer/msbuild/2003";
 
 var namespaceName = "Malware.MDKServices";
@@ -15,7 +16,8 @@ var identity = manifest
     .Element(XName.Get("Identity", "http://schemas.microsoft.com/developer/vsx-schema/2011"));
 var version = (string)identity.Attribute("Version");
 
-Context.Output.WriteLine($@"using System;
+Context.Output[OutputFile].BuildAction = BuildAction.GenerateOnly;
+Context.Output[OutputFile].WriteLine($@"using System;
 
 namespace {namespaceName} 
 {{

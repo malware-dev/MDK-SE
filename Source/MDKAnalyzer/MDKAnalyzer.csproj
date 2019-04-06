@@ -48,14 +48,6 @@
   </ItemGroup>
   
   <ItemGroup>
-    <Compile Include="..\MDKServices\GamePathUnavailableException.cs" Link="GamePathUnavailableException.cs" />
-    <Compile Include="..\MDKServices\MDKProjectOptions.cs" Link="MDKProjectOptions.cs" />
-    <Compile Include="..\MDKServices\MDKProjectPaths.cs" Link="MDKProjectPaths.cs" />
-    <Compile Include="..\MDKServices\MDKProjectProperties.GeneratedInfo.cs" Link="MDKProjectProperties.GeneratedInfo.cs" />
-    <Compile Include="..\MDKServices\MDKProjectPropertiesException.cs" Link="MDKProjectPropertiesException.cs" />
-  </ItemGroup>
-  
-  <ItemGroup>
     <Content Include="terminal.cache">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -73,5 +65,7 @@
     <None Update="tools\*.ps1" CopyToOutputDirectory="Always" Pack="true" PackagePath="" />
     <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
+
+  <Import Project="..\Mixin.MDKProjectProperties\Mixin.MDKProjectProperties.projitems" Label="Shared" />
 
 </Project>

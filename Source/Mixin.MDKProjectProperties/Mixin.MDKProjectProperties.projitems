@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>19fe099b-04f4-4dac-9805-d66a8ea7574b</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Malware.MDKServices</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)GamePathUnavailableException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MDKProjectOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MDKProjectPaths.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MDKProjectProperties.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MDKProjectProperties.GeneratedInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MDKProjectPropertiesException.cs" />
+  </ItemGroup>
+</Project>

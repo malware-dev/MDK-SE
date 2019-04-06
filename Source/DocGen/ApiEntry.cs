@@ -143,6 +143,8 @@ namespace DocGen
         static string XmlDocParameterStr(ProgrammableBlockApi api, ParameterInfo parameterInfo)
         {
             var type = parameterInfo.ParameterType.IsByRef || parameterInfo.ParameterType.IsPointer ? parameterInfo.ParameterType.GetElementType() : parameterInfo.ParameterType;
+            if (type.IsGenericType && !type.IsGenericTypeDefinition)
+                type = type.GetGenericTypeDefinition();
             if (parameterInfo.ParameterType.IsByRef)
             {
                 if (type.FullName == null)

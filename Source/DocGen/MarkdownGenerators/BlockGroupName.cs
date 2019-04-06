@@ -39,10 +39,18 @@ namespace DocGen.MarkdownGenerators
                 case "VRage.Game.ModAPI.Ingame.IMySlimBlock":
                     return new BlockGroupName("Grid Program and Terminal System", "Types related to the grid program and grid terminal system", 3000);
 
-                case "VRage.Game.ModAPI.Ingame.IMyInventoryItem":
+                case "VRage.Game.ModAPI.Ingame.MyInventoryItem":
                 case "VRage.Game.ModAPI.Ingame.IMyInventory":
-                case "VRage.Game.ModAPI.Ingame.MyInventoryItemExtension":
+                case "VRage.Game.ModAPI.Ingame.MyInventoryItemFilter":
+                case "VRage.Game.ModAPI.Ingame.MyItemInfo":
                     return new BlockGroupName("Inventory", "Types related to inventory analysis and management.", 5000);
+
+                case "Sandbox.ModAPI.Ingame.IMyIntergridCommunicationSystem":
+                case "Sandbox.ModAPI.Ingame.IMyBroadcastListener":
+                case "Sandbox.ModAPI.Ingame.IMyUnicastListener":
+                case "Sandbox.ModAPI.Ingame.IMyMessageProvider":
+                case "Sandbox.ModAPI.Ingame.TransmissionDistance":
+                    return new BlockGroupName("IGC", "Types related to the intergrid communication system.", 5000);
 
                 case "Sandbox.ModAPI.Interfaces.TerminalBlockExtentions":
                 case "Sandbox.ModAPI.Interfaces.ITerminalProperty":

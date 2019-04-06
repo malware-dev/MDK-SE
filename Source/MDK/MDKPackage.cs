@@ -6,7 +6,6 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using EnvDTE;
-using JetBrains.Annotations;
 using Malware.MDKServices;
 using MDK.Build;
 using MDK.Commands;
@@ -14,7 +13,7 @@ using MDK.Resources;
 using MDK.Services;
 using MDK.Views.BlueprintManager;
 using MDK.Views.BugReports;
-using MDK.Views.ProjectIntegrity;
+using MDK.Views.ProjectHealth;
 using MDK.Views.UpdateDetection;
 using MDK.VisualStudio;
 using Microsoft.VisualStudio;
@@ -32,7 +31,6 @@ namespace MDK
     [Guid(PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     [ProvideOptionPage(typeof(MDKOptions), "MDK/SE", "Options", 0, 0, true)]
-//    [ProvideAutoLoad(UIContextGuids80.NoSolution)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionOpening_string)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.ShellInitialized_string)]
     public sealed partial class MDKPackage : ExtendedPackage
@@ -45,14 +43,6 @@ namespace MDK
         bool _hasCheckedForUpdates;
         bool _isEnabled;
         SolutionManager _solutionManager;
-
-        /// <summary>
-        ///     Creates a new instance of <see cref="MDKPackage" />
-        /// </summary>
-        public MDKPackage()
-        {
-            ScriptUpgrades = new ScriptUpgrades();
-        }
 
         /// <summary>
         ///     Fired when the MDK features are enabled
@@ -98,11 +88,6 @@ namespace MDK
         public IServiceProvider ServiceProvider => this;
 
         /// <summary>
-        ///     The <see cref="ScriptUpgrades" /> service
-        /// </summary>
-        public ScriptUpgrades ScriptUpgrades { get; }
-
-        /// <summary>
         ///     Gets the installation path for the current MDK package
         /// </summary>
         public DirectoryInfo InstallPath { get; } = new FileInfo(new Uri(typeof(MDKPackage).Assembly.CodeBase).LocalPath).Directory;
@@ -144,6 +129,91 @@ namespace MDK
             KnownUIContexts.ShellInitializedContext.WhenActivated(OnShellActivated);
 
             base.Initialize();
+        }
+
+        void OnUpdateDetected(Version detectedVersion)
+        {
+            if (detectedVersion == null)
+                return;
+            UpdateDetectedDialog.ShowDialog(new UpdateDetectedDialogModel(detectedVersion));
+        }
+
+        void OnShellActivated()
+        {
+            _solutionManager.EndRecording();
+        }
+
+        void OnSolutionClosed(object sender, EventArgs e)
+        {
+            IsEnabled = false;
+        }
+
+        void OnSolutionLoaded(object sender, EventArgs e)
+        {
+            OnSolutionLoaded(DTE.Solution);
+        }
+
+        void OnProjectLoaded(object sender, ProjectLoadedEventArgs e)
+        {
+            if (e.IsStandalone)
+                OnProjectLoaded(e.Project);
+        }
+
+        async void OnProjectLoaded(Project project)
+        {
+            HealthAnalysis analysis;
+            try
+            {
+                analysis = await HealthAnalysis.AnalyzeAsync(project, GetAnalysisOptions());
+            }
+            catch (Exception e)
+            {
+                ShowError(Text.MDKPackage_OnProjectLoaded_ErrorAnalyzingProject, string.Format(Text.MDKPackage_OnProjectLoaded_ErrorAnalyzingProject_Description, project?.Name), e);
+                IsEnabled = false;
+                return;
+            }
+
+            if (!analysis.IsMDKProject)
+                return;
+            IsEnabled = true;
+
+            if (analysis.IsHealthy)
+                return;
+
+            PresentAnalysisResults(analysis);
+        }
+
+        async void OnSolutionLoaded(Solution solution)
+        {
+            HealthAnalysis[] analyses;
+            try
+            {
+                analyses = await HealthAnalysis.AnalyzeAsync(solution, GetAnalysisOptions());
+            }
+            catch (Exception e)
+            {
+                ShowError(Text.MDKPackage_OnSolutionLoaded_ErrorAnalyzingSolution, Text.MDKPackage_OnSolutionLoaded_ErrorAnalyzingSolution_Description, e);
+                IsEnabled = false;
+                return;
+            }
+
+            if (!analyses.Any(analysis => analysis.IsMDKProject))
+            {
+                IsEnabled = false;
+                return;
+            }
+
+            IsEnabled = true;
+
+            var unhealtyProjects = analyses.Where(analysis => !analysis.IsHealthy).ToArray();
+            if (unhealtyProjects.Any())
+                PresentAnalysisResults(unhealtyProjects);
+
+            if (!_hasCheckedForUpdates)
+            {
+                _hasCheckedForUpdates = true;
+                CheckForUpdatesAsync();
+            }
         }
 
         async void CheckForUpdatesAsync()
@@ -190,113 +260,22 @@ namespace MDK
             }
         }
 
-        void OnUpdateDetected(Version detectedVersion)
-        {
-            if (detectedVersion == null)
-                return;
-            UpdateDetectedDialog.ShowDialog(new UpdateDetectedDialogModel(detectedVersion));
-        }
-
-        void OnShellActivated()
-        {
-            _solutionManager.EndRecording();
-        }
-
-        void OnSolutionClosed(object sender, EventArgs e)
-        {
-            IsEnabled = false;
-        }
-
-        void OnSolutionLoaded(object sender, EventArgs e)
-        {
-            OnSolutionLoaded(DTE.Solution);
-        }
-
-        void OnProjectLoaded(object sender, ProjectLoadedEventArgs e)
-        {
-            if (e.IsStandalone)
-                OnProjectLoaded(e.Project);
-        }
-
-        async void OnProjectLoaded(Project project)
-        {
-            ScriptSolutionAnalysisResult result;
-            try
+        HealthAnalysisOptions GetAnalysisOptions() =>
+            new HealthAnalysisOptions
             {
-                result = await ScriptUpgrades.AnalyzeAsync(project, new ScriptUpgradeAnalysisOptions
-                {
-                    DefaultGameBinPath = Options.GetActualGameBinPath(),
-                    InstallPath = InstallPath.FullName,
-                    TargetVersion = Version,
-                    GameAssemblyNames = GameAssemblyNames,
-                    GameFiles = GameFiles,
-                    UtilityAssemblyNames = UtilityAssemblyNames,
-                    UtilityFiles = UtilityFiles
-                });
-            }
-            catch (Exception e)
-            {
-                ShowError(Text.MDKPackage_OnProjectLoaded_ErrorAnalyzingProject, string.Format(Text.MDKPackage_OnProjectLoaded_ErrorAnalyzingProject_Description, project?.Name), e);
-                IsEnabled = false;
-                return;
-            }
+                DefaultGameBinPath = Options.GetActualGameBinPath(),
+                InstallPath = InstallPath.FullName,
+                TargetVersion = Version,
+                GameAssemblyNames = GameAssemblyNames,
+                GameFiles = GameFiles,
+                UtilityAssemblyNames = UtilityAssemblyNames,
+                UtilityFiles = UtilityFiles
+            };
 
-            if (!result.HasScriptProjects)
-                return;
-            IsEnabled = true;
-            if (result.IsValid)
-                return;
-
-            QueryUpgrade(this, result);
-        }
-
-        void QueryUpgrade([NotNull] MDKPackage package, ScriptSolutionAnalysisResult result)
+        void PresentAnalysisResults(params HealthAnalysis[] analysis)
         {
-            if (package == null)
-                throw new ArgumentNullException(nameof(package));
-            var model = new RequestUpgradeDialogModel(package, result);
-            RequestUpgradeDialog.ShowDialog(model);
-        }
-
-        async void OnSolutionLoaded(Solution solution)
-        {
-            ScriptSolutionAnalysisResult result;
-            try
-            {
-                result = await ScriptUpgrades.AnalyzeAsync(solution, new ScriptUpgradeAnalysisOptions
-                {
-                    DefaultGameBinPath = Options.GetActualGameBinPath(),
-                    InstallPath = InstallPath.FullName,
-                    TargetVersion = Version,
-                    GameAssemblyNames = GameAssemblyNames,
-                    GameFiles = GameFiles,
-                    UtilityAssemblyNames = UtilityAssemblyNames,
-                    UtilityFiles = UtilityFiles
-                });
-            }
-            catch (Exception e)
-            {
-                ShowError(Text.MDKPackage_OnSolutionLoaded_ErrorAnalyzingSolution, Text.MDKPackage_OnSolutionLoaded_ErrorAnalyzingSolution_Description, e);
-                IsEnabled = false;
-                return;
-            }
-
-            if (!result.HasScriptProjects)
-            {
-                IsEnabled = false;
-                return;
-            }
-
-            IsEnabled = true;
-
-            if (!result.IsValid)
-                QueryUpgrade(this, result);
-
-            if (!_hasCheckedForUpdates)
-            {
-                _hasCheckedForUpdates = true;
-                CheckForUpdatesAsync();
-            }
+            var model = new ProjectHealthDialogModel(this, analysis);
+            ProjectHealthDialog.ShowDialog(model);
         }
 
         /// <summary>

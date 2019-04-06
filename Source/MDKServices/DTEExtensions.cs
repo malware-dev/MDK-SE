@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
@@ -18,6 +19,8 @@ namespace Malware.MDKServices
         /// </summary>
         /// <param name="project"></param>
         /// <returns></returns>
+        [DebuggerStepThrough]
+        [DebuggerNonUserCode]
         public static bool IsLoaded(this Project project)
         {
             // This is downright dirty, but it's the only way to determine if a project is loaded or not.

@@ -4,9 +4,9 @@ using System.Collections.Immutable;
 namespace Malware.MDKServices
 {
     /// <summary>
-    /// Options for the <see cref="ScriptUpgrades"/> analysis methods
+    /// Options for the <see cref="HealthAnalysis"/> analysis methods
     /// </summary>
-    public struct ScriptUpgradeAnalysisOptions
+    public struct HealthAnalysisOptions
     {
         /// <summary>
         /// The default path to the game binaries
