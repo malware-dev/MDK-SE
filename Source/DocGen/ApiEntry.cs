@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using DocGen.XmlDocs;
 
@@ -259,13 +260,16 @@ namespace DocGen
             throw new NotSupportedException();
         }
 
-        string ToParameterString(ParameterInfo parameterInfo, ApiEntryStringFlags flags)
+        string ToParameterString(ParameterInfo parameterInfo, int index, ApiEntryStringFlags flags)
         {
             var segments = new List<string>();
 
             if (flags.HasFlag(ApiEntryStringFlags.ParameterTypes))
             {
-                var prefix = parameterInfo.IsOut ? "out\u00A0" : parameterInfo.ParameterType.IsByRef ? "ref\u00A0" : parameterInfo.ParameterType.IsPointer ? "*" : "";
+                var prefix = "";
+                if (parameterInfo.Member.IsDefined(typeof(ExtensionAttribute), false) && index == 0)
+                    prefix += "this\u00A0";
+                prefix += parameterInfo.ParameterType.IsByRef ? "ref\u00A0" : parameterInfo.ParameterType.IsPointer ? "*" : parameterInfo.IsOut ? "out\u00A0" : "";
                 var type = parameterInfo.ParameterType.IsByRef || parameterInfo.ParameterType.IsPointer ? parameterInfo.ParameterType.GetElementType() : parameterInfo.ParameterType;
                 segments.Add(prefix + Api.GetEntry(type, true).ToString(ForSubCalls(flags)));
             }
@@ -302,7 +306,7 @@ namespace DocGen
             {
                 var parameters = constructorInfo.GetParameters();
                 buffer.Append("(");
-                buffer.Append(string.Join(", ", parameters.Select(p => ToParameterString(p, flags))));
+                buffer.Append(string.Join(", ", parameters.Select((p, i) => ToParameterString(p, i, flags))));
                 buffer.Append(")");
             }
 
@@ -355,7 +359,7 @@ namespace DocGen
             {
                 var parameters = methodInfo.GetParameters();
                 buffer.Append("(");
-                buffer.Append(string.Join(", ", parameters.Select(p => ToParameterString(p, flags))));
+                buffer.Append(string.Join(", ", parameters.Select((p, i) => ToParameterString(p, i, flags))));
                 buffer.Append(")");
             }
 
