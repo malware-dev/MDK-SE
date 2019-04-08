@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using JetBrains.Annotations;
 using Malware.MDKServices;
 using MDK.Build.Solution;
@@ -10,19 +11,36 @@ using Microsoft.CodeAnalysis.Rename;
 
 namespace MDK.Build.Composers.Minifying
 {
-    class SymbolRenamer
+    partial class SymbolRenamer
     {
-        static char[] GetSymbolChars()
-        {
-            var chars = new List<char>(50000);
-            for (var u = 0; u <= ushort.MaxValue; u++)
-            {
-                if (char.IsLetter((char)u))
-                    chars.Add((char)u);
-            }
-            return chars.ToArray();
-        }
-        static readonly char[] BaseNChars = GetSymbolChars();
+        //static char[] GetSymbolChars()
+        //{
+        //    var chars = new List<char>(50000);
+        //    for (var u = 0; u <= ushort.MaxValue; u++)
+        //    {
+        //        var ch = (char)u;
+        //        if (IsDeniedCharacter(ch))
+        //            continue;
+        //        if (char.IsLetter(ch))
+        //            chars.Add(ch);
+        //    }
+        //    return chars.ToArray();
+        //}
+
+        //static bool IsDeniedCharacter(char ch)
+        //{
+        //    switch (ch)
+        //    {
+        //        case '\u180E':
+        //        case '\u0600':
+        //        case '\u00AD':
+        //            return true;
+        //    }
+
+        //    return false;
+        //}
+
+        //static readonly char[] BaseNChars = GetSymbolChars();
 
         public async Task<ProgramComposition> ProcessAsync([NotNull] ProgramComposition composition, [NotNull] ProjectScriptInfo config)
         {
