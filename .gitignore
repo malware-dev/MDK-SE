@@ -63,6 +63,9 @@ Packages/
 #Allow whitelist.cache
 !whitelist.cache
 
+#Allow terminal.cache
+!terminal.cache
+
 #Allow Release folder
 !/Release
 !/Release/**/*.exe
