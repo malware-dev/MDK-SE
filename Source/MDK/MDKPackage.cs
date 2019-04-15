@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using EnvDTE;
 using Malware.MDKServices;
@@ -104,7 +105,7 @@ namespace MDK
         ///     Initialization of the package; this method is called right after the package is sited, so this is the place
         ///     where you can put all the initialization code that rely on services provided by VisualStudio.
         /// </summary>
-        protected override void Initialize()
+        protected override System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
             _solutionManager = new SolutionManager(this);
             _solutionManager.BeginRecording();
@@ -128,7 +129,7 @@ namespace MDK
 
             KnownUIContexts.ShellInitializedContext.WhenActivated(OnShellActivated);
 
-            base.Initialize();
+            return base.InitializeAsync(cancellationToken, progress);
         }
 
         void OnUpdateDetected(Version detectedVersion)

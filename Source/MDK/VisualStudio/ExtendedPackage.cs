@@ -11,7 +11,7 @@ namespace MDK.VisualStudio
     /// <summary>
     /// Provides helpful extensions for a Visual Studio package.
     /// </summary>
-    public abstract class ExtendedPackage : Package
+    public abstract class ExtendedPackage : AsyncPackage
     {
         List<Command> _commands = new List<Command>();
         DTE _dte;
