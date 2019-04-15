@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Malware.MDKServices;
@@ -86,7 +87,8 @@ namespace Malware.MDKAnalyzer
                 SyntaxKind.AliasQualifiedName,
                 SyntaxKind.QualifiedName,
                 SyntaxKind.GenericName,
-                SyntaxKind.IdentifierName);
+                SyntaxKind.IdentifierName,
+                SyntaxKind.DestructorDeclaration);
             context.RegisterSyntaxNodeAction(AnalyzeDeclaration,
                 SyntaxKind.PropertyDeclaration,
                 SyntaxKind.VariableDeclaration,
@@ -205,11 +207,10 @@ namespace Malware.MDKAnalyzer
                 return;
             }
 
-            // The exception finally clause cannot be allowed ingame because it can be used
-            // to circumvent the instruction counter exception and crash the game
-            if (node.Kind() == SyntaxKind.FinallyClause)
+            // Destructors are unpredictable so they cannot be allowed
+            if (node.Kind() == SyntaxKind.DestructorDeclaration)
             {
-                var kw = ((FinallyClauseSyntax)node).FinallyKeyword;
+                var kw = ((DestructorDeclarationSyntax)node).Identifier;
                 var diagnostic = Diagnostic.Create(ProhibitedLanguageElementRule, kw.GetLocation(), kw.ToString());
                 context.ReportDiagnostic(diagnostic);
                 return;

@@ -49,7 +49,7 @@ namespace Malware.MDKServices
                 var expectedInstallPath = options.InstallPath.TrimEnd('/', '\\');
 
                 if (!string.Equals(installPath, expectedInstallPath, StringComparison.CurrentCultureIgnoreCase))
-                    analysis._problems.Add(new HealthProblem(HealthCode.BadInstallPath, HealthSeverity.Warning, "Invalid install path, can't find analyzer"));
+                    analysis._problems.Add(new HealthProblem(HealthCode.BadInstallPath, HealthSeverity.Warning, "Invalid install path"));
             }
 
 

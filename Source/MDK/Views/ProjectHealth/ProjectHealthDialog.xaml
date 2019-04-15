@@ -51,9 +51,7 @@
             </Grid>
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding Severity}"
-                             Value="Warning"
-                             debugging:TriggerTracing.TriggerName="Warning"
-                             debugging:TriggerTracing.TraceEnabled="True">
+                             Value="Warning">
                     <Setter TargetName="warningSymbol"
                             Property="Visibility"
                             Value="Visible" />
@@ -62,9 +60,7 @@
                             Value="Hidden" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Severity}"
-                             Value="Critical"
-                             debugging:TriggerTracing.TriggerName="Error"
-                             debugging:TriggerTracing.TraceEnabled="True">
+                             Value="Critical">
                     <Setter TargetName="warningSymbol"
                             Property="Visibility"
                             Value="Hidden" />
