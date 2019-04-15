@@ -12,11 +12,11 @@ Space Engineers is trademarked to Keen Software House. This toolkit is fan-made,
     <Tags>SpaceEngineers Space Engineers Programmable Block PB Ingame Script</Tags>
   </Metadata>
   <Installation>
-    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[15.0]" />
+    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[15.0.28307.53, 17.0)" />
   </Installation>
   <Dependencies>
     <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.6.1,)" />
-    <Dependency Id="Microsoft.VisualStudio.MPF.15.0" DisplayName="Visual Studio MPF 15.0" d:Source="Installed" Version="[15.0]" />
+    <!--<Dependency Id="Microsoft.VisualStudio.MPF.15.0" DisplayName="Visual Studio MPF 15.0" d:Source="Installed" Version="[15.0]" />-->
   </Dependencies>
   <Assets>
     <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="IngameScriptTemplate" d:TargetPath="|IngameScriptTemplate;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
@@ -29,7 +29,7 @@ Space Engineers is trademarked to Keen Software House. This toolkit is fan-made,
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="MDKAnalyzer" d:VsixSubPath="Analyzers" Path="|MDKAnalyzer|" AssemblyName="|MDKAnalyzer;AssemblyName|" />
   </Assets>
   <Prerequisites>
-    <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0,16.0)" DisplayName="Visual Studio core editor" />
-    <Prerequisite Id="Microsoft.VisualStudio.Component.Roslyn.LanguageServices" Version="[15.0,16.0)" DisplayName="Roslyn Language Services" />
+    <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0,)" DisplayName="Visual Studio core editor" />
+    <Prerequisite Id="Microsoft.VisualStudio.Component.Roslyn.LanguageServices" Version="[15.0,)" DisplayName="Roslyn Language Services" />
   </Prerequisites>
 </PackageManifest>
