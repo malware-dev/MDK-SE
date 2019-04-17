@@ -1,4 +1,8 @@
-﻿using Microsoft.VisualStudio.PlatformUI;
+﻿using System;
+using System.Windows;
+using MDK.Resources;
+using MDK.Views.Options;
+using Microsoft.VisualStudio.PlatformUI;
 
 namespace MDK.Views.ProjectHealth
 {
@@ -19,23 +23,34 @@ namespace MDK.Views.ProjectHealth
             return dialog.ShowModal();
         }
 
+        void OnProjectOptionsRequested(object sender, ProjectOptionsRequestedEventArgs e)
+        {
+            var model = new ScriptOptionsDialogModel(e.Package, e.Project);
+            var result = ScriptOptionsDialog.ShowDialog(model);
+            e.Result = result;
+        }
+
         /// <summary>
         /// Creates a new instance of the <see cref="ProjectHealthDialog"/>
         /// </summary>
-        public ProjectHealthDialog()
-        {
-            InitializeComponent();
-        }
+        public ProjectHealthDialog() { InitializeComponent(); }
+
+        void OnUpgradeCompleted(object sender, EventArgs e) { MessageBox.Show(this, Text.ProjectHealthDialog_OnUpgradeCompleted_BackupsStoredMessage, "Projects Upgraded/Repaired", MessageBoxButton.OK, MessageBoxImage.Information); }
 
         void SetModel(ProjectHealthDialogModel viewModel)
         {
             Host.DataContext = viewModel;
             viewModel.Closing += OnModelClosing;
+            viewModel.ProjectOptionsRequested += OnProjectOptionsRequested;
+            viewModel.UpgradeCompleted += OnUpgradeCompleted;
         }
 
         void OnModelClosing(object sender, DialogClosingEventArgs e)
         {
-            ((ProjectHealthDialogModel)Host.DataContext).Closing += OnModelClosing;
+            var viewModel = ((ProjectHealthDialogModel)Host.DataContext);
+            viewModel.Closing -= OnModelClosing;
+            viewModel.ProjectOptionsRequested -= OnProjectOptionsRequested;
+            viewModel.UpgradeCompleted -= OnUpgradeCompleted;
             DialogResult = e.State;
             Close();
         }

@@ -63,7 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <VSTemplate Include="UtilityClass.vstemplate">
-      <OutputSubPath>Space Engineers</OutputSubPath>
+      <OutputSubPath>Space Engineers\ProgrammableBlock</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

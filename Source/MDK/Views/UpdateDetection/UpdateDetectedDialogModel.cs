@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using MDK.Views.Options;
 
 namespace MDK.Views.UpdateDetection

@@ -1,4 +1,6 @@
-﻿namespace MDK.Views.BugReports
+﻿using System.Threading.Tasks;
+
+namespace MDK.Views.BugReports
 {
     /// <summary>
     /// The view model for <see cref="ErrorDialog"/>
@@ -55,9 +57,6 @@
         }
 
         /// <inheritdoc />
-        protected override bool OnSave()
-        {
-            return true;
-        }
+        protected override bool OnSave() => true;
     }
 }

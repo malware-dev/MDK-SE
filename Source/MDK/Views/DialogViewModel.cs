@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using JetBrains.Annotations;
 
@@ -98,10 +99,7 @@ namespace MDK.Views
         /// Override this method if you need to be able to perform cleanups or stop a cancel.
         /// </summary>
         /// <returns></returns>
-        protected virtual bool OnCancel()
-        {
-            return true;
-        }
+        protected virtual bool OnCancel() => true;
 
         /// <summary>
         /// Called when the model is closing. Any view using this model should close as well.

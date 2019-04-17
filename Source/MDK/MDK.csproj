@@ -123,6 +123,7 @@
       <DependentUpon>ProjectHealthDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ProjectHealth\ProjectHealthDialogModel.cs" />
+    <Compile Include="Views\ProjectHealth\ProjectOptionsRequestedEventArgs.cs" />
     <Compile Include="Views\ProjectHealth\UpgradeFrom_1_1.cs" />
     <Compile Include="Views\ToBooleanConverter.cs" />
     <Compile Include="Views\DialogClosingEventArgs.cs" />

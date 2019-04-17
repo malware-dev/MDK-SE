@@ -69,7 +69,7 @@
   <ItemGroup>
     <VSTemplate Include="MixinProjectTemplate.vstemplate">
       <SubType>Designer</SubType>
-      <OutputSubPath>Space Engineers</OutputSubPath>
+      <OutputSubPath>Space Engineers\ProgrammableBlock</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

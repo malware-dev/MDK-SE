@@ -19,6 +19,11 @@ namespace Malware.MDKServices
         public string InstallPath;
 
         /// <summary>
+        /// The default path to put the deployed scripts.
+        /// </summary>
+        public string DefaultOutputPath;
+
+        /// <summary>
         /// The target extension version
         /// </summary>
         public Version TargetVersion;

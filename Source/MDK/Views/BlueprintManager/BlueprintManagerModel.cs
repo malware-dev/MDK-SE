@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using MDK.Resources;
@@ -225,10 +226,7 @@ namespace MDK.Views.BlueprintManager
 
         /// <inheritdoc />
         /// <returns></returns>
-        protected override bool OnSave()
-        {
-            return true;
-        }
+        protected override bool OnSave() => true;
 
         /// <summary>
         /// Sends a message through the user interface to the end-user.

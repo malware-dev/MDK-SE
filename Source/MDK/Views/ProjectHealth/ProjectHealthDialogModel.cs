@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Windows;
+using System.Xml;
 using System.Xml.Linq;
 using JetBrains.Annotations;
 using Malware.MDKServices;
 using MDK.Resources;
-using Microsoft.VisualStudio.PlatformUI;
 
 namespace MDK.Views.ProjectHealth
 {
@@ -17,6 +17,7 @@ namespace MDK.Views.ProjectHealth
     /// </summary>
     public class ProjectHealthDialogModel : DialogViewModel
     {
+        const string Xmlns = "http://schemas.microsoft.com/developer/msbuild/2003";
         string _message = Text.ProjectHealthDialogModel_DefaultMessage;
 
         /// <summary>
@@ -30,6 +31,16 @@ namespace MDK.Views.ProjectHealth
 
             Projects = analyses.ToList().AsReadOnly();
         }
+
+        /// <summary>
+        /// Requests the project options dialog to allow the user to make changes to the output path.
+        /// </summary>
+        public event EventHandler<ProjectOptionsRequestedEventArgs> ProjectOptionsRequested;
+
+        /// <summary>
+        /// Informs the view that the upgrade process is complete.
+        /// </summary>
+        public event EventHandler UpgradeCompleted;
 
         /// <summary>
         /// A list of projects and their problems
@@ -77,6 +88,8 @@ namespace MDK.Views.ProjectHealth
                 return false;
             try
             {
+                SaveAndCloseCommand.IsEnabled = false;
+                CancelCommand.IsEnabled = false;
                 foreach (var project in Projects)
                 {
                     Backup(project);
@@ -85,23 +98,23 @@ namespace MDK.Views.ProjectHealth
                     Repair(project);
                     handle.Reload();
                 }
+                UpgradeCompleted?.Invoke(this, EventArgs.Empty);
             }
             catch (Exception e)
             {
                 Package.ShowError(Text.ProjectHealthDialogModel_OnSave_Error, Text.ProjectHealthDialogModel_OnSave_Error_Description, e);
             }
+
             return true;
         }
 
         void Backup(HealthAnalysis project)
         {
             var directory = Path.GetDirectoryName(project.FileName) ?? ".\\";
-            var zipFileName = $"Backup_{DateTime.Now:yyyy-MM-dd-HHmmssfff}.zip";
+            var zipFileName = $"{Path.GetFileNameWithoutExtension(project.FileName)}_Backup_{DateTime.Now:yyyy-MM-dd-HHmmssfff}.zip";
             var tmpZipName = Path.Combine(Path.GetTempPath(), zipFileName);
             ZipFile.CreateFromDirectory(directory, tmpZipName, CompressionLevel.Fastest, false);
-            var backupDirectory = new DirectoryInfo(Path.Combine(directory, "Backup"));
-            if (!backupDirectory.Exists)
-                backupDirectory.Create();
+            var backupDirectory = new DirectoryInfo(Path.Combine(directory, "..\\"));
             File.Copy(tmpZipName, Path.Combine(backupDirectory.FullName, zipFileName));
             File.Delete(tmpZipName);
         }
@@ -114,6 +127,8 @@ namespace MDK.Views.ProjectHealth
                 return;
             }
 
+            var showOptions = false;
+            var addPropertiesFile = false;
             foreach (var problem in project.Problems)
             {
                 switch (problem.Code)
@@ -124,9 +139,15 @@ namespace MDK.Views.ProjectHealth
                         break;
 
                     case HealthCode.MissingPathsFile:
-                        //project.Properties.Paths.GameBinPath = project.AnalysisOptions.DefaultGameBinPath;
-                        //project.Properties.Paths.InstallPath = project.AnalysisOptions.InstallPath;
-                        //project.Properties.Paths.OutputPath = project.AnalysisOptions.
+                        showOptions = true;
+                        project.Properties.Paths.InstallPath = project.AnalysisOptions.InstallPath;
+                        project.Properties.Paths.GameBinPath = project.AnalysisOptions.DefaultGameBinPath;
+                        project.Properties.Paths.OutputPath = project.AnalysisOptions.DefaultOutputPath;
+                        foreach (var reference in MDKProjectPaths.DefaultAssemblyReferences)
+                            project.Properties.Paths.AssemblyReferences.Add(reference);
+                        foreach (var reference in MDKProjectPaths.DefaultAnalyzerReferences)
+                            project.Properties.Paths.AnalyzerReferences.Add(reference);
+                        addPropertiesFile = true;
                         break;
 
                     case HealthCode.BadInstallPath:
@@ -136,7 +157,68 @@ namespace MDK.Views.ProjectHealth
                         throw new ArgumentOutOfRangeException();
                 }
             }
+
             project.Properties.Paths.Save();
+            if (addPropertiesFile)
+            {
+                Include(project.FileName, project.Properties.Paths.FileName);
+            }
+
+            if (showOptions)
+            {
+                var args = new ProjectOptionsRequestedEventArgs(Package, project.Properties);
+                ProjectOptionsRequested?.Invoke(this, args);
+            }
+        }
+
+        void Include(string projectFileName, string fileName)
+        {
+            XDocument document;
+            XmlNameTable nameTable;
+            using (var streamReader = File.OpenText(projectFileName))
+            {
+                var readerSettings = new XmlReaderSettings
+                {
+                    IgnoreWhitespace = true
+                };
+
+                var xmlReader = XmlReader.Create(streamReader, readerSettings);
+                document = XDocument.Load(xmlReader);
+                nameTable = xmlReader.NameTable;
+                if (nameTable == null)
+                    throw new InvalidOperationException(Text.UpgradeFrom1_1_Upgrade_ErrorLoadingProject);
+            }
+
+            var nsm = new XmlNamespaceManager(nameTable);
+            nsm.AddNamespace("m", Xmlns);
+
+            var projectBasePath = Path.GetDirectoryName(Path.GetFullPath(projectFileName)) ?? ".";
+            if (!projectBasePath.EndsWith("\\"))
+                projectBasePath += "\\";
+            fileName = Path.Combine(projectBasePath, fileName);
+            if (fileName.StartsWith(projectBasePath))
+                fileName = fileName.Substring(projectBasePath.Length);
+            else
+                fileName = Path.GetFullPath(fileName);
+
+            var existingElement = document.Descendants(XName.Get("AdditionalFiles", Xmlns))
+                .FirstOrDefault(e => string.Equals((string)e.Attribute("Include"), fileName, StringComparison.CurrentCultureIgnoreCase));
+            if (existingElement != null)
+                return;
+
+            var itemGroupElement = document.Descendants(XName.Get("ItemGroup", Xmlns)).LastOrDefault();
+            if (itemGroupElement == null)
+            {
+                itemGroupElement = new XElement(XName.Get("ItemGroup", Xmlns));
+                document.Root.Add(itemGroupElement);
+            }
+
+            var fileElement = new XElement(XName.Get("AdditionalFiles", Xmlns),
+                new XAttribute("Include", fileName),
+                new XElement(XName.Get("CopyToOutputDirectory", Xmlns), new XText("Always"))
+            );
+            itemGroupElement.Add(fileElement);
+            document.Save(projectFileName);
         }
 
         void Upgrade(HealthAnalysis project)

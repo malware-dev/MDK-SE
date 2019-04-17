@@ -539,6 +539,15 @@ namespace MDK.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Backups have been stored in the projects&apos; parent folders..
+        /// </summary>
+        internal static string ProjectHealthDialog_OnUpgradeCompleted_BackupsStoredMessage {
+            get {
+                return ResourceManager.GetString("ProjectHealthDialog_OnUpgradeCompleted_BackupsStoredMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The following MDK projects must be upgraded in order to function correctly. Do you wish to do this now?.
         /// </summary>
         internal static string ProjectHealthDialogModel_DefaultMessage {

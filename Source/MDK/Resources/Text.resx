@@ -306,4 +306,7 @@
   <data name="UpgradeFrom1_1_Upgrade_ErrorLoadingProject" xml:space="preserve">
     <value>Error loading the original project file</value>
   </data>
+  <data name="ProjectHealthDialog_OnUpgradeCompleted_BackupsStoredMessage" xml:space="preserve">
+    <value>Backups have been stored in the projects' parent folders.</value>
+  </data>
 </root>

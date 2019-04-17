@@ -265,6 +265,7 @@ namespace MDK
             new HealthAnalysisOptions
             {
                 DefaultGameBinPath = Options.GetActualGameBinPath(),
+                DefaultOutputPath = Options.GetActualOutputPath(),
                 InstallPath = InstallPath.FullName,
                 TargetVersion = Version,
                 GameAssemblyNames = GameAssemblyNames,

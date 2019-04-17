@@ -1,4 +1,5 @@
-﻿using MDK.Resources;
+﻿using System.Threading.Tasks;
+using MDK.Resources;
 
 namespace MDK.Views.Wizard
 {

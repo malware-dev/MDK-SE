@@ -71,7 +71,7 @@
   <ItemGroup>
     <VSTemplate Include="IngameScript.vstemplate">
       <SubType>Designer</SubType>
-      <OutputSubPath>Space Engineers</OutputSubPath>
+      <OutputSubPath>Space Engineers\ProgrammableBlock</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>

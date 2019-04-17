@@ -37,7 +37,7 @@ namespace Malware.MDKServices
 
             MDKProjectOptions options = null;
             MDKProjectPaths paths = null;
-            if (File.Exists(mdkOptionsFileName) && File.Exists(mdkPathsFileName))
+            if (File.Exists(mdkOptionsFileName)/* && File.Exists(mdkPathsFileName)*/)
             {
                 options = MDKProjectOptions.Load(mdkOptionsFileName);
                 paths = MDKProjectPaths.Load(mdkPathsFileName);
