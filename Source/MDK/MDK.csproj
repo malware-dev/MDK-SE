@@ -119,12 +119,21 @@
     <Compile Include="Views\BugReports\ErrorDialogModel.cs" />
     <Compile Include="Views\MessageEventArgs.cs" />
     <Compile Include="Views\MessageEventType.cs" />
+    <Compile Include="Views\ProjectHealth\Fixes\BackupFix.cs" />
+    <Compile Include="Views\ProjectHealth\Fixes\BadOutputPathFix.cs" />
+    <Compile Include="Views\ProjectHealth\Fixes\BadGamePathFix.cs" />
+    <Compile Include="Views\ProjectHealth\Fixes\BadInstallPathFix.cs" />
+    <Compile Include="Views\ProjectHealth\Fixes\Fix.cs" />
+    <Compile Include="Views\ProjectHealth\Fixes\MissingPathsFileFix.cs" />
+    <Compile Include="Views\ProjectHealth\Fixes\MissingWhitelistFix.cs" />
+    <Compile Include="Views\ProjectHealth\Fixes\OutdatedFix.cs" />
+    <Compile Include="Views\ProjectHealth\Fixes\FixStatus.cs" />
     <Compile Include="Views\ProjectHealth\ProjectHealthDialog.xaml.cs">
       <DependentUpon>ProjectHealthDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ProjectHealth\ProjectHealthDialogModel.cs" />
     <Compile Include="Views\ProjectHealth\ProjectOptionsRequestedEventArgs.cs" />
-    <Compile Include="Views\ProjectHealth\UpgradeFrom_1_1.cs" />
+    <Compile Include="Views\ProjectHealth\Fixes\UpgradeFrom_1_1.cs" />
     <Compile Include="Views\ToBooleanConverter.cs" />
     <Compile Include="Views\DialogClosingEventArgs.cs" />
     <Compile Include="Views\DialogViewModel.cs" />

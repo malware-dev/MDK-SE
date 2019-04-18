@@ -28,6 +28,21 @@
         /// <summary>
         /// The install path is invalid.
         /// </summary>
-        BadInstallPath
+        BadInstallPath,
+
+        /// <summary>
+        /// The game path is invalid.
+        /// </summary>
+        BadGamePath,
+
+        /// <summary>
+        /// The output path is invalid.
+        /// </summary>
+        BadOutputPath,
+
+        /// <summary>
+        /// The whitelist cache file is missing.
+        /// </summary>
+        MissingWhitelist
     }
 }

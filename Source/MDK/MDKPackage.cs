@@ -206,7 +206,7 @@ namespace MDK
 
             IsEnabled = true;
 
-            var unhealtyProjects = analyses.Where(analysis => !analysis.IsHealthy).ToArray();
+            var unhealtyProjects = analyses.Where(analysis => analysis.IsMDKProject && !analysis.IsHealthy).ToArray();
             if (unhealtyProjects.Any())
                 PresentAnalysisResults(unhealtyProjects);
 

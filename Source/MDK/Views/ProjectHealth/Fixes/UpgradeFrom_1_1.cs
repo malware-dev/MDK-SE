@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
@@ -9,7 +8,7 @@ using System.Xml.XPath;
 using Malware.MDKServices;
 using MDK.Resources;
 
-namespace MDK.Views.ProjectHealth
+namespace MDK.Views.ProjectHealth.Fixes
 {
     // ReSharper disable once InconsistentNaming
     class UpgradeFrom_1_1

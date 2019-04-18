@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using EnvDTE;
+using Microsoft.VisualStudio.Shell;
 
 namespace Malware.MDKServices
 {
@@ -19,7 +21,7 @@ namespace Malware.MDKServices
         /// <param name="project"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static Task<HealthAnalysis> AnalyzeAsync(Project project, HealthAnalysisOptions options) => Task.Run(() => Analyze(project, options));
+        public static Task<HealthAnalysis> AnalyzeAsync(Project project, HealthAnalysisOptions options) => System.Threading.Tasks.Task.Run(() => Analyze(project, options));
 
         /// <summary>
         /// Analyze an entire solution's worth of projects
@@ -27,14 +29,14 @@ namespace Malware.MDKServices
         /// <param name="solution"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static Task<HealthAnalysis[]> AnalyzeAsync(Solution solution, HealthAnalysisOptions options) => Task.WhenAll(solution.Projects.Cast<Project>().Select(project => Task.Run(() => Analyze(project, options))));
+        public static Task<HealthAnalysis[]> AnalyzeAsync(Solution solution, HealthAnalysisOptions options) => System.Threading.Tasks.Task.WhenAll(solution.Projects.Cast<Project>().Select(project => System.Threading.Tasks.Task.Run(() => Analyze(project, options))));
 
         static HealthAnalysis Analyze(Project project, HealthAnalysisOptions options)
         {
             if (!project.IsLoaded())
                 return new HealthAnalysis(project, null, options);
             var projectInfo = MDKProjectProperties.Load(project.FullName, project.Name);
-            if (!projectInfo.IsValid && !projectInfo.Options.IsValid)
+            if (!projectInfo.IsValid && !(projectInfo.Options?.IsValid ?? false))
                 return new HealthAnalysis(project, null, options);
 
             var analysis = new HealthAnalysis(project, projectInfo, options);
@@ -50,8 +52,19 @@ namespace Malware.MDKServices
 
                 if (!string.Equals(installPath, expectedInstallPath, StringComparison.CurrentCultureIgnoreCase))
                     analysis._problems.Add(new HealthProblem(HealthCode.BadInstallPath, HealthSeverity.Warning, "Invalid install path"));
+
+                var vrageRef = Path.Combine(projectInfo.Paths.GameBinPath, "vrage.dll");
+                if (!File.Exists(vrageRef))
+                    analysis._problems.Add(new HealthProblem(HealthCode.BadGamePath, HealthSeverity.Critical, "Invalid game path"));
+
+                var outputPath = projectInfo.Paths.OutputPath.TrimEnd('/', '\\');
+                if (!Directory.Exists(outputPath))
+                    analysis._problems.Add(new HealthProblem(HealthCode.BadOutputPath, HealthSeverity.Warning, "Invalid output path"));
             }
 
+            var whitelistFileName = Path.Combine(Path.GetDirectoryName(project.FullName), "mdk\\whitelist.cache");
+            if (!File.Exists(whitelistFileName))
+                analysis._problems.Add(new HealthProblem(HealthCode.MissingWhitelist, HealthSeverity.Critical, "Missing Whitelist Cache"));
 
             return analysis;
         }

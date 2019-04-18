@@ -23,13 +23,6 @@ namespace MDK.Views.ProjectHealth
             return dialog.ShowModal();
         }
 
-        void OnProjectOptionsRequested(object sender, ProjectOptionsRequestedEventArgs e)
-        {
-            var model = new ScriptOptionsDialogModel(e.Package, e.Project);
-            var result = ScriptOptionsDialog.ShowDialog(model);
-            e.Result = result;
-        }
-
         /// <summary>
         /// Creates a new instance of the <see cref="ProjectHealthDialog"/>
         /// </summary>
@@ -41,7 +34,6 @@ namespace MDK.Views.ProjectHealth
         {
             Host.DataContext = viewModel;
             viewModel.Closing += OnModelClosing;
-            viewModel.ProjectOptionsRequested += OnProjectOptionsRequested;
             viewModel.UpgradeCompleted += OnUpgradeCompleted;
         }
 
@@ -49,7 +41,6 @@ namespace MDK.Views.ProjectHealth
         {
             var viewModel = ((ProjectHealthDialogModel)Host.DataContext);
             viewModel.Closing -= OnModelClosing;
-            viewModel.ProjectOptionsRequested -= OnProjectOptionsRequested;
             viewModel.UpgradeCompleted -= OnUpgradeCompleted;
             DialogResult = e.State;
             Close();
