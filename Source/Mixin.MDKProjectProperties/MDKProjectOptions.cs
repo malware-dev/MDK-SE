@@ -15,7 +15,7 @@ namespace Malware.MDKServices
     /// <summary>
     /// Represents a set of general options for an MDK project
     /// </summary>
-    public partial class MDKProjectOptions: INotifyPropertyChanged
+    public partial class MDKProjectOptions : INotifyPropertyChanged
     {
         const string Xmlns = "http://schemas.microsoft.com/developer/msbuild/2003";
 
@@ -110,13 +110,15 @@ namespace Malware.MDKServices
             var trimTypes = ((string)trimTypesElement ?? "no").Trim().Equals("yes", StringComparison.CurrentCultureIgnoreCase);
             var ignoredFolders = document.XPathSelectElements("./m:Project/m:PropertyGroup/m:MDKIgnore/m:Folder", nsm).Select(e => (string)e).ToArray();
             var ignoredFiles = document.XPathSelectElements("./m:Project/m:PropertyGroup/m:MDKIgnore/m:File", nsm).Select(e => (string)e).ToArray();
+            var excludeFromDeployAll = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKExcludeFromDeployAll", nsm) != null;
 
             var result = new MDKProjectOptions(fileName, true)
             {
                 Version = version,
                 Namespace = ns,
                 Minify = minify,
-                TrimTypes = trimTypes
+                TrimTypes = trimTypes,
+                ExcludeFromDeployAll = excludeFromDeployAll
             };
             if (ignoredFolders.Length > 0)
                 foreach (var item in ignoredFolders)
@@ -136,6 +138,7 @@ namespace Malware.MDKServices
         string _baseDir;
         Version _version;
         string _ns;
+        bool _excludeFromDeployAll;
 
         MDKProjectOptions(string fileName, bool isValid)
         {
@@ -240,6 +243,22 @@ namespace Malware.MDKServices
         }
 
         /// <summary>
+        /// Determines whether this script should be excluded when running the Deploy All command.
+        /// </summary>
+        public bool ExcludeFromDeployAll
+        {
+            get => _excludeFromDeployAll;
+            set
+            {
+                if (value == _excludeFromDeployAll)
+                    return;
+                _excludeFromDeployAll = value;
+                HasChanges = true;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
         /// A list of folders which code will not be included in neither analysis nor deployment
         /// </summary>
         public ObservableCollection<string> IgnoredFolders { get; } = new ObservableCollection<string>();
@@ -264,15 +283,9 @@ namespace Malware.MDKServices
             return path + "\\";
         }
 
-        void OnIgnoredFilesChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
-        {
-            _ignoredFilesCache = null;
-        }
+        void OnIgnoredFilesChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs) { _ignoredFilesCache = null; }
 
-        void OnIgnoredFoldersChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
-        {
-            _ignoredFoldersCache = null;
-        }
+        void OnIgnoredFoldersChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs) { _ignoredFoldersCache = null; }
 
         /// <summary>
         /// Commits all changes without saving. <see cref="HasChanges"/> will be false after this. This method is not required when calling <see cref="Save"/>.
@@ -300,6 +313,7 @@ namespace Malware.MDKServices
                 XElement trimTypesGroupElement = null;
                 XElement trimTypesElement = null;
                 XElement ignoreElement = null;
+                XElement excludeFromDeployAllElement = null;
                 if (File.Exists(FileName))
                 {
                     using (var streamReader = File.OpenText(FileName))
@@ -325,6 +339,7 @@ namespace Malware.MDKServices
                             trimTypesGroupElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKTrimTypes", nsm);
                             trimTypesElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKTrimTypes/m:Enabled", nsm);
                             ignoreElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKIgnore", nsm);
+                            excludeFromDeployAllElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKExcludeFromDeployAll", nsm);
                         }
                     }
                 }
@@ -406,6 +421,15 @@ namespace Malware.MDKServices
                     groupElement.Add(ignoreElement);
                 }
 
+                if (ExcludeFromDeployAll)
+                {
+                    if (excludeFromDeployAllElement == null)
+                        excludeFromDeployAllElement = new XElement(XName.Get("MDKExcludeFromDeployAll", Xmlns));
+                    groupElement.Add(excludeFromDeployAllElement);
+                }
+                else
+                    excludeFromDeployAllElement?.Remove();
+
                 HasChanges = false;
 
                 var settings = new XmlWriterSettings
@@ -419,6 +443,7 @@ namespace Malware.MDKServices
                     document.WriteTo(writer);
                     writer.Flush();
                 }
+
                 Commit();
             }
             catch (Exception e)
@@ -432,10 +457,7 @@ namespace Malware.MDKServices
         /// </summary>
         /// <param name="propertyName"></param>
         [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) { PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)); }
 
         /// <summary>
         /// Determines whether the given file path is within one of the ignored folders or files.

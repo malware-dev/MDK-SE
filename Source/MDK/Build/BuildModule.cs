@@ -151,6 +151,11 @@ namespace MDK.Build
                     return null;
             }
 
+            if (config.Options.ExcludeFromDeployAll)
+            {
+                return null;
+            }
+
             var composition = await ComposeDocumentAsync(project, config);
             Steps++;
 
