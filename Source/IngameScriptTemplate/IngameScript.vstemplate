@@ -6,8 +6,9 @@
     <Icon>IngameScript.ico</Icon>
     <AppliesTo>CSharp</AppliesTo>
     <ProjectType>CSharp</ProjectType>
-    <RequiredFrameworkVersion>4.6</RequiredFrameworkVersion>
-    <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
+    <RequiredFrameworkVersion>4.6.1</RequiredFrameworkVersion>
+    <MaxFrameworkVersion>4.6.1</MaxFrameworkVersion>
+    <NumberOfParentCategoriesToRollUp>2</NumberOfParentCategoriesToRollUp>
     <SortOrder>1000</SortOrder>
     <TemplateID>e8dc9f0e-c9d8-400b-b23d-b61e738f2a72</TemplateID>
     <CreateNewFolder>true</CreateNewFolder>
@@ -27,7 +28,7 @@
     </Project>
   </TemplateContent>
   <WizardExtension>
-    <Assembly>MDK, Version=1.0.0.0, Culture=Neutral, PublicKeyToken=ed62e9cc24aaaa2b</Assembly>
+    <Assembly>MDK, Version=1.2.0.0, Culture=Neutral, PublicKeyToken=ed62e9cc24aaaa2b</Assembly>
     <FullClassName>MDK.Services.IngameScriptWizard</FullClassName>
   </WizardExtension>
 </VSTemplate>

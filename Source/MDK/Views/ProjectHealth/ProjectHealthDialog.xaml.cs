@@ -28,20 +28,17 @@ namespace MDK.Views.ProjectHealth
         /// </summary>
         public ProjectHealthDialog() { InitializeComponent(); }
 
-        void OnUpgradeCompleted(object sender, EventArgs e) { MessageBox.Show(this, Text.ProjectHealthDialog_OnUpgradeCompleted_BackupsStoredMessage, "Projects Upgraded/Repaired", MessageBoxButton.OK, MessageBoxImage.Information); }
 
         void SetModel(ProjectHealthDialogModel viewModel)
         {
             Host.DataContext = viewModel;
             viewModel.Closing += OnModelClosing;
-            viewModel.UpgradeCompleted += OnUpgradeCompleted;
         }
 
         void OnModelClosing(object sender, DialogClosingEventArgs e)
         {
             var viewModel = ((ProjectHealthDialogModel)Host.DataContext);
             viewModel.Closing -= OnModelClosing;
-            viewModel.UpgradeCompleted -= OnUpgradeCompleted;
             DialogResult = e.State;
             Close();
         }

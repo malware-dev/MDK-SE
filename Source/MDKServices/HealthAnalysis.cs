@@ -105,6 +105,9 @@ namespace Malware.MDKServices
         /// </summary>
         public MDKProjectProperties Properties { get; }
 
+        /// <summary>
+        /// Contains the options used when running this analysis
+        /// </summary>
         public HealthAnalysisOptions AnalysisOptions { get; }
 
         /// <summary>

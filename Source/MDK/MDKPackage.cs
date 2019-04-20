@@ -26,14 +26,14 @@ namespace MDK
     /// <summary>
     ///     The MDK Visual Studio Extension
     /// </summary>
-    [PackageRegistration(UseManagedResourcesOnly = true)]
-    [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
+    [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
+    [InstalledProductRegistration("#110", "#112", "1.2", IconResourceID = 400)] // Info on this package for Help/About
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [Guid(PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     [ProvideOptionPage(typeof(MDKOptions), "MDK/SE", "Options", 0, 0, true)]
-    [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionOpening_string)]
-    [ProvideAutoLoad(VSConstants.UICONTEXT.ShellInitialized_string)]
+    [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionOpening_string, PackageAutoLoadFlags.BackgroundLoad)]
+    [ProvideAutoLoad(VSConstants.UICONTEXT.ShellInitialized_string, PackageAutoLoadFlags.BackgroundLoad)]
     public sealed partial class MDKPackage : ExtendedPackage
     {
         /// <summary>
@@ -105,8 +105,9 @@ namespace MDK
         ///     Initialization of the package; this method is called right after the package is sited, so this is the place
         ///     where you can put all the initialization code that rely on services provided by VisualStudio.
         /// </summary>
-        protected override System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
+        protected override async System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
+            await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
             _solutionManager = new SolutionManager(this);
             _solutionManager.BeginRecording();
             _solutionManager.ProjectLoaded += OnProjectLoaded;
@@ -129,7 +130,7 @@ namespace MDK
 
             KnownUIContexts.ShellInitializedContext.WhenActivated(OnShellActivated);
 
-            return base.InitializeAsync(cancellationToken, progress);
+            await base.InitializeAsync(cancellationToken, progress);
         }
 
         void OnUpdateDetected(Version detectedVersion)

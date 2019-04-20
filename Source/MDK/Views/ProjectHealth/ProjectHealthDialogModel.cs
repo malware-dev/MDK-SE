@@ -47,11 +47,6 @@ namespace MDK.Views.ProjectHealth
         }
 
         /// <summary>
-        /// Informs the view that the upgrade process is complete.
-        /// </summary>
-        public event EventHandler UpgradeCompleted;
-
-        /// <summary>
         /// A list of projects and their problems
         /// </summary>
         public ReadOnlyCollection<HealthAnalysis> Projects { get; set; }

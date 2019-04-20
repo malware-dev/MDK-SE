@@ -35,6 +35,7 @@ namespace MDK.Services
                 $"-applaunch {appId}",
                 $"-plugin \"{pluginPath}\"",
                 "-nosplash",
+                "-skipintro",
                 "-whitelistcaches",
                 $"\"{whitelistTarget}\"",
                 "-terminalcaches",
