@@ -49,6 +49,7 @@ Thumbs.db
 *.log
 [Bb]in
 [Dd]ebug*/
+![Dd]ebugging*/
 *.lib
 *.sbr
 obj/
