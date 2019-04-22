@@ -1,6 +1,9 @@
 ﻿using System;
+using MDK.Resources;
 using MDK.Views.Whitelist;
 using MDK.VisualStudio;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace MDK.Commands
 {
@@ -23,7 +26,10 @@ namespace MDK.Commands
         {
             var package = (MDKPackage)Package;
 
-            RefreshWhitelistCacheDialog.ShowDialog(new RefreshWhitelistCacheDialogModel(package, package.DTE));
+            if (RefreshWhitelistCacheDialog.ShowDialog(new RefreshWhitelistCacheDialogModel(package, package.DTE)) == true)
+            {
+                VsShellUtilities.ShowMessageBox(ServiceProvider, Text.RefreshWhitelistCacheCommand_OnExecute_UpdatedWhitelistsDescription, Text.RefreshWhitelistCacheCommand_OnExecute_UpdatedWhitelistsTitle, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+            }
         }
     }
 }

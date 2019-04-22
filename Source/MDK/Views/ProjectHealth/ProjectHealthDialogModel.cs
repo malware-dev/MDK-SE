@@ -25,7 +25,7 @@ namespace MDK.Views.ProjectHealth
             new OutdatedFix(),
             new BadInstallPathFix(),
             new MissingPathsFileFix(),
-            new MissingWhitelistFix(),
+            new MissingOrOutdatedWhitelistFix(),
             new BadGamePathFix(), 
             new BadOutputPathFix()
         }.OrderBy(f => f.SortIndex).ToList();
@@ -45,6 +45,12 @@ namespace MDK.Views.ProjectHealth
 
             FixStatuses = new ReadOnlyObservableCollection<FixStatus>(_fixStatuses);
         }
+
+
+        /// <summary>
+        /// Occurs when a message has been sent which a user should respond to
+        /// </summary>
+        public event EventHandler<MessageEventArgs> MessageRequested;
 
         /// <summary>
         /// A list of projects and their problems
@@ -157,11 +163,28 @@ namespace MDK.Views.ProjectHealth
                 _isCompleted = true;
                 OkText = "Close";
                 SaveAndCloseCommand.IsEnabled = true;
+                SendMessage(Text.ProjectHealthDialogModel_RunUpgrades_UpgradeComplete, Text.ProjectHealthDialogModel_RunUpgrades_Description, MessageEventType.Info);
+                SaveAndClose();
             }
             catch (Exception e)
             {
                 Package.ShowError(Text.ProjectHealthDialogModel_OnSave_Error, Text.ProjectHealthDialogModel_OnSave_Error_Description, e);
             }
+        }
+
+        /// <summary>
+        /// Sends a message through the user interface to the end-user.
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="description"></param>
+        /// <param name="type"></param>
+        /// <param name="defaultResult"></param>
+        /// <returns></returns>
+        public bool SendMessage(string title, string description, MessageEventType type, bool defaultResult = true)
+        {
+            var args = new MessageEventArgs(title, description, type, !defaultResult);
+            MessageRequested?.Invoke(this, args);
+            return !args.Cancel;
         }
     }
 }

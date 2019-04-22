@@ -14,6 +14,7 @@ var identity = manifest
     .Element(XName.Get("Metadata", "http://schemas.microsoft.com/developer/vsx-schema/2011"))
     .Element(XName.Get("Identity", "http://schemas.microsoft.com/developer/vsx-schema/2011"));
 var version = (string)identity.Attribute("Version");
+var shortVersion = new Version(version).ToString(2);
 
 var gameAssemblies = new List<string>();
 var utilityAssemblies = new List<string>();
@@ -48,9 +49,11 @@ var requiredIdeVersion = other.XPathSelectElement("/Other/RequiredIdeVersion")?.
 
 Context.Output.WriteLine($@"using System;
 using System.Collections.Immutable;
+using Microsoft.VisualStudio.Shell;
 
 namespace {namespaceName} 
 {{
+    [InstalledProductRegistration(""#110"", ""#112"", ""{shortVersion}"", IconResourceID = 400)] // Info on this package for Help/About
 	public partial class MDKPackage 
     {{
 	    /// <summary>

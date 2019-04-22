@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using Malware.MDKUtilities;
 
 namespace MDK.Services
@@ -14,7 +16,7 @@ namespace MDK.Services
         /// <summary>
         /// Start space engineers with a dedicated plugin designed to update the ingame script whitelist cache file.
         /// </summary>
-        public void Refresh(string installPath)
+        public async Task RefreshAsync(string installPath)
         {
             var steam = new Steam();
             if (!steam.Exists)
@@ -51,6 +53,15 @@ namespace MDK.Services
                 }
             };
             process.Start();
+
+            await Task.Delay(5000);
+            while (true)
+            {
+                var processByName = Process.GetProcessesByName("SpaceEngineers").Where(p => !p.HasExited).ToArray();
+                if (processByName.Length == 0)
+                    break;
+                await Task.Delay(1000);
+            }
         }
     }
 }

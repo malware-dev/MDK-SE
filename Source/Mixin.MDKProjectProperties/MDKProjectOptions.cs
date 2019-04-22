@@ -272,7 +272,7 @@ namespace Malware.MDKServices
         {
             if (Path.IsPathRooted(path))
                 return Path.GetFullPath(path);
-            return Path.GetFullPath(Path.Combine(_baseDir, path));
+            return Path.GetFullPath(Path.Combine(_baseDir, "..\\" + path));
         }
 
         string FullyQualifiedFolder(string path)

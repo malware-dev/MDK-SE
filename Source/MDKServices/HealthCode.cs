@@ -43,6 +43,11 @@
         /// <summary>
         /// The whitelist cache file is missing.
         /// </summary>
-        MissingWhitelist
+        MissingWhitelist,
+
+        /// <summary>
+        /// The whitelist cache file is outdated.
+        /// </summary>
+        OutdatedWhitelist
     }
 }

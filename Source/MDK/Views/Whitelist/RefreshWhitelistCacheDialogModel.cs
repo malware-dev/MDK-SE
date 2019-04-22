@@ -1,7 +1,12 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using EnvDTE;
 using JetBrains.Annotations;
+using Malware.MDKServices;
 using MDK.Services;
 using MDK.Views.Options;
 
@@ -32,9 +37,45 @@ namespace MDK.Views.Whitelist
         /// <returns></returns>
         protected override bool OnSave()
         {
+            if (_isDone)
+                return true;
+            if (_isWorking)
+                return false;
+            Refresh();
+            return false;
+        }
+
+        bool _isWorking;
+        bool _isDone;
+
+        async void Refresh()
+        {
+            SaveAndCloseCommand.IsEnabled = false;
+            CancelCommand.IsEnabled = false;
+            _isWorking = true;
             var cache = new WhitelistCache();
-            cache.Refresh(_package.InstallPath.FullName);
-            return true;
+            await cache.RefreshAsync(_package.InstallPath.FullName);
+
+            var dte2 = (EnvDTE80.DTE2)_package.DTE;
+            var projects = ((IEnumerable)dte2.ToolWindows.SolutionExplorer.SelectedItems)
+                .OfType<UIHierarchyItem>()
+                .Select(item => item.Object)
+                .OfType<Project>();
+            foreach (var project in projects)
+            {
+                var projectProperties = MDKProjectProperties.Load(project.FullName, project.Name);
+                if (projectProperties.IsValid)
+                {
+                    var targetCacheFile = Path.Combine(Path.GetDirectoryName(projectProperties.FileName) ?? ".", "MDK\\whitelist.cache");
+                    var sourceCacheFile = Path.Combine(_package.InstallPath.FullName, "Analyzers\\whitelist.cache");
+                    if (File.Exists(sourceCacheFile))
+                        File.Copy(sourceCacheFile, targetCacheFile, true);
+                }
+            }
+
+            _isDone = true;
+            SaveAndCloseCommand.IsEnabled = true;
+            SaveAndClose();
         }
     }
 }

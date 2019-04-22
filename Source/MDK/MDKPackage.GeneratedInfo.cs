@@ -1,14 +1,16 @@
 using System;
 using System.Collections.Immutable;
+using Microsoft.VisualStudio.Shell;
 
 namespace MDK 
 {
+    [InstalledProductRegistration("#110", "#112", "1.2", IconResourceID = 400)] // Info on this package for Help/About
 	public partial class MDKPackage 
     {
 	    /// <summary>
 		/// The current package version
 		/// </summary>
-		public static readonly Version Version = new Version("1.2.6");
+		public static readonly Version Version = new Version("1.2.14");
 
         /// <summary>
 		/// The required IDE version

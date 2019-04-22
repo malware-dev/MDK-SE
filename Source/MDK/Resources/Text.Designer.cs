@@ -575,6 +575,24 @@ namespace MDK.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The upgrade process has been completed. It is recommended that you do a complete Build|Clean Solution + Build|Rebuild Solution to make sure all Visual Studio caches are updated..
+        /// </summary>
+        internal static string ProjectHealthDialogModel_RunUpgrades_Description {
+            get {
+                return ResourceManager.GetString("ProjectHealthDialogModel_RunUpgrades_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Upgrade Complete.
+        /// </summary>
+        internal static string ProjectHealthDialogModel_RunUpgrades_UpgradeComplete {
+            get {
+                return ResourceManager.GetString("ProjectHealthDialogModel_RunUpgrades_UpgradeComplete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Bad Options File - was tagged as outdated, but can&apos;t find the right upgrade tool for version {0}.
         /// </summary>
         internal static string ProjectHealthDialogModel_Upgrade_BadUpgradeVersion {
@@ -598,6 +616,24 @@ namespace MDK.Resources {
         internal static string ProjectOptionsCommand_OnExecute_NoMDKProjectsDescription {
             get {
                 return ResourceManager.GetString("ProjectOptionsCommand_OnExecute_NoMDKProjectsDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The whitelist caches have been updated. You might need to rebuild your project for any changes to take effect..
+        /// </summary>
+        internal static string RefreshWhitelistCacheCommand_OnExecute_UpdatedWhitelistsDescription {
+            get {
+                return ResourceManager.GetString("RefreshWhitelistCacheCommand_OnExecute_UpdatedWhitelistsDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Whitelist Caches Updated.
+        /// </summary>
+        internal static string RefreshWhitelistCacheCommand_OnExecute_UpdatedWhitelistsTitle {
+            get {
+                return ResourceManager.GetString("RefreshWhitelistCacheCommand_OnExecute_UpdatedWhitelistsTitle", resourceCulture);
             }
         }
         

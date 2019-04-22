@@ -33,14 +33,49 @@ namespace MDK.Views.ProjectHealth
         {
             Host.DataContext = viewModel;
             viewModel.Closing += OnModelClosing;
+            viewModel.MessageRequested += OnMessageRequested;
         }
 
         void OnModelClosing(object sender, DialogClosingEventArgs e)
         {
             var viewModel = ((ProjectHealthDialogModel)Host.DataContext);
             viewModel.Closing -= OnModelClosing;
+            viewModel.MessageRequested -= OnMessageRequested;
             DialogResult = e.State;
             Close();
+        }
+
+        void OnMessageRequested(object sender, MessageEventArgs e)
+        {
+            MessageBoxImage image;
+            MessageBoxButton buttons;
+            switch (e.EventType)
+            {
+                case MessageEventType.Confirm:
+                    image = MessageBoxImage.Question;
+                    buttons = MessageBoxButton.YesNo;
+                    break;
+                case MessageEventType.Warning:
+                    image = MessageBoxImage.Warning;
+                    buttons = MessageBoxButton.OK;
+                    break;
+                case MessageEventType.Error:
+                    image = MessageBoxImage.Error;
+                    buttons = MessageBoxButton.OK;
+                    break;
+                default:
+                    image = MessageBoxImage.Information;
+                    buttons = MessageBoxButton.OK;
+                    break;
+            }
+            var response = MessageBox.Show(this, e.Description, e.Title, buttons, image);
+            switch (response)
+            {
+                case MessageBoxResult.Cancel:
+                case MessageBoxResult.No:
+                    e.Cancel = true;
+                    break;
+            }
         }
     }
 }

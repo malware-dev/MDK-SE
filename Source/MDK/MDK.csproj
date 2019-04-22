@@ -125,7 +125,7 @@
     <Compile Include="Views\ProjectHealth\Fixes\BadInstallPathFix.cs" />
     <Compile Include="Views\ProjectHealth\Fixes\Fix.cs" />
     <Compile Include="Views\ProjectHealth\Fixes\MissingPathsFileFix.cs" />
-    <Compile Include="Views\ProjectHealth\Fixes\MissingWhitelistFix.cs" />
+    <Compile Include="Views\ProjectHealth\Fixes\MissingOrOutdatedWhitelistFix.cs" />
     <Compile Include="Views\ProjectHealth\Fixes\OutdatedFix.cs" />
     <Compile Include="Views\ProjectHealth\Fixes\FixStatus.cs" />
     <Compile Include="Views\ProjectHealth\ProjectHealthDialog.xaml.cs">

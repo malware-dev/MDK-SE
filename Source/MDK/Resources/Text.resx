@@ -309,4 +309,16 @@
   <data name="ProjectHealthDialog_OnUpgradeCompleted_BackupsStoredMessage" xml:space="preserve">
     <value>Backups have been stored in the projects' parent folders.</value>
   </data>
+  <data name="RefreshWhitelistCacheCommand_OnExecute_UpdatedWhitelistsDescription" xml:space="preserve">
+    <value>The whitelist caches have been updated. You might need to rebuild your project for any changes to take effect.</value>
+  </data>
+  <data name="RefreshWhitelistCacheCommand_OnExecute_UpdatedWhitelistsTitle" xml:space="preserve">
+    <value>Whitelist Caches Updated</value>
+  </data>
+  <data name="ProjectHealthDialogModel_RunUpgrades_UpgradeComplete" xml:space="preserve">
+    <value>Upgrade Complete</value>
+  </data>
+  <data name="ProjectHealthDialogModel_RunUpgrades_Description" xml:space="preserve">
+    <value>The upgrade process has been completed. It is recommended that you do a complete Build|Clean Solution + Build|Rebuild Solution to make sure all Visual Studio caches are updated.</value>
+  </data>
 </root>

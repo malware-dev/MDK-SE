@@ -1,9 +1,18 @@
-
+- #115 Fix-114: Add terminal.cache and fix .gitignore (VMSBigot)
+- #133 VS2019 Dev support: Remove unused refs and add Microsoft.MSBuild package (VMSBigot)
+- #132 MixInFix: Generate New GUID for Project (VMSBigot)
+- #128 [PRE] MDKFactory extension class added to deployed code
+- #127 [PRE] Error upgrading project 
+- #131 [PRE] MDK Analyzer not found
+- #127 [PRE] Error upgrading project 
+- #129 [PRE] Warning about analyzer not having required netstandard
+- #126 [PRE] Unexpected "The MDK.options file could not be found." Analyzer result.
+- [PRE] Fixed whitelist cache not getting updated
+- Fixed whitelist cache refresh tool not directly updating caches
 - #111 thumb.jpg in existing scripts not recognized in blueprint manager
-- #124 [PRE] [VS2019] Error when attempting to create a new Project 
-- #125 [PRE] [VS2019] New projects default to C# 7 or higher. 
-- #130 Suggestion: Refreshing whitelist runs SE; Add -skipintro to not show intro video 
-    
+- #124 [PRE], [VS2019] Error when attempting to create a new Project 
+- #125 [PRE], [VS2019] New projects default to C# 7 or higher. 
+- #130 Suggestion: Refreshing whitelist runs SE; Add -skipintro to not show intro video    
 - Changed how script options are stored in order to make it easier to work on projects on multiple computers
 - Renamed Blueprint Manager to Script Manager
 - Deprecated Readme.cs (more or less), changed to Instructions.readme and added item template for it

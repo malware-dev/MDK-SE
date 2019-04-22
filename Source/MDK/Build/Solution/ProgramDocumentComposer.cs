@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -76,6 +77,11 @@ namespace MDK.Build.Solution
 
             if (fileName.IndexOf(".debug.", StringComparison.CurrentCultureIgnoreCase) >= 0)
                 return true;
+
+            if (filePath.Contains("Bootstrapper.cs"))
+            {
+                Debugger.Break();
+            }
 
             return config.IsIgnoredFilePath(filePath);
         }
