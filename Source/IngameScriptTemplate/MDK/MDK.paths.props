@@ -12,6 +12,10 @@
     <MDKOutputPath>$mdkoutputpath$</MDKOutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>$(MDKGameBinPath)\System.Collections.Immutable.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="Sandbox.Common">
       <HintPath>$(MDKGameBinPath)\Sandbox.Common.dll</HintPath>
       <Private>False</Private>
