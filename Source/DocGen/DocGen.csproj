@@ -48,6 +48,7 @@
     <Compile Include="ApiEntry.cs" />
     <Compile Include="ApiEntryStringFlags.cs" />
     <Compile Include="LocalizationTexts.cs" />
+    <Compile Include="MarkdownGenerators\MicrosoftLink.cs" />
     <Compile Include="MarkdownGenerators\NamespaceIndexGenerator.cs" />
     <Compile Include="MarkdownGenerators\BlockGroupName.cs" />
     <Compile Include="MarkdownGenerators\NamespaceGenerator.cs" />

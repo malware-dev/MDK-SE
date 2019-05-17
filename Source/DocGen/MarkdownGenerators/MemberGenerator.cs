@@ -11,24 +11,36 @@ namespace DocGen.MarkdownGenerators
 {
     class MemberGenerator : DocumentGenerator
     {
-        static bool IsMsType(MemberInfo memberInfo)
-        {
-            var assembly = memberInfo.GetAssembly();
-            if (assembly.GetName().Name == "mscorlib")
-                return true;
-            var companyAttribute = assembly.GetCustomAttribute<AssemblyCompanyAttribute>();
-            if (companyAttribute?.Company == "Microsoft Corporation")
-                return true;
-            return false;
-        }
+        //static bool IsMsType(MemberInfo memberInfo)
+        //{
+        //    var assembly = memberInfo.GetAssembly();
+        //    if (assembly.GetName().Name == "mscorlib")
+        //        return true;
+        //    var companyAttribute = assembly.GetCustomAttribute<AssemblyCompanyAttribute>();
+        //    if (companyAttribute?.Company == "Microsoft Corporation")
+        //        return true;
+        //    return false;
+        //}
 
         public static string LinkTo(string text, ApiEntry entry)
         {
             if (ShouldBeIgnored(entry))
                 return text;
 
-            if (IsMsType(entry.Member))
-                return MarkdownInline.HRef(text, $"https://docs.microsoft.com/en-us/dotnet/api/{entry.FullName.ToLower()}?view=netframework-4.6");
+            if (MicrosoftLink.IsMsType(entry.Member))
+            {
+                var type = entry.Member as Type;
+                var fullName = entry.FullName;
+                if (type != null)
+                {
+                    if (type.IsGenericType && !type.IsGenericTypeDefinition)
+                        type = type.GetGenericTypeDefinition();
+                    fullName = type.FullName?.Replace('`', '-');
+                }
+
+                return MarkdownInline.HRef(text, $"https://docs.microsoft.com/en-us/dotnet/api/{fullName}?view=netframework-4.6");
+            }
+
             return MarkdownInline.HRef(text, Path.GetFileNameWithoutExtension(entry.SuggestedFileName));
         }
 
