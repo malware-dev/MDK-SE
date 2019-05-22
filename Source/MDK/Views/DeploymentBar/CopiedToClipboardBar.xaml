@@ -1,0 +1,8 @@
+﻿<visualStudio:NotificationBar x:Class="MDK.Views.DeploymentBar.CopiedToClipboardBar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:visualStudio="clr-namespace:MDK.VisualStudio"
+             HasCloseButton="False"
+             Timeout="3">
+    <visualStudio:NotificationTextSpan Text="The deployed script was copied to the clipboard." />
+</visualStudio:NotificationBar>

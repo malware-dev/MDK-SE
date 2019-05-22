@@ -14,6 +14,7 @@ using MDK.Resources;
 using MDK.Services;
 using MDK.Views.BlueprintManager;
 using MDK.Views.BugReports;
+using MDK.Views.DeploymentBar;
 using MDK.Views.ProjectHealth;
 using MDK.Views.UpdateDetection;
 using MDK.VisualStudio;
@@ -353,15 +354,12 @@ namespace MDK
                 {
                     if (!nonBlocking && Options.ShowBlueprintManagerOnDeploy)
                     {
-                        var distinctPaths = deployedScripts.Select(script => FormattedPath(script.Paths.OutputPath)).Distinct().ToArray();
-                        if (distinctPaths.Length == 1)
+                        var bar = new DeploymentBar
                         {
-                            var model = new BlueprintManagerDialogModel(Text.MDKPackage_Deploy_Description,
-                                distinctPaths[0], deployedScripts.Select(s => s.Name));
-                            BlueprintManagerDialog.ShowDialog(model);
-                        }
-                        else
-                            VsShellUtilities.ShowMessageBox(ServiceProvider, Text.MDKPackage_Deploy_DeploymentCompleteDescription, Text.MDKPackage_Deploy_DeploymentComplete, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                            DeployedScripts = deployedScripts,
+                            CanShowMe = deployedScripts.Select(script => FormattedPath(script.Paths.OutputPath)).Distinct().Count() == 1
+                        };
+                        bar.ShowAsync(ServiceProvider);
                     }
                 }
                 else

@@ -1,0 +1,10 @@
+﻿<visualStudio:NotificationBar x:Class="MDK.Views.DeploymentBar.DeploymentBar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:visualStudio="clr-namespace:MDK.VisualStudio">
+    <visualStudio:NotificationTextSpan Text="Your scripts have been deployed." />
+    <visualStudio:NotificationBar.Actions>
+        <visualStudio:NotificationHyperlink x:Name="showMeLink" Text="Show Me" Clicked="ShowMeLink_OnClicked" />
+        <visualStudio:NotificationHyperlink x:Name="copyLink" Text="Copy script to the Clipboard" Clicked="CopyLink_OnClicked" />
+    </visualStudio:NotificationBar.Actions>
+</visualStudio:NotificationBar>

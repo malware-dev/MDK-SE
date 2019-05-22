@@ -117,6 +117,12 @@
       <DependentUpon>ErrorDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\BugReports\ErrorDialogModel.cs" />
+    <Compile Include="Views\DeploymentBar\CopiedToClipboardBar.xaml.cs">
+      <DependentUpon>CopiedToClipboardBar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DeploymentBar\DeploymentBar.xaml.cs">
+      <DependentUpon>DeploymentBar.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\MessageEventArgs.cs" />
     <Compile Include="Views\MessageEventType.cs" />
     <Compile Include="Views\ProjectHealth\Fixes\BackupFix.cs" />
@@ -154,6 +160,11 @@
     <Compile Include="Views\Wizard\NewScriptWizardDialogModel.cs" />
     <Compile Include="VisualStudio\Animation.cs" />
     <Compile Include="VisualStudio\ExtendedPackage.cs" />
+    <Compile Include="VisualStudio\NotificationAction.cs" />
+    <Compile Include="VisualStudio\NotificationBar.cs" />
+    <Compile Include="VisualStudio\NotificationButton.cs" />
+    <Compile Include="VisualStudio\NotificationHyperlink.cs" />
+    <Compile Include="VisualStudio\NotificationTextSpan.cs" />
     <Compile Include="VisualStudio\ProjectEventArgs.cs" />
     <Compile Include="VisualStudio\ProjectExtensions.cs" />
     <Compile Include="VisualStudio\ProjectLoadedEventArgs.cs" />
@@ -606,6 +617,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\DeploymentBar\CopiedToClipboardBar.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\DeploymentBar\DeploymentBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\FolderBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -643,6 +662,7 @@
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.2.6.1\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
     <Analyzer Include="..\packages\Microsoft.VisualStudio.Threading.Analyzers.15.8.132\analyzers\cs\Microsoft.VisualStudio.Threading.Analyzers.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="..\Mixin.SteamAndSE\Mixin.SteamAndSE.projitems" Label="Shared" />
