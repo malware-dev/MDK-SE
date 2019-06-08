@@ -1,3 +1,9 @@
+### MDK now requires at least Visual Studio 2017 15.9
+
+Known issue: The menu items sometimes drops out of the context menus. I have to date been able to reproduce it _once_ but I couldn't figure out why. If you can find out a way to reliably reproduce this, then please let me know!
+
+- #149 Fixed wrong information in constructor comment. (SpaceBeeGaming)
+- #146 [PRE] Missing reference to System.Collections.Immutable (kwilliams1987)
 - #115 Fix-114: Add terminal.cache and fix .gitignore (VMSBigot)
 - #133 VS2019 Dev support: Remove unused refs and add Microsoft.MSBuild package (VMSBigot)
 - #132 MixInFix: Generate New GUID for Project (VMSBigot)
@@ -27,4 +33,4 @@
 - Proper install-time version checking, finally
 - Fixed #98 Unimportant Non-SE Project Error
 - Added #99 Include "Do not deploy" option in MDK Script Options window / #79 Deploy option in files.
-  "Exclude from Deploy All" checkbox    
+  "Exclude from Deploy All" checkbox
