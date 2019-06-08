@@ -268,15 +268,7 @@ VRage.MyTuple<T1, T2, T3, T4, T5>+*, VRage.Library
 VRage.MyTuple<T1, T2, T3, T4, T5, T6>+*, VRage.Library
 VRage.MyTupleComparer<T1, T2>+*, VRage.Library
 VRage.MyTupleComparer<T1, T2, T3>+*, VRage.Library
-VRage.MyTexts, VRage
-VRage.MyTexts.GetString(string), VRage
-VRage.MyTexts.GetString(VRage.Utils.MyStringId), VRage
-VRage.MyTexts.Exists(VRage.Utils.MyStringId), VRage
-VRage.MyTexts.Get(VRage.Utils.MyStringId), VRage
-VRage.MyTexts.AppendFormat(System.Text.StringBuilder, VRage.Utils.MyStringId, object), VRage
-VRage.MyTexts.AppendFormat(System.Text.StringBuilder, VRage.Utils.MyStringId, VRage.Utils.MyStringId), VRage
-VRage.MyTexts.Languages, VRage
-VRage.MyTexts.LanguageDescription+*, VRage
+VRage.MyTexts.MyLanguageDescription+*, VRage
 VRage.MyLanguagesEnum+*, VRage
 VRage.Game.Components.MyComponentContainer, VRage.Game
 VRage.Game.Components.MyComponentContainer.TryGet<T>(out T), VRage.Game

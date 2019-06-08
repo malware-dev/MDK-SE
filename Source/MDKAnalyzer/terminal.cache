@@ -227,41 +227,6 @@
     <property name="TargetNeutrals" type="Boolean" />
     <property name="UseConveyor" type="Boolean" />
   </block>
-  <block type="Sandbox.ModAPI.Ingame.IMyPowerProducer">
-    <action name="OnOff" text="Toggle block On/Off" />
-    <action name="OnOff_On" text="Toggle block On" />
-    <action name="OnOff_Off" text="Toggle block Off" />
-    <action name="ShowOnHUD" text="Show on HUD On/Off" />
-    <action name="ShowOnHUD_On" text="Show on HUD On" />
-    <action name="ShowOnHUD_Off" text="Show on HUD Off" />
-    <property name="OnOff" type="Boolean" />
-    <property name="ShowInTerminal" type="Boolean" />
-    <property name="ShowInInventory" type="Boolean" />
-    <property name="ShowInToolbarConfig" type="Boolean" />
-    <property name="Name" type="StringBuilder" />
-    <property name="ShowOnHUD" type="Boolean" />
-  </block>
-  <block type="SpaceEngineers.Game.ModAPI.Ingame.IMyParachute">
-    <action name="OnOff" text="Toggle block On/Off" />
-    <action name="OnOff_On" text="Toggle block On" />
-    <action name="OnOff_Off" text="Toggle block Off" />
-    <action name="ShowOnHUD" text="Show on HUD On/Off" />
-    <action name="ShowOnHUD_On" text="Show on HUD On" />
-    <action name="ShowOnHUD_Off" text="Show on HUD Off" />
-    <action name="Open" text=" Open/Closed" />
-    <action name="Open_On" text=" Open" />
-    <action name="Open_Off" text=" Closed" />
-    <action name="AutoDeploy" text="Auto deploy On/Off" />
-    <property name="OnOff" type="Boolean" />
-    <property name="ShowInTerminal" type="Boolean" />
-    <property name="ShowInInventory" type="Boolean" />
-    <property name="ShowInToolbarConfig" type="Boolean" />
-    <property name="Name" type="StringBuilder" />
-    <property name="ShowOnHUD" type="Boolean" />
-    <property name="Open" type="Boolean" />
-    <property name="AutoDeploy" type="Boolean" />
-    <property name="AutoDeployHeight" type="Single" />
-  </block>
   <block type="SpaceEngineers.Game.ModAPI.Ingame.IMyAirVent">
     <action name="OnOff" text="Toggle block On/Off" />
     <action name="OnOff_On" text="Toggle block On" />
@@ -353,6 +318,20 @@
     <property name="Radius" type="Single" />
     <property name="Gravity" type="Single" />
   </block>
+  <block type="Sandbox.ModAPI.Ingame.IMyPowerProducer">
+    <action name="OnOff" text="Toggle block On/Off" />
+    <action name="OnOff_On" text="Toggle block On" />
+    <action name="OnOff_Off" text="Toggle block Off" />
+    <action name="ShowOnHUD" text="Show on HUD On/Off" />
+    <action name="ShowOnHUD_On" text="Show on HUD On" />
+    <action name="ShowOnHUD_Off" text="Show on HUD Off" />
+    <property name="OnOff" type="Boolean" />
+    <property name="ShowInTerminal" type="Boolean" />
+    <property name="ShowInInventory" type="Boolean" />
+    <property name="ShowInToolbarConfig" type="Boolean" />
+    <property name="Name" type="StringBuilder" />
+    <property name="ShowOnHUD" type="Boolean" />
+  </block>
   <block type="SpaceEngineers.Game.ModAPI.Ingame.IMyInteriorLight">
     <action name="OnOff" text="Toggle block On/Off" />
     <action name="OnOff_On" text="Toggle block On" />
@@ -438,6 +417,27 @@
     <property name="ShowInToolbarConfig" type="Boolean" />
     <property name="Name" type="StringBuilder" />
     <property name="ShowOnHUD" type="Boolean" />
+  </block>
+  <block type="SpaceEngineers.Game.ModAPI.Ingame.IMyParachute">
+    <action name="OnOff" text="Toggle block On/Off" />
+    <action name="OnOff_On" text="Toggle block On" />
+    <action name="OnOff_Off" text="Toggle block Off" />
+    <action name="ShowOnHUD" text="Show on HUD On/Off" />
+    <action name="ShowOnHUD_On" text="Show on HUD On" />
+    <action name="ShowOnHUD_Off" text="Show on HUD Off" />
+    <action name="Open" text=" Open/Closed" />
+    <action name="Open_On" text=" Open" />
+    <action name="Open_Off" text=" Closed" />
+    <action name="AutoDeploy" text="Auto deploy On/Off" />
+    <property name="OnOff" type="Boolean" />
+    <property name="ShowInTerminal" type="Boolean" />
+    <property name="ShowInInventory" type="Boolean" />
+    <property name="ShowInToolbarConfig" type="Boolean" />
+    <property name="Name" type="StringBuilder" />
+    <property name="ShowOnHUD" type="Boolean" />
+    <property name="Open" type="Boolean" />
+    <property name="AutoDeploy" type="Boolean" />
+    <property name="AutoDeployHeight" type="Single" />
   </block>
   <block type="SpaceEngineers.Game.ModAPI.Ingame.IMyShipMergeBlock">
     <action name="OnOff" text="Toggle block On/Off" />
@@ -612,18 +612,13 @@
     <property name="Name" type="StringBuilder" />
     <property name="ShowOnHUD" type="Boolean" />
   </block>
-  <block type="Sandbox.ModAPI.Ingame.IMySmallMissileLauncherReload">
+  <block type="Sandbox.ModAPI.Ingame.IMyShipDrill">
     <action name="OnOff" text="Toggle block On/Off" />
     <action name="OnOff_On" text="Toggle block On" />
     <action name="OnOff_Off" text="Toggle block Off" />
     <action name="ShowOnHUD" text="Show on HUD On/Off" />
     <action name="ShowOnHUD_On" text="Show on HUD On" />
     <action name="ShowOnHUD_Off" text="Show on HUD Off" />
-    <action name="ShootOnce" text="Shoot once" />
-    <action name="Shoot" text="Shoot On/Off" />
-    <action name="Shoot_On" text="Shoot On" />
-    <action name="Shoot_Off" text="Shoot Off" />
-    <action name="UseConveyor" text="Use Conveyor System On/Off" />
     <action name="UseConveyor" text="Use Conveyor System On/Off" />
     <property name="OnOff" type="Boolean" />
     <property name="ShowInTerminal" type="Boolean" />
@@ -631,27 +626,9 @@
     <property name="ShowInToolbarConfig" type="Boolean" />
     <property name="Name" type="StringBuilder" />
     <property name="ShowOnHUD" type="Boolean" />
-    <property name="Shoot" type="Boolean" />
-    <property name="UseConveyor" type="Boolean" />
     <property name="UseConveyor" type="Boolean" />
   </block>
   <block type="Sandbox.ModAPI.Ingame.IMyShipGrinder">
-    <action name="OnOff" text="Toggle block On/Off" />
-    <action name="OnOff_On" text="Toggle block On" />
-    <action name="OnOff_Off" text="Toggle block Off" />
-    <action name="ShowOnHUD" text="Show on HUD On/Off" />
-    <action name="ShowOnHUD_On" text="Show on HUD On" />
-    <action name="ShowOnHUD_Off" text="Show on HUD Off" />
-    <action name="UseConveyor" text="Use Conveyor System On/Off" />
-    <property name="OnOff" type="Boolean" />
-    <property name="ShowInTerminal" type="Boolean" />
-    <property name="ShowInInventory" type="Boolean" />
-    <property name="ShowInToolbarConfig" type="Boolean" />
-    <property name="Name" type="StringBuilder" />
-    <property name="ShowOnHUD" type="Boolean" />
-    <property name="UseConveyor" type="Boolean" />
-  </block>
-  <block type="Sandbox.ModAPI.Ingame.IMyShipDrill">
     <action name="OnOff" text="Toggle block On/Off" />
     <action name="OnOff_On" text="Toggle block On" />
     <action name="OnOff_Off" text="Toggle block Off" />
@@ -709,23 +686,28 @@
     <property name="Shoot" type="Boolean" />
     <property name="UseConveyor" type="Boolean" />
   </block>
-  <block type="Sandbox.ModAPI.Ingame.IMyAirtightSlideDoor">
+  <block type="Sandbox.ModAPI.Ingame.IMySmallMissileLauncherReload">
     <action name="OnOff" text="Toggle block On/Off" />
     <action name="OnOff_On" text="Toggle block On" />
     <action name="OnOff_Off" text="Toggle block Off" />
     <action name="ShowOnHUD" text="Show on HUD On/Off" />
     <action name="ShowOnHUD_On" text="Show on HUD On" />
     <action name="ShowOnHUD_Off" text="Show on HUD Off" />
-    <action name="Open" text=" Open/Closed" />
-    <action name="Open_On" text=" Open" />
-    <action name="Open_Off" text=" Closed" />
+    <action name="ShootOnce" text="Shoot once" />
+    <action name="Shoot" text="Shoot On/Off" />
+    <action name="Shoot_On" text="Shoot On" />
+    <action name="Shoot_Off" text="Shoot Off" />
+    <action name="UseConveyor" text="Use Conveyor System On/Off" />
+    <action name="UseConveyor" text="Use Conveyor System On/Off" />
     <property name="OnOff" type="Boolean" />
     <property name="ShowInTerminal" type="Boolean" />
     <property name="ShowInInventory" type="Boolean" />
     <property name="ShowInToolbarConfig" type="Boolean" />
     <property name="Name" type="StringBuilder" />
     <property name="ShowOnHUD" type="Boolean" />
-    <property name="Open" type="Boolean" />
+    <property name="Shoot" type="Boolean" />
+    <property name="UseConveyor" type="Boolean" />
+    <property name="UseConveyor" type="Boolean" />
   </block>
   <block type="Sandbox.ModAPI.Ingame.IMyAdvancedDoor">
     <action name="OnOff" text="Toggle block On/Off" />
@@ -762,6 +744,66 @@
     <property name="Name" type="StringBuilder" />
     <property name="ShowOnHUD" type="Boolean" />
     <property name="Open" type="Boolean" />
+  </block>
+  <block type="Sandbox.ModAPI.Ingame.IMyAirtightSlideDoor">
+    <action name="OnOff" text="Toggle block On/Off" />
+    <action name="OnOff_On" text="Toggle block On" />
+    <action name="OnOff_Off" text="Toggle block Off" />
+    <action name="ShowOnHUD" text="Show on HUD On/Off" />
+    <action name="ShowOnHUD_On" text="Show on HUD On" />
+    <action name="ShowOnHUD_Off" text="Show on HUD Off" />
+    <action name="Open" text=" Open/Closed" />
+    <action name="Open_On" text=" Open" />
+    <action name="Open_Off" text=" Closed" />
+    <property name="OnOff" type="Boolean" />
+    <property name="ShowInTerminal" type="Boolean" />
+    <property name="ShowInInventory" type="Boolean" />
+    <property name="ShowInToolbarConfig" type="Boolean" />
+    <property name="Name" type="StringBuilder" />
+    <property name="ShowOnHUD" type="Boolean" />
+    <property name="Open" type="Boolean" />
+  </block>
+  <block type="Sandbox.ModAPI.Ingame.IMyBatteryBlock">
+    <action name="OnOff" text="Toggle block On/Off" />
+    <action name="OnOff_On" text="Toggle block On" />
+    <action name="OnOff_Off" text="Toggle block Off" />
+    <action name="ShowOnHUD" text="Show on HUD On/Off" />
+    <action name="ShowOnHUD_On" text="Show on HUD On" />
+    <action name="ShowOnHUD_Off" text="Show on HUD Off" />
+    <action name="Recharge" text="Recharge On/Off" />
+    <action name="Discharge" text="Discharge On/Off" />
+    <action name="Auto" text="Enable Auto" />
+    <property name="OnOff" type="Boolean" />
+    <property name="ShowInTerminal" type="Boolean" />
+    <property name="ShowInInventory" type="Boolean" />
+    <property name="ShowInToolbarConfig" type="Boolean" />
+    <property name="Name" type="StringBuilder" />
+    <property name="ShowOnHUD" type="Boolean" />
+    <property name="ChargeMode" type="Int64" />
+  </block>
+  <block type="Sandbox.ModAPI.Ingame.IMyCameraBlock">
+    <action name="OnOff" text="Toggle block On/Off" />
+    <action name="OnOff_On" text="Toggle block On" />
+    <action name="OnOff_Off" text="Toggle block Off" />
+    <action name="ShowOnHUD" text="Show on HUD On/Off" />
+    <action name="ShowOnHUD_On" text="Show on HUD On" />
+    <action name="ShowOnHUD_Off" text="Show on HUD Off" />
+    <property name="OnOff" type="Boolean" />
+    <property name="ShowInTerminal" type="Boolean" />
+    <property name="ShowInInventory" type="Boolean" />
+    <property name="ShowInToolbarConfig" type="Boolean" />
+    <property name="Name" type="StringBuilder" />
+    <property name="ShowOnHUD" type="Boolean" />
+  </block>
+  <block type="Sandbox.ModAPI.Ingame.IMyCargoContainer">
+    <action name="ShowOnHUD" text="Show on HUD On/Off" />
+    <action name="ShowOnHUD_On" text="Show on HUD On" />
+    <action name="ShowOnHUD_Off" text="Show on HUD Off" />
+    <property name="ShowInTerminal" type="Boolean" />
+    <property name="ShowInInventory" type="Boolean" />
+    <property name="ShowInToolbarConfig" type="Boolean" />
+    <property name="Name" type="StringBuilder" />
+    <property name="ShowOnHUD" type="Boolean" />
   </block>
   <block type="Sandbox.ModAPI.Ingame.IMyCockpit">
     <action name="ShowOnHUD" text="Show on HUD On/Off" />
@@ -820,37 +862,51 @@
     <property name="DrainAll" type="Boolean" />
     <property name="blacklistWhitelist" type="Int64" />
   </block>
-  <block type="Sandbox.ModAPI.Ingame.IMyBatteryBlock">
+  <block type="Sandbox.ModAPI.Ingame.IMyDoor">
     <action name="OnOff" text="Toggle block On/Off" />
     <action name="OnOff_On" text="Toggle block On" />
     <action name="OnOff_Off" text="Toggle block Off" />
     <action name="ShowOnHUD" text="Show on HUD On/Off" />
     <action name="ShowOnHUD_On" text="Show on HUD On" />
     <action name="ShowOnHUD_Off" text="Show on HUD Off" />
-    <action name="Recharge" text="Recharge On/Off" />
-    <action name="Discharge" text="Discharge On/Off" />
-    <action name="Auto" text="Enable Auto" />
+    <action name="Open" text=" Open/Closed" />
+    <action name="Open_On" text=" Open" />
+    <action name="Open_Off" text=" Closed" />
     <property name="OnOff" type="Boolean" />
     <property name="ShowInTerminal" type="Boolean" />
     <property name="ShowInInventory" type="Boolean" />
     <property name="ShowInToolbarConfig" type="Boolean" />
     <property name="Name" type="StringBuilder" />
     <property name="ShowOnHUD" type="Boolean" />
-    <property name="ChargeMode" type="Int64" />
+    <property name="Open" type="Boolean" />
   </block>
-  <block type="Sandbox.ModAPI.Ingame.IMyCameraBlock">
+  <block type="Sandbox.ModAPI.Ingame.IMyGyro">
     <action name="OnOff" text="Toggle block On/Off" />
     <action name="OnOff_On" text="Toggle block On" />
     <action name="OnOff_Off" text="Toggle block Off" />
     <action name="ShowOnHUD" text="Show on HUD On/Off" />
     <action name="ShowOnHUD_On" text="Show on HUD On" />
     <action name="ShowOnHUD_Off" text="Show on HUD Off" />
+    <action name="IncreasePower" text="Increase Power" />
+    <action name="DecreasePower" text="Decrease Power" />
+    <action name="Override" text="Override controls On/Off" />
+    <action name="IncreaseYaw" text="Increase Yaw override" />
+    <action name="DecreaseYaw" text="Decrease Yaw override" />
+    <action name="IncreasePitch" text="Increase Pitch override" />
+    <action name="DecreasePitch" text="Decrease Pitch override" />
+    <action name="IncreaseRoll" text="Increase Roll override" />
+    <action name="DecreaseRoll" text="Decrease Roll override" />
     <property name="OnOff" type="Boolean" />
     <property name="ShowInTerminal" type="Boolean" />
     <property name="ShowInInventory" type="Boolean" />
     <property name="ShowInToolbarConfig" type="Boolean" />
     <property name="Name" type="StringBuilder" />
     <property name="ShowOnHUD" type="Boolean" />
+    <property name="Power" type="Single" />
+    <property name="Override" type="Boolean" />
+    <property name="Yaw" type="Single" />
+    <property name="Pitch" type="Single" />
+    <property name="Roll" type="Single" />
   </block>
   <block type="Sandbox.ModAPI.Ingame.IMyJumpDrive">
     <action name="OnOff" text="Toggle block On/Off" />
@@ -872,6 +928,58 @@
     <property name="ShowOnHUD" type="Boolean" />
     <property name="Recharge" type="Boolean" />
     <property name="JumpDistance" type="Single" />
+  </block>
+  <block type="Sandbox.ModAPI.Ingame.IMyReactor">
+    <action name="OnOff" text="Toggle block On/Off" />
+    <action name="OnOff_On" text="Toggle block On" />
+    <action name="OnOff_Off" text="Toggle block Off" />
+    <action name="ShowOnHUD" text="Show on HUD On/Off" />
+    <action name="ShowOnHUD_On" text="Show on HUD On" />
+    <action name="ShowOnHUD_Off" text="Show on HUD Off" />
+    <action name="UseConveyor" text="Use Conveyor System On/Off" />
+    <property name="OnOff" type="Boolean" />
+    <property name="ShowInTerminal" type="Boolean" />
+    <property name="ShowInInventory" type="Boolean" />
+    <property name="ShowInToolbarConfig" type="Boolean" />
+    <property name="Name" type="StringBuilder" />
+    <property name="ShowOnHUD" type="Boolean" />
+    <property name="UseConveyor" type="Boolean" />
+  </block>
+  <block type="Sandbox.ModAPI.Ingame.IMyReflectorLight">
+    <action name="OnOff" text="Toggle block On/Off" />
+    <action name="OnOff_On" text="Toggle block On" />
+    <action name="OnOff_Off" text="Toggle block Off" />
+    <action name="ShowOnHUD" text="Show on HUD On/Off" />
+    <action name="ShowOnHUD_On" text="Show on HUD On" />
+    <action name="ShowOnHUD_Off" text="Show on HUD Off" />
+    <action name="IncreaseRadius" text="Increase Radius" />
+    <action name="DecreaseRadius" text="Decrease Radius" />
+    <action name="IncreaseFalloff" text="Increase Falloff" />
+    <action name="DecreaseFalloff" text="Decrease Falloff" />
+    <action name="IncreaseIntensity" text="Increase Intensity" />
+    <action name="DecreaseIntensity" text="Decrease Intensity" />
+    <action name="IncreaseOffset" text="Increase Offset" />
+    <action name="DecreaseOffset" text="Decrease Offset" />
+    <action name="IncreaseBlink Interval" text="Increase Blink Interval" />
+    <action name="DecreaseBlink Interval" text="Decrease Blink Interval" />
+    <action name="IncreaseBlink Lenght" text="Increase Blink Length" />
+    <action name="DecreaseBlink Lenght" text="Decrease Blink Length" />
+    <action name="IncreaseBlink Offset" text="Increase Blink Offset" />
+    <action name="DecreaseBlink Offset" text="Decrease Blink Offset" />
+    <property name="OnOff" type="Boolean" />
+    <property name="ShowInTerminal" type="Boolean" />
+    <property name="ShowInInventory" type="Boolean" />
+    <property name="ShowInToolbarConfig" type="Boolean" />
+    <property name="Name" type="StringBuilder" />
+    <property name="ShowOnHUD" type="Boolean" />
+    <property name="Color" type="Color" />
+    <property name="Radius" type="Single" />
+    <property name="Falloff" type="Single" />
+    <property name="Intensity" type="Single" />
+    <property name="Offset" type="Single" />
+    <property name="Blink Interval" type="Single" />
+    <property name="Blink Lenght" type="Single" />
+    <property name="Blink Offset" type="Single" />
   </block>
   <block type="Sandbox.ModAPI.Ingame.IMyRemoteControl">
     <action name="ShowOnHUD" text="Show on HUD On/Off" />
@@ -943,114 +1051,6 @@
     <property name="HorizonIndicator" type="Boolean" />
     <property name="MainCockpit" type="Boolean" />
   </block>
-  <block type="Sandbox.ModAPI.Ingame.IMyDoor">
-    <action name="OnOff" text="Toggle block On/Off" />
-    <action name="OnOff_On" text="Toggle block On" />
-    <action name="OnOff_Off" text="Toggle block Off" />
-    <action name="ShowOnHUD" text="Show on HUD On/Off" />
-    <action name="ShowOnHUD_On" text="Show on HUD On" />
-    <action name="ShowOnHUD_Off" text="Show on HUD Off" />
-    <action name="Open" text=" Open/Closed" />
-    <action name="Open_On" text=" Open" />
-    <action name="Open_Off" text=" Closed" />
-    <property name="OnOff" type="Boolean" />
-    <property name="ShowInTerminal" type="Boolean" />
-    <property name="ShowInInventory" type="Boolean" />
-    <property name="ShowInToolbarConfig" type="Boolean" />
-    <property name="Name" type="StringBuilder" />
-    <property name="ShowOnHUD" type="Boolean" />
-    <property name="Open" type="Boolean" />
-  </block>
-  <block type="Sandbox.ModAPI.Ingame.IMyReflectorLight">
-    <action name="OnOff" text="Toggle block On/Off" />
-    <action name="OnOff_On" text="Toggle block On" />
-    <action name="OnOff_Off" text="Toggle block Off" />
-    <action name="ShowOnHUD" text="Show on HUD On/Off" />
-    <action name="ShowOnHUD_On" text="Show on HUD On" />
-    <action name="ShowOnHUD_Off" text="Show on HUD Off" />
-    <action name="IncreaseRadius" text="Increase Radius" />
-    <action name="DecreaseRadius" text="Decrease Radius" />
-    <action name="IncreaseFalloff" text="Increase Falloff" />
-    <action name="DecreaseFalloff" text="Decrease Falloff" />
-    <action name="IncreaseIntensity" text="Increase Intensity" />
-    <action name="DecreaseIntensity" text="Decrease Intensity" />
-    <action name="IncreaseOffset" text="Increase Offset" />
-    <action name="DecreaseOffset" text="Decrease Offset" />
-    <action name="IncreaseBlink Interval" text="Increase Blink Interval" />
-    <action name="DecreaseBlink Interval" text="Decrease Blink Interval" />
-    <action name="IncreaseBlink Lenght" text="Increase Blink Length" />
-    <action name="DecreaseBlink Lenght" text="Decrease Blink Length" />
-    <action name="IncreaseBlink Offset" text="Increase Blink Offset" />
-    <action name="DecreaseBlink Offset" text="Decrease Blink Offset" />
-    <property name="OnOff" type="Boolean" />
-    <property name="ShowInTerminal" type="Boolean" />
-    <property name="ShowInInventory" type="Boolean" />
-    <property name="ShowInToolbarConfig" type="Boolean" />
-    <property name="Name" type="StringBuilder" />
-    <property name="ShowOnHUD" type="Boolean" />
-    <property name="Color" type="Color" />
-    <property name="Radius" type="Single" />
-    <property name="Falloff" type="Single" />
-    <property name="Intensity" type="Single" />
-    <property name="Offset" type="Single" />
-    <property name="Blink Interval" type="Single" />
-    <property name="Blink Lenght" type="Single" />
-    <property name="Blink Offset" type="Single" />
-  </block>
-  <block type="Sandbox.ModAPI.Ingame.IMyReactor">
-    <action name="OnOff" text="Toggle block On/Off" />
-    <action name="OnOff_On" text="Toggle block On" />
-    <action name="OnOff_Off" text="Toggle block Off" />
-    <action name="ShowOnHUD" text="Show on HUD On/Off" />
-    <action name="ShowOnHUD_On" text="Show on HUD On" />
-    <action name="ShowOnHUD_Off" text="Show on HUD Off" />
-    <action name="UseConveyor" text="Use Conveyor System On/Off" />
-    <property name="OnOff" type="Boolean" />
-    <property name="ShowInTerminal" type="Boolean" />
-    <property name="ShowInInventory" type="Boolean" />
-    <property name="ShowInToolbarConfig" type="Boolean" />
-    <property name="Name" type="StringBuilder" />
-    <property name="ShowOnHUD" type="Boolean" />
-    <property name="UseConveyor" type="Boolean" />
-  </block>
-  <block type="Sandbox.ModAPI.Ingame.IMyCargoContainer">
-    <action name="ShowOnHUD" text="Show on HUD On/Off" />
-    <action name="ShowOnHUD_On" text="Show on HUD On" />
-    <action name="ShowOnHUD_Off" text="Show on HUD Off" />
-    <property name="ShowInTerminal" type="Boolean" />
-    <property name="ShowInInventory" type="Boolean" />
-    <property name="ShowInToolbarConfig" type="Boolean" />
-    <property name="Name" type="StringBuilder" />
-    <property name="ShowOnHUD" type="Boolean" />
-  </block>
-  <block type="Sandbox.ModAPI.Ingame.IMyGyro">
-    <action name="OnOff" text="Toggle block On/Off" />
-    <action name="OnOff_On" text="Toggle block On" />
-    <action name="OnOff_Off" text="Toggle block Off" />
-    <action name="ShowOnHUD" text="Show on HUD On/Off" />
-    <action name="ShowOnHUD_On" text="Show on HUD On" />
-    <action name="ShowOnHUD_Off" text="Show on HUD Off" />
-    <action name="IncreasePower" text="Increase Power" />
-    <action name="DecreasePower" text="Decrease Power" />
-    <action name="Override" text="Override controls On/Off" />
-    <action name="IncreaseYaw" text="Increase Yaw override" />
-    <action name="DecreaseYaw" text="Decrease Yaw override" />
-    <action name="IncreasePitch" text="Increase Pitch override" />
-    <action name="DecreasePitch" text="Decrease Pitch override" />
-    <action name="IncreaseRoll" text="Increase Roll override" />
-    <action name="DecreaseRoll" text="Decrease Roll override" />
-    <property name="OnOff" type="Boolean" />
-    <property name="ShowInTerminal" type="Boolean" />
-    <property name="ShowInInventory" type="Boolean" />
-    <property name="ShowInToolbarConfig" type="Boolean" />
-    <property name="Name" type="StringBuilder" />
-    <property name="ShowOnHUD" type="Boolean" />
-    <property name="Power" type="Single" />
-    <property name="Override" type="Boolean" />
-    <property name="Yaw" type="Single" />
-    <property name="Pitch" type="Single" />
-    <property name="Roll" type="Single" />
-  </block>
   <block type="Sandbox.ModAPI.Ingame.IMyThrust">
     <action name="OnOff" text="Toggle block On/Off" />
     <action name="OnOff_On" text="Toggle block On" />
@@ -1067,6 +1067,42 @@
     <property name="Name" type="StringBuilder" />
     <property name="ShowOnHUD" type="Boolean" />
     <property name="Override" type="Single" />
+  </block>
+  <block type="Sandbox.ModAPI.Ingame.IMyAssembler">
+    <action name="OnOff" text="Toggle block On/Off" />
+    <action name="OnOff_On" text="Toggle block On" />
+    <action name="OnOff_Off" text="Toggle block Off" />
+    <action name="ShowOnHUD" text="Show on HUD On/Off" />
+    <action name="ShowOnHUD_On" text="Show on HUD On" />
+    <action name="ShowOnHUD_Off" text="Show on HUD Off" />
+    <action name="UseConveyor" text="Use Conveyor System On/Off" />
+    <action name="slaveMode" text="Cooperative Mode On/Off" />
+    <property name="OnOff" type="Boolean" />
+    <property name="ShowInTerminal" type="Boolean" />
+    <property name="ShowInInventory" type="Boolean" />
+    <property name="ShowInToolbarConfig" type="Boolean" />
+    <property name="Name" type="StringBuilder" />
+    <property name="ShowOnHUD" type="Boolean" />
+    <property name="UseConveyor" type="Boolean" />
+    <property name="slaveMode" type="Boolean" />
+  </block>
+  <block type="Sandbox.ModAPI.Ingame.IMyBeacon">
+    <action name="OnOff" text="Toggle block On/Off" />
+    <action name="OnOff_On" text="Toggle block On" />
+    <action name="OnOff_Off" text="Toggle block Off" />
+    <action name="ShowOnHUD" text="Show on HUD On/Off" />
+    <action name="ShowOnHUD_On" text="Show on HUD On" />
+    <action name="ShowOnHUD_Off" text="Show on HUD Off" />
+    <action name="IncreaseRadius" text="Increase Broadcast radius" />
+    <action name="DecreaseRadius" text="Decrease Broadcast radius" />
+    <property name="OnOff" type="Boolean" />
+    <property name="ShowInTerminal" type="Boolean" />
+    <property name="ShowInInventory" type="Boolean" />
+    <property name="ShowInToolbarConfig" type="Boolean" />
+    <property name="ShowOnHUD" type="Boolean" />
+    <property name="CustomName" type="StringBuilder" />
+    <property name="HudText" type="StringBuilder" />
+    <property name="Radius" type="Single" />
   </block>
   <block type="Sandbox.ModAPI.Ingame.IMyLaserAntenna">
     <action name="OnOff" text="Toggle block On/Off" />
@@ -1093,6 +1129,56 @@
     <property name="PBList" type="Int64" />
   </block>
   <block type="Sandbox.ModAPI.Ingame.IMyMotorAdvancedStator">
+    <action name="OnOff" text="Toggle block On/Off" />
+    <action name="OnOff_On" text="Toggle block On" />
+    <action name="OnOff_Off" text="Toggle block Off" />
+    <action name="ShowOnHUD" text="Show on HUD On/Off" />
+    <action name="ShowOnHUD_On" text="Show on HUD On" />
+    <action name="ShowOnHUD_Off" text="Show on HUD Off" />
+    <action name="IncreaseWeld speed" text="Increase Safety lock speed" />
+    <action name="DecreaseWeld speed" text="Decrease Safety lock speed" />
+    <action name="Force weld" text="Safety lock override On/Off" />
+    <action name="IncreaseSafetyDetach" text="Increase Safety detach" />
+    <action name="DecreaseSafetyDetach" text="Decrease Safety detach" />
+    <action name="ShareInertiaTensor" text="Share inertia tensor On/Off" />
+    <action name="Add Top Part" text="Add Rotor Head" />
+    <action name="Add Small Top Part" text="Add Small Head" />
+    <action name="Reverse" text="Reverse" />
+    <action name="Detach" text="Detach" />
+    <action name="Attach" text="Attach" />
+    <action name="RotorLock" text="Rotor lock On/Off" />
+    <action name="IncreaseTorque" text="Increase Torque" />
+    <action name="DecreaseTorque" text="Decrease Torque" />
+    <action name="IncreaseBrakingTorque" text="Increase Braking torque" />
+    <action name="DecreaseBrakingTorque" text="Decrease Braking torque" />
+    <action name="IncreaseVelocity" text="Increase Velocity" />
+    <action name="DecreaseVelocity" text="Decrease Velocity" />
+    <action name="ResetVelocity" text="Reset Velocity" />
+    <action name="IncreaseLowerLimit" text="Increase Lower limit" />
+    <action name="DecreaseLowerLimit" text="Decrease Lower limit" />
+    <action name="IncreaseUpperLimit" text="Increase Upper limit" />
+    <action name="DecreaseUpperLimit" text="Decrease Upper limit" />
+    <action name="IncreaseDisplacement" text="Increase Rotor displacement" />
+    <action name="DecreaseDisplacement" text="Decrease Rotor displacement" />
+    <property name="OnOff" type="Boolean" />
+    <property name="ShowInTerminal" type="Boolean" />
+    <property name="ShowInInventory" type="Boolean" />
+    <property name="ShowInToolbarConfig" type="Boolean" />
+    <property name="Name" type="StringBuilder" />
+    <property name="ShowOnHUD" type="Boolean" />
+    <property name="Weld speed" type="Single" />
+    <property name="Force weld" type="Boolean" />
+    <property name="SafetyDetach" type="Single" />
+    <property name="ShareInertiaTensor" type="Boolean" />
+    <property name="RotorLock" type="Boolean" />
+    <property name="Torque" type="Single" />
+    <property name="BrakingTorque" type="Single" />
+    <property name="Velocity" type="Single" />
+    <property name="LowerLimit" type="Single" />
+    <property name="UpperLimit" type="Single" />
+    <property name="Displacement" type="Single" />
+  </block>
+  <block type="Sandbox.ModAPI.Ingame.IMyMotorStator">
     <action name="OnOff" text="Toggle block On/Off" />
     <action name="OnOff_On" text="Toggle block On" />
     <action name="OnOff_Off" text="Toggle block Off" />
@@ -1208,133 +1294,6 @@
     <property name="Propulsion override" type="Single" />
     <property name="Steer override" type="Single" />
   </block>
-  <block type="Sandbox.ModAPI.Ingame.IMyShipConnector">
-    <action name="OnOff" text="Toggle block On/Off" />
-    <action name="OnOff_On" text="Toggle block On" />
-    <action name="OnOff_Off" text="Toggle block Off" />
-    <action name="ShowOnHUD" text="Show on HUD On/Off" />
-    <action name="ShowOnHUD_On" text="Show on HUD On" />
-    <action name="ShowOnHUD_Off" text="Show on HUD Off" />
-    <action name="ThrowOut" text="Throw Out On/Off" />
-    <action name="CollectAll" text="Collect All On/Off" />
-    <action name="Lock" text="Lock" />
-    <action name="Unlock" text="Unlock" />
-    <action name="SwitchLock" text="Switch lock" />
-    <action name="IncreaseStrength" text="Increase Strength" />
-    <action name="DecreaseStrength" text="Decrease Strength" />
-    <property name="OnOff" type="Boolean" />
-    <property name="ShowInTerminal" type="Boolean" />
-    <property name="ShowInInventory" type="Boolean" />
-    <property name="ShowInToolbarConfig" type="Boolean" />
-    <property name="Name" type="StringBuilder" />
-    <property name="ShowOnHUD" type="Boolean" />
-    <property name="ThrowOut" type="Boolean" />
-    <property name="CollectAll" type="Boolean" />
-    <property name="Strength" type="Single" />
-  </block>
-  <block type="Sandbox.ModAPI.Ingame.IMyWarhead">
-    <action name="ShowOnHUD" text="Show on HUD On/Off" />
-    <action name="ShowOnHUD_On" text="Show on HUD On" />
-    <action name="ShowOnHUD_Off" text="Show on HUD Off" />
-    <action name="IncreaseDetonationTime" text="Increase Detonation time" />
-    <action name="DecreaseDetonationTime" text="Decrease Detonation time" />
-    <action name="StartCountdown" text="Start countdown" />
-    <action name="StopCountdown" text="Stop countdown" />
-    <action name="Safety" text="Arm warhead On/Off" />
-    <action name="Detonate" text="Detonate" />
-    <property name="ShowInTerminal" type="Boolean" />
-    <property name="ShowInInventory" type="Boolean" />
-    <property name="ShowInToolbarConfig" type="Boolean" />
-    <property name="Name" type="StringBuilder" />
-    <property name="ShowOnHUD" type="Boolean" />
-    <property name="DetonationTime" type="Single" />
-    <property name="Safety" type="Boolean" />
-  </block>
-  <block type="Sandbox.ModAPI.Ingame.IMyMotorStator">
-    <action name="OnOff" text="Toggle block On/Off" />
-    <action name="OnOff_On" text="Toggle block On" />
-    <action name="OnOff_Off" text="Toggle block Off" />
-    <action name="ShowOnHUD" text="Show on HUD On/Off" />
-    <action name="ShowOnHUD_On" text="Show on HUD On" />
-    <action name="ShowOnHUD_Off" text="Show on HUD Off" />
-    <action name="IncreaseWeld speed" text="Increase Safety lock speed" />
-    <action name="DecreaseWeld speed" text="Decrease Safety lock speed" />
-    <action name="Force weld" text="Safety lock override On/Off" />
-    <action name="IncreaseSafetyDetach" text="Increase Safety detach" />
-    <action name="DecreaseSafetyDetach" text="Decrease Safety detach" />
-    <action name="ShareInertiaTensor" text="Share inertia tensor On/Off" />
-    <action name="Add Top Part" text="Add Rotor Head" />
-    <action name="Add Small Top Part" text="Add Small Head" />
-    <action name="Reverse" text="Reverse" />
-    <action name="Detach" text="Detach" />
-    <action name="Attach" text="Attach" />
-    <action name="RotorLock" text="Rotor lock On/Off" />
-    <action name="IncreaseTorque" text="Increase Torque" />
-    <action name="DecreaseTorque" text="Decrease Torque" />
-    <action name="IncreaseBrakingTorque" text="Increase Braking torque" />
-    <action name="DecreaseBrakingTorque" text="Decrease Braking torque" />
-    <action name="IncreaseVelocity" text="Increase Velocity" />
-    <action name="DecreaseVelocity" text="Decrease Velocity" />
-    <action name="ResetVelocity" text="Reset Velocity" />
-    <action name="IncreaseLowerLimit" text="Increase Lower limit" />
-    <action name="DecreaseLowerLimit" text="Decrease Lower limit" />
-    <action name="IncreaseUpperLimit" text="Increase Upper limit" />
-    <action name="DecreaseUpperLimit" text="Decrease Upper limit" />
-    <action name="IncreaseDisplacement" text="Increase Rotor displacement" />
-    <action name="DecreaseDisplacement" text="Decrease Rotor displacement" />
-    <property name="OnOff" type="Boolean" />
-    <property name="ShowInTerminal" type="Boolean" />
-    <property name="ShowInInventory" type="Boolean" />
-    <property name="ShowInToolbarConfig" type="Boolean" />
-    <property name="Name" type="StringBuilder" />
-    <property name="ShowOnHUD" type="Boolean" />
-    <property name="Weld speed" type="Single" />
-    <property name="Force weld" type="Boolean" />
-    <property name="SafetyDetach" type="Single" />
-    <property name="ShareInertiaTensor" type="Boolean" />
-    <property name="RotorLock" type="Boolean" />
-    <property name="Torque" type="Single" />
-    <property name="BrakingTorque" type="Single" />
-    <property name="Velocity" type="Single" />
-    <property name="LowerLimit" type="Single" />
-    <property name="UpperLimit" type="Single" />
-    <property name="Displacement" type="Single" />
-  </block>
-  <block type="Sandbox.ModAPI.Ingame.IMyBeacon">
-    <action name="OnOff" text="Toggle block On/Off" />
-    <action name="OnOff_On" text="Toggle block On" />
-    <action name="OnOff_Off" text="Toggle block Off" />
-    <action name="ShowOnHUD" text="Show on HUD On/Off" />
-    <action name="ShowOnHUD_On" text="Show on HUD On" />
-    <action name="ShowOnHUD_Off" text="Show on HUD Off" />
-    <action name="IncreaseRadius" text="Increase Broadcast radius" />
-    <action name="DecreaseRadius" text="Decrease Broadcast radius" />
-    <property name="OnOff" type="Boolean" />
-    <property name="ShowInTerminal" type="Boolean" />
-    <property name="ShowInInventory" type="Boolean" />
-    <property name="ShowInToolbarConfig" type="Boolean" />
-    <property name="CustomName" type="StringBuilder" />
-    <property name="HudText" type="StringBuilder" />
-    <property name="Radius" type="Single" />
-  </block>
-  <block type="Sandbox.ModAPI.Ingame.IMyAssembler">
-    <action name="OnOff" text="Toggle block On/Off" />
-    <action name="OnOff_On" text="Toggle block On" />
-    <action name="OnOff_Off" text="Toggle block Off" />
-    <action name="ShowOnHUD" text="Show on HUD On/Off" />
-    <action name="ShowOnHUD_On" text="Show on HUD On" />
-    <action name="ShowOnHUD_Off" text="Show on HUD Off" />
-    <action name="UseConveyor" text="Use Conveyor System On/Off" />
-    <action name="slaveMode" text="Cooperative Mode On/Off" />
-    <property name="OnOff" type="Boolean" />
-    <property name="ShowInTerminal" type="Boolean" />
-    <property name="ShowInInventory" type="Boolean" />
-    <property name="ShowInToolbarConfig" type="Boolean" />
-    <property name="Name" type="StringBuilder" />
-    <property name="ShowOnHUD" type="Boolean" />
-    <property name="UseConveyor" type="Boolean" />
-    <property name="slaveMode" type="Boolean" />
-  </block>
   <block type="Sandbox.ModAPI.Ingame.IMyOreDetector">
     <action name="OnOff" text="Toggle block On/Off" />
     <action name="OnOff_On" text="Toggle block On" />
@@ -1390,40 +1349,49 @@
     <property name="ShowOnHUD" type="Boolean" />
     <property name="UseConveyor" type="Boolean" />
   </block>
-  <block type="Sandbox.ModAPI.Ingame.IMyTextPanel">
+  <block type="Sandbox.ModAPI.Ingame.IMyWarhead">
+    <action name="ShowOnHUD" text="Show on HUD On/Off" />
+    <action name="ShowOnHUD_On" text="Show on HUD On" />
+    <action name="ShowOnHUD_Off" text="Show on HUD Off" />
+    <action name="IncreaseDetonationTime" text="Increase Detonation time" />
+    <action name="DecreaseDetonationTime" text="Decrease Detonation time" />
+    <action name="StartCountdown" text="Start countdown" />
+    <action name="StopCountdown" text="Stop countdown" />
+    <action name="Safety" text="Arm warhead On/Off" />
+    <action name="Detonate" text="Detonate" />
+    <property name="ShowInTerminal" type="Boolean" />
+    <property name="ShowInInventory" type="Boolean" />
+    <property name="ShowInToolbarConfig" type="Boolean" />
+    <property name="Name" type="StringBuilder" />
+    <property name="ShowOnHUD" type="Boolean" />
+    <property name="DetonationTime" type="Single" />
+    <property name="Safety" type="Boolean" />
+  </block>
+  <block type="Sandbox.ModAPI.Ingame.IMyShipConnector">
     <action name="OnOff" text="Toggle block On/Off" />
     <action name="OnOff_On" text="Toggle block On" />
     <action name="OnOff_Off" text="Toggle block Off" />
     <action name="ShowOnHUD" text="Show on HUD On/Off" />
     <action name="ShowOnHUD_On" text="Show on HUD On" />
     <action name="ShowOnHUD_Off" text="Show on HUD Off" />
-    <action name="IncreaseFontSize" text="Increase Font Size" />
-    <action name="DecreaseFontSize" text="Decrease Font Size" />
-    <action name="IncreaseTextPaddingSlider" text="Increase Text Padding" />
-    <action name="DecreaseTextPaddingSlider" text="Decrease Text Padding" />
-    <action name="IncreaseChangeIntervalSlider" text="Increase Image change interval" />
-    <action name="DecreaseChangeIntervalSlider" text="Decrease Image change interval" />
-    <action name="PreserveAspectRatio" text="Preserve aspect ratio On/Off" />
+    <action name="ThrowOut" text="Throw Out On/Off" />
+    <action name="CollectAll" text="Collect All On/Off" />
+    <action name="Lock" text="Lock" />
+    <action name="Unlock" text="Unlock" />
+    <action name="SwitchLock" text="Switch lock" />
+    <action name="IncreaseStrength" text="Increase Strength" />
+    <action name="DecreaseStrength" text="Decrease Strength" />
     <property name="OnOff" type="Boolean" />
     <property name="ShowInTerminal" type="Boolean" />
     <property name="ShowInInventory" type="Boolean" />
     <property name="ShowInToolbarConfig" type="Boolean" />
     <property name="Name" type="StringBuilder" />
     <property name="ShowOnHUD" type="Boolean" />
-    <property name="Title" type="StringBuilder" />
-    <property name="Content" type="Int64" />
-    <property name="ScriptForegroundColor" type="Color" />
-    <property name="ScriptBackgroundColor" type="Color" />
-    <property name="Font" type="Int64" />
-    <property name="FontSize" type="Single" />
-    <property name="FontColor" type="Color" />
-    <property name="alignment" type="Int64" />
-    <property name="TextPaddingSlider" type="Single" />
-    <property name="BackgroundColor" type="Color" />
-    <property name="ChangeIntervalSlider" type="Single" />
-    <property name="PreserveAspectRatio" type="Boolean" />
+    <property name="ThrowOut" type="Boolean" />
+    <property name="CollectAll" type="Boolean" />
+    <property name="Strength" type="Single" />
   </block>
-  <block type="Sandbox.ModAPI.Ingame.IMyOxygenGenerator">
+  <block type="Sandbox.ModAPI.Ingame.IMyCollector">
     <action name="OnOff" text="Toggle block On/Off" />
     <action name="OnOff_On" text="Toggle block On" />
     <action name="OnOff_Off" text="Toggle block Off" />
@@ -1431,8 +1399,6 @@
     <action name="ShowOnHUD_On" text="Show on HUD On" />
     <action name="ShowOnHUD_Off" text="Show on HUD Off" />
     <action name="UseConveyor" text="Use Conveyor System On/Off" />
-    <action name="Refill" text="Refill Bottles" />
-    <action name="Auto-Refill" text="Auto-Refill On/Off" />
     <property name="OnOff" type="Boolean" />
     <property name="ShowInTerminal" type="Boolean" />
     <property name="ShowInInventory" type="Boolean" />
@@ -1440,63 +1406,6 @@
     <property name="Name" type="StringBuilder" />
     <property name="ShowOnHUD" type="Boolean" />
     <property name="UseConveyor" type="Boolean" />
-    <property name="Auto-Refill" type="Boolean" />
-  </block>
-  <block type="Sandbox.ModAPI.Ingame.IMyOxygenTank">
-    <action name="OnOff" text="Toggle block On/Off" />
-    <action name="OnOff_On" text="Toggle block On" />
-    <action name="OnOff_Off" text="Toggle block Off" />
-    <action name="ShowOnHUD" text="Show on HUD On/Off" />
-    <action name="ShowOnHUD_On" text="Show on HUD On" />
-    <action name="ShowOnHUD_Off" text="Show on HUD Off" />
-    <action name="Stockpile" text="Stockpile On/Off" />
-    <action name="Stockpile_On" text="Stockpile On" />
-    <action name="Stockpile_Off" text="Stockpile Off" />
-    <action name="Refill" text="Refill Bottles" />
-    <action name="Auto-Refill" text="Auto-Refill On/Off" />
-    <property name="OnOff" type="Boolean" />
-    <property name="ShowInTerminal" type="Boolean" />
-    <property name="ShowInInventory" type="Boolean" />
-    <property name="ShowInToolbarConfig" type="Boolean" />
-    <property name="Name" type="StringBuilder" />
-    <property name="ShowOnHUD" type="Boolean" />
-    <property name="Stockpile" type="Boolean" />
-    <property name="Auto-Refill" type="Boolean" />
-  </block>
-  <block type="Sandbox.ModAPI.Ingame.IMyProgrammableBlock">
-    <action name="OnOff" text="Toggle block On/Off" />
-    <action name="OnOff_On" text="Toggle block On" />
-    <action name="OnOff_Off" text="Toggle block Off" />
-    <action name="ShowOnHUD" text="Show on HUD On/Off" />
-    <action name="ShowOnHUD_On" text="Show on HUD On" />
-    <action name="ShowOnHUD_Off" text="Show on HUD Off" />
-    <action name="Run" text="Run" />
-    <action name="RunWithDefaultArgument" text="Run with default argument" />
-    <action name="IncreaseFontSize" text="Increase Font Size" />
-    <action name="DecreaseFontSize" text="Decrease Font Size" />
-    <action name="IncreaseTextPaddingSlider" text="Increase Text Padding" />
-    <action name="DecreaseTextPaddingSlider" text="Decrease Text Padding" />
-    <action name="IncreaseChangeIntervalSlider" text="Increase Image change interval" />
-    <action name="DecreaseChangeIntervalSlider" text="Decrease Image change interval" />
-    <action name="PreserveAspectRatio" text="Preserve aspect ratio On/Off" />
-    <property name="OnOff" type="Boolean" />
-    <property name="ShowInTerminal" type="Boolean" />
-    <property name="ShowInInventory" type="Boolean" />
-    <property name="ShowInToolbarConfig" type="Boolean" />
-    <property name="Name" type="StringBuilder" />
-    <property name="ShowOnHUD" type="Boolean" />
-    <property name="ConsoleCommand" type="StringBuilder" />
-    <property name="Content" type="Int64" />
-    <property name="ScriptForegroundColor" type="Color" />
-    <property name="ScriptBackgroundColor" type="Color" />
-    <property name="Font" type="Int64" />
-    <property name="FontSize" type="Single" />
-    <property name="FontColor" type="Color" />
-    <property name="alignment" type="Int64" />
-    <property name="TextPaddingSlider" type="Single" />
-    <property name="BackgroundColor" type="Color" />
-    <property name="ChangeIntervalSlider" type="Single" />
-    <property name="PreserveAspectRatio" type="Boolean" />
   </block>
   <block type="Sandbox.ModAPI.Ingame.IMyCryoChamber">
     <action name="ShowOnHUD" text="Show on HUD On/Off" />
@@ -1537,6 +1446,20 @@
     <property name="BackgroundColor" type="Color" />
     <property name="ChangeIntervalSlider" type="Single" />
     <property name="PreserveAspectRatio" type="Boolean" />
+  </block>
+  <block type="Sandbox.ModAPI.Ingame.IMyDecoy">
+    <action name="OnOff" text="Toggle block On/Off" />
+    <action name="OnOff_On" text="Toggle block On" />
+    <action name="OnOff_Off" text="Toggle block Off" />
+    <action name="ShowOnHUD" text="Show on HUD On/Off" />
+    <action name="ShowOnHUD_On" text="Show on HUD On" />
+    <action name="ShowOnHUD_Off" text="Show on HUD Off" />
+    <property name="OnOff" type="Boolean" />
+    <property name="ShowInTerminal" type="Boolean" />
+    <property name="ShowInInventory" type="Boolean" />
+    <property name="ShowInToolbarConfig" type="Boolean" />
+    <property name="Name" type="StringBuilder" />
+    <property name="ShowOnHUD" type="Boolean" />
   </block>
   <block type="Sandbox.ModAPI.Ingame.IMyExtendedPistonBase">
     <action name="OnOff" text="Toggle block On/Off" />
@@ -1582,6 +1505,46 @@
     <property name="MaxImpulseAxis" type="Single" />
     <property name="MaxImpulseNonAxis" type="Single" />
   </block>
+  <block type="Sandbox.ModAPI.Ingame.IMyOxygenGenerator">
+    <action name="OnOff" text="Toggle block On/Off" />
+    <action name="OnOff_On" text="Toggle block On" />
+    <action name="OnOff_Off" text="Toggle block Off" />
+    <action name="ShowOnHUD" text="Show on HUD On/Off" />
+    <action name="ShowOnHUD_On" text="Show on HUD On" />
+    <action name="ShowOnHUD_Off" text="Show on HUD Off" />
+    <action name="UseConveyor" text="Use Conveyor System On/Off" />
+    <action name="Refill" text="Refill Bottles" />
+    <action name="Auto-Refill" text="Auto-Refill On/Off" />
+    <property name="OnOff" type="Boolean" />
+    <property name="ShowInTerminal" type="Boolean" />
+    <property name="ShowInInventory" type="Boolean" />
+    <property name="ShowInToolbarConfig" type="Boolean" />
+    <property name="Name" type="StringBuilder" />
+    <property name="ShowOnHUD" type="Boolean" />
+    <property name="UseConveyor" type="Boolean" />
+    <property name="Auto-Refill" type="Boolean" />
+  </block>
+  <block type="Sandbox.ModAPI.Ingame.IMyOxygenTank">
+    <action name="OnOff" text="Toggle block On/Off" />
+    <action name="OnOff_On" text="Toggle block On" />
+    <action name="OnOff_Off" text="Toggle block Off" />
+    <action name="ShowOnHUD" text="Show on HUD On/Off" />
+    <action name="ShowOnHUD_On" text="Show on HUD On" />
+    <action name="ShowOnHUD_Off" text="Show on HUD Off" />
+    <action name="Stockpile" text="Stockpile On/Off" />
+    <action name="Stockpile_On" text="Stockpile On" />
+    <action name="Stockpile_Off" text="Stockpile Off" />
+    <action name="Refill" text="Refill Bottles" />
+    <action name="Auto-Refill" text="Auto-Refill On/Off" />
+    <property name="OnOff" type="Boolean" />
+    <property name="ShowInTerminal" type="Boolean" />
+    <property name="ShowInInventory" type="Boolean" />
+    <property name="ShowInToolbarConfig" type="Boolean" />
+    <property name="Name" type="StringBuilder" />
+    <property name="ShowOnHUD" type="Boolean" />
+    <property name="Stockpile" type="Boolean" />
+    <property name="Auto-Refill" type="Boolean" />
+  </block>
   <block type="Sandbox.ModAPI.Ingame.IMyPistonBase">
     <action name="OnOff" text="Toggle block On/Off" />
     <action name="OnOff_On" text="Toggle block On" />
@@ -1625,6 +1588,41 @@
     <property name="LowerLimit" type="Single" />
     <property name="MaxImpulseAxis" type="Single" />
     <property name="MaxImpulseNonAxis" type="Single" />
+  </block>
+  <block type="Sandbox.ModAPI.Ingame.IMyProgrammableBlock">
+    <action name="OnOff" text="Toggle block On/Off" />
+    <action name="OnOff_On" text="Toggle block On" />
+    <action name="OnOff_Off" text="Toggle block Off" />
+    <action name="ShowOnHUD" text="Show on HUD On/Off" />
+    <action name="ShowOnHUD_On" text="Show on HUD On" />
+    <action name="ShowOnHUD_Off" text="Show on HUD Off" />
+    <action name="Run" text="Run" />
+    <action name="RunWithDefaultArgument" text="Run with default argument" />
+    <action name="IncreaseFontSize" text="Increase Font Size" />
+    <action name="DecreaseFontSize" text="Decrease Font Size" />
+    <action name="IncreaseTextPaddingSlider" text="Increase Text Padding" />
+    <action name="DecreaseTextPaddingSlider" text="Decrease Text Padding" />
+    <action name="IncreaseChangeIntervalSlider" text="Increase Image change interval" />
+    <action name="DecreaseChangeIntervalSlider" text="Decrease Image change interval" />
+    <action name="PreserveAspectRatio" text="Preserve aspect ratio On/Off" />
+    <property name="OnOff" type="Boolean" />
+    <property name="ShowInTerminal" type="Boolean" />
+    <property name="ShowInInventory" type="Boolean" />
+    <property name="ShowInToolbarConfig" type="Boolean" />
+    <property name="Name" type="StringBuilder" />
+    <property name="ShowOnHUD" type="Boolean" />
+    <property name="ConsoleCommand" type="StringBuilder" />
+    <property name="Content" type="Int64" />
+    <property name="ScriptForegroundColor" type="Color" />
+    <property name="ScriptBackgroundColor" type="Color" />
+    <property name="Font" type="Int64" />
+    <property name="FontSize" type="Single" />
+    <property name="FontColor" type="Color" />
+    <property name="alignment" type="Int64" />
+    <property name="TextPaddingSlider" type="Single" />
+    <property name="BackgroundColor" type="Color" />
+    <property name="ChangeIntervalSlider" type="Single" />
+    <property name="PreserveAspectRatio" type="Boolean" />
   </block>
   <block type="Sandbox.ModAPI.Ingame.IMySensorBlock">
     <action name="OnOff" text="Toggle block On/Off" />
@@ -1703,34 +1701,37 @@
     <property name="Detect Neutral" type="Boolean" />
     <property name="Detect Enemy" type="Boolean" />
   </block>
-  <block type="Sandbox.ModAPI.Ingame.IMyCollector">
+  <block type="Sandbox.ModAPI.Ingame.IMyTextPanel">
     <action name="OnOff" text="Toggle block On/Off" />
     <action name="OnOff_On" text="Toggle block On" />
     <action name="OnOff_Off" text="Toggle block Off" />
     <action name="ShowOnHUD" text="Show on HUD On/Off" />
     <action name="ShowOnHUD_On" text="Show on HUD On" />
     <action name="ShowOnHUD_Off" text="Show on HUD Off" />
-    <action name="UseConveyor" text="Use Conveyor System On/Off" />
+    <action name="IncreaseFontSize" text="Increase Font Size" />
+    <action name="DecreaseFontSize" text="Decrease Font Size" />
+    <action name="IncreaseTextPaddingSlider" text="Increase Text Padding" />
+    <action name="DecreaseTextPaddingSlider" text="Decrease Text Padding" />
+    <action name="IncreaseChangeIntervalSlider" text="Increase Image change interval" />
+    <action name="DecreaseChangeIntervalSlider" text="Decrease Image change interval" />
+    <action name="PreserveAspectRatio" text="Preserve aspect ratio On/Off" />
     <property name="OnOff" type="Boolean" />
     <property name="ShowInTerminal" type="Boolean" />
     <property name="ShowInInventory" type="Boolean" />
     <property name="ShowInToolbarConfig" type="Boolean" />
     <property name="Name" type="StringBuilder" />
     <property name="ShowOnHUD" type="Boolean" />
-    <property name="UseConveyor" type="Boolean" />
-  </block>
-  <block type="Sandbox.ModAPI.Ingame.IMyDecoy">
-    <action name="OnOff" text="Toggle block On/Off" />
-    <action name="OnOff_On" text="Toggle block On" />
-    <action name="OnOff_Off" text="Toggle block Off" />
-    <action name="ShowOnHUD" text="Show on HUD On/Off" />
-    <action name="ShowOnHUD_On" text="Show on HUD On" />
-    <action name="ShowOnHUD_Off" text="Show on HUD Off" />
-    <property name="OnOff" type="Boolean" />
-    <property name="ShowInTerminal" type="Boolean" />
-    <property name="ShowInInventory" type="Boolean" />
-    <property name="ShowInToolbarConfig" type="Boolean" />
-    <property name="Name" type="StringBuilder" />
-    <property name="ShowOnHUD" type="Boolean" />
+    <property name="Title" type="StringBuilder" />
+    <property name="Content" type="Int64" />
+    <property name="ScriptForegroundColor" type="Color" />
+    <property name="ScriptBackgroundColor" type="Color" />
+    <property name="Font" type="Int64" />
+    <property name="FontSize" type="Single" />
+    <property name="FontColor" type="Color" />
+    <property name="alignment" type="Int64" />
+    <property name="TextPaddingSlider" type="Single" />
+    <property name="BackgroundColor" type="Color" />
+    <property name="ChangeIntervalSlider" type="Single" />
+    <property name="PreserveAspectRatio" type="Boolean" />
   </block>
 </terminals>
