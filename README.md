@@ -1,7 +1,7 @@
 # MDK-SE
-(Malware's Development Kit for SE)
+_(Malware's Development Kit for SE)_
 
-----
+- - -
 
 A toolkit to help with ingame script (programmable block) development for Keen Software House's space sandbox Space Engineers. It helps you create a ready-to-code project for writing ingame scripts, and provides an analyzer which warns you if you're trying to use something that is not allowed in Space Engineers.
 
@@ -21,5 +21,7 @@ A toolkit to help with ingame script (programmable block) development for Keen S
 * [Quick Introduction to Space Engineers Ingame Scripts](https://github.com/malware-dev/MDK-SE/wiki/Quick-Introduction-to-Space-Engineers-Ingame-Scripts)  
   (You don't have to use the extension to get something out of this guide)
 * [Contributing to MDK](https://github.com/malware-dev/MDK-SE/blob/master/CONTRIBUTING.md)
+
+- - -
 
 Space Engineers is trademarked to Keen Software House. This toolkit is fan-made, and its developer has no relation to Keen Software House.

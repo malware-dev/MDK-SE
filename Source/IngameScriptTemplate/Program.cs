@@ -51,7 +51,7 @@ namespace IngameScript
             // The constructor is optional and can be removed if not
             // needed.
             // 
-            // It's recommended to set RuntimeInfo.UpdateFrequency 
+            // It's recommended to set Runtime.UpdateFrequency 
             // here, which will allow your script to run itself without a 
             // timer block.
         }
