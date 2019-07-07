@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
@@ -56,7 +54,22 @@ namespace MDK.VisualStudio
         /// <summary>
         /// Gets the current solution status
         /// </summary>
-        public SolutionStatus Status { get; private set; }
+        public SolutionStatus Status
+        {
+            get
+            {
+                _solutionCtl.GetProperty((int)__VSPROPID4.VSPROPID_IsSolutionFullyLoaded, out var isFullyLoadedV); 
+                _solutionCtl.GetProperty((int)__VSPROPID.VSPROPID_IsSolutionOpening, out var isOpeningV); 
+                _solutionCtl.GetProperty((int)__VSPROPID2.VSPROPID_IsSolutionClosing, out var isClosingV);
+                if ((bool)isOpeningV)
+                    return SolutionStatus.Loading;
+                if ((bool)isClosingV)
+                    return SolutionStatus.Closing;
+                if ((bool)isFullyLoadedV)
+                    return SolutionStatus.Loaded;
+                return SolutionStatus.Closed;
+            }
+        }
 
         /// <inheritdoc />
         ~SolutionManager()
@@ -84,9 +97,6 @@ namespace MDK.VisualStudio
             _solutionCtl.UnadviseSolutionEvents(_solutionEventsCookie);
         }
 
-        ConcurrentQueue<Action> _recordedEvents = new ConcurrentQueue<Action>();
-        bool _recordEvents = false;
-
         int IVsSolutionEvents.OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)
         {
             // I cannot rely on the fAdded argument, because it's behavior changes between normal and lightweight solution load,
@@ -99,90 +109,70 @@ namespace MDK.VisualStudio
             if (project == null)
                 return VSConstants.S_OK;
 
-            void raiseEvent() => OnProjectLoaded((Project)objProj, Status != SolutionStatus.Loading);
-
-            if (_recordEvents)
-                _recordedEvents.Enqueue(raiseEvent);
-            else
-                raiseEvent();
+            OnProjectLoaded((Project)objProj, Status != SolutionStatus.Loading);
 
             return VSConstants.S_OK;
         }
 
         int IVsSolutionEvents.OnQueryCloseProject(IVsHierarchy pHierarchy, int fRemoving, ref int pfCancel)
         {
-            return VSConstants.S_OK;
+            return VSConstants.E_NOTIMPL;
         }
 
         int IVsSolutionEvents.OnBeforeCloseProject(IVsHierarchy pHierarchy, int fRemoved)
         {
-            return VSConstants.S_OK;
+            return VSConstants.E_NOTIMPL;
         }
 
         int IVsSolutionEvents.OnAfterLoadProject(IVsHierarchy pStubHierarchy, IVsHierarchy pRealHierarchy)
         {
-            return VSConstants.S_OK;
+            return VSConstants.E_NOTIMPL;
         }
 
         int IVsSolutionEvents.OnQueryUnloadProject(IVsHierarchy pRealHierarchy, ref int pfCancel)
         {
-            return VSConstants.S_OK;
+            return VSConstants.E_NOTIMPL;
         }
 
         int IVsSolutionEvents.OnBeforeUnloadProject(IVsHierarchy pRealHierarchy, IVsHierarchy pStubHierarchy)
         {
-            return VSConstants.S_OK;
+            return VSConstants.E_NOTIMPL;
         }
 
         int IVsSolutionEvents.OnAfterOpenSolution(object pUnkReserved, int fNewSolution)
         {
-            return VSConstants.S_OK;
+            return VSConstants.E_NOTIMPL;
         }
 
         int IVsSolutionEvents.OnQueryCloseSolution(object pUnkReserved, ref int pfCancel)
         {
-            return VSConstants.S_OK;
+            return VSConstants.E_NOTIMPL;
         }
 
         int IVsSolutionEvents.OnBeforeCloseSolution(object pUnkReserved)
         {
-            void raiseEvent() => OnSolutionClosing();
-
-            if (_recordEvents)
-                _recordedEvents.Enqueue(raiseEvent);
-            else
-                raiseEvent();
+            OnSolutionClosing();
 
             return VSConstants.S_OK;
         }
 
         int IVsSolutionEvents.OnAfterCloseSolution(object pUnkReserved)
         {
-            void raiseEvent() => OnSolutionClosed();
-
-            if (_recordEvents)
-                _recordedEvents.Enqueue(raiseEvent);
-            else
-                raiseEvent();
+            OnSolutionClosed();
 
             return VSConstants.S_OK;
         }
 
         int IVsSolutionLoadEvents.OnBeforeOpenSolution(string pszSolutionFilename)
         {
-            void raiseEvent() => OnSolutionLoading();
-
-            if (_recordEvents)
-                _recordedEvents.Enqueue(raiseEvent);
-            else
-                raiseEvent();
+            OnSolutionLoading();
 
             return VSConstants.S_OK;
         }
 
         int IVsSolutionLoadEvents.OnBeforeBackgroundSolutionLoadBegins()
         {
-            return VSConstants.S_OK;
+            return VSConstants.E_NOTIMPL;
         }
 
         int IVsSolutionLoadEvents.OnQueryBackgroundLoadProjectBatch(out bool pfShouldDelayLoadToNextIdle)
@@ -193,22 +183,17 @@ namespace MDK.VisualStudio
 
         int IVsSolutionLoadEvents.OnBeforeLoadProjectBatch(bool fIsBackgroundIdleBatch)
         {
-            return VSConstants.S_OK;
+            return VSConstants.E_NOTIMPL;
         }
 
         int IVsSolutionLoadEvents.OnAfterLoadProjectBatch(bool fIsBackgroundIdleBatch)
         {
-            return VSConstants.S_OK;
+            return VSConstants.E_NOTIMPL;
         }
 
         int IVsSolutionLoadEvents.OnAfterBackgroundSolutionLoadComplete()
         {
-            void raiseEvent() => OnSolutionLoaded();
-
-            if (_recordEvents)
-                _recordedEvents.Enqueue(raiseEvent);
-            else
-                raiseEvent();
+            OnSolutionLoaded();
 
             return VSConstants.S_OK;
         }
@@ -218,7 +203,6 @@ namespace MDK.VisualStudio
         /// </summary>
         protected virtual void OnSolutionLoading()
         {
-            Status = SolutionStatus.Loading;
             SolutionLoading?.Invoke(this, EventArgs.Empty);
         }
 
@@ -227,7 +211,6 @@ namespace MDK.VisualStudio
         /// </summary>
         protected virtual void OnSolutionLoaded()
         {
-            Status = SolutionStatus.Loaded;
             SolutionLoaded?.Invoke(this, EventArgs.Empty);
         }
 
@@ -236,7 +219,6 @@ namespace MDK.VisualStudio
         /// </summary>
         protected virtual void OnSolutionClosing()
         {
-            Status = SolutionStatus.Closing;
             SolutionClosing?.Invoke(this, EventArgs.Empty);
         }
 
@@ -245,7 +227,6 @@ namespace MDK.VisualStudio
         /// </summary>
         protected virtual void OnSolutionClosed()
         {
-            Status = SolutionStatus.Closed;
             SolutionClosed?.Invoke(this, EventArgs.Empty);
         }
 
@@ -257,37 +238,6 @@ namespace MDK.VisualStudio
         protected virtual void OnProjectLoaded(Project project, bool isStandalone)
         {
             ProjectLoaded?.Invoke(this, new ProjectLoadedEventArgs(project, isStandalone));
-        }
-
-        /// <summary>
-        /// Begins suppressing and recording all incoming events for later playback.
-        /// </summary>
-        public void BeginRecording()
-        {
-            _recordEvents = true;
-        }
-
-        /// <summary>
-        /// Ends suppression and recording of all incoming events.
-        /// </summary>
-        /// <param name="playback">If <c>true</c>, playback all events immediately. Otherwise the queue remains filled for later manual playback.</param>
-        public void EndRecording(bool playback = true)
-        {
-            _recordEvents = false;
-            if (playback)
-                Playback();
-        }
-        
-        /// <summary>
-        /// Plays back all recorded events.
-        /// </summary>
-        public void Playback()
-        {
-            while (!_recordedEvents.IsEmpty)
-            {
-                if (_recordedEvents.TryDequeue(out var action))
-                    action();
-            }
         }
     }
 }

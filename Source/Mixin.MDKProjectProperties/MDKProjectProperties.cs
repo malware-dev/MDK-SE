@@ -21,13 +21,16 @@ namespace Malware.MDKServices
         /// <param name="projectFileName">The file name of this project</param>
         /// <param name="projectName">The display name of this project</param>
         /// <returns></returns>
-        public static MDKProjectProperties Load([NotNull] string projectFileName, string projectName = null)
+        public static MDKProjectProperties Load([NotNull] string projectFileName, string projectName = null, Action<string> echo = null)
         {
             if (string.IsNullOrEmpty(projectFileName))
                 throw new ArgumentException("Value cannot be null or empty.", nameof(projectFileName));
 
             if (!File.Exists(projectFileName) || Regex.IsMatch(projectFileName, @"\w+://"))
+            {
+                echo?.Invoke($"{projectFileName} does not exist, or it's a network file (not supported)");
                 return new MDKProjectProperties(projectFileName, null, null, null);
+            }
 
             var fileName = Path.GetFullPath(projectFileName);
             var name = projectName ?? Path.GetFileNameWithoutExtension(projectFileName);
@@ -42,16 +45,19 @@ namespace Malware.MDKServices
                 options = MDKProjectOptions.Load(mdkOptionsFileName);
                 paths = MDKProjectPaths.Load(mdkPathsFileName);
 
+                echo?.Invoke($"{projectName ?? projectFileName} is a valid MDK project.");
                 return new MDKProjectProperties(projectFileName, name, options, paths);
             }
 
             if (File.Exists(legacyOptionsFileName))
             {
+                echo?.Invoke($"{projectName ?? projectFileName} is a legacy MDK project.");
                 ImportLegacy_1_1(projectFileName, ref options, mdkOptionsFileName, ref paths, mdkPathsFileName);
                 if (options != null && paths != null)
                     return new MDKProjectProperties(projectFileName, name, options, paths);
             }
 
+            echo?.Invoke($"{projectName ?? projectFileName} not an MDK project.");
             return new MDKProjectProperties(projectFileName, null, null, null);
         }
 

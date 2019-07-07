@@ -33,35 +33,58 @@ namespace Malware.MDKServices
 
         static HealthAnalysis Analyze(Project project, HealthAnalysisOptions options)
         {
+            options.Echo?.Invoke("Analyzing project...");
             if (!project.IsLoaded())
+            {
+                options.Echo?.Invoke("Project is not loaded.");
                 return new HealthAnalysis(project, null, options);
-            var projectInfo = MDKProjectProperties.Load(project.FullName, project.Name);
+            }
+
+            var projectInfo = MDKProjectProperties.Load(project.FullName, project.Name, options.Echo);
             if (!projectInfo.IsValid && !(projectInfo.Options?.IsValid ?? false))
+            {
+                options.Echo?.Invoke($"{project.Name} contains invalid data.");
                 return new HealthAnalysis(project, null, options);
+            }
 
             var analysis = new HealthAnalysis(project, projectInfo, options);
             if (projectInfo.Options.Version < new Version(1, 2))
-                analysis._problems.Add(new HealthProblem(HealthCode.Outdated, HealthSeverity.Critical, "This project format is outdated."));
+            {
+                options.Echo?.Invoke($"{project.Name}: This project format is outdated.");
+                analysis._problems.Add(new HealthProblem(HealthCode.Outdated, HealthSeverity.Critical, "This project format is outdated"));
+            }
 
             var whitelistFileName = Path.Combine(Path.GetDirectoryName(project.FullName), "mdk\\whitelist.cache");
 
             if (!projectInfo.Paths.IsValid)
+            {
+                options.Echo?.Invoke($"{project.Name}: Missing paths file.");
                 analysis._problems.Add(new HealthProblem(HealthCode.MissingPathsFile, HealthSeverity.Critical, "Missing paths file"));
+            }
             else
             {
                 var installPath = projectInfo.Paths.InstallPath.TrimEnd('/', '\\');
                 var expectedInstallPath = options.InstallPath.TrimEnd('/', '\\');
 
                 if (!string.Equals(installPath, expectedInstallPath, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    options.Echo?.Invoke($"{project.Name}: Invalid install path.");
                     analysis._problems.Add(new HealthProblem(HealthCode.BadInstallPath, HealthSeverity.Warning, "Invalid install path"));
+                }
 
                 var vrageRef = Path.Combine(projectInfo.Paths.GameBinPath, "vrage.dll");
                 if (!File.Exists(vrageRef))
+                {
+                    options.Echo?.Invoke($"{project.Name}: Invalid game path.");
                     analysis._problems.Add(new HealthProblem(HealthCode.BadGamePath, HealthSeverity.Critical, "Invalid game path"));
+                }
 
                 var outputPath = projectInfo.Paths.OutputPath.TrimEnd('/', '\\');
                 if (!Directory.Exists(outputPath))
+                {
+                    options.Echo?.Invoke($"{project.Name}: Invalid output path.");
                     analysis._problems.Add(new HealthProblem(HealthCode.BadOutputPath, HealthSeverity.Warning, "Invalid output path"));
+                }
 
                 var whitelistCacheFileName = Path.Combine(expectedInstallPath, "Analyzers\\whitelist.cache");
                 if (File.Exists(whitelistCacheFileName))
@@ -69,12 +92,18 @@ namespace Malware.MDKServices
                     var cacheDate = File.GetLastWriteTime(whitelistCacheFileName);
                     var currentDate = File.GetLastWriteTime(whitelistFileName);
                     if (cacheDate > currentDate)
+                    {
+                        options.Echo?.Invoke($"{project.Name}: The whitelist cache must be updated.");
                         analysis._problems.Add(new HealthProblem(HealthCode.OutdatedWhitelist, HealthSeverity.Warning, "The whitelist cache must be updated"));
+                    }
                 }
             }
 
             if (!File.Exists(whitelistFileName))
+            {
+                options.Echo?.Invoke($"{project.Name}: Missing Whitelist Cache.");
                 analysis._problems.Add(new HealthProblem(HealthCode.MissingWhitelist, HealthSeverity.Critical, "Missing Whitelist Cache"));
+            }
 
             return analysis;
         }
@@ -97,7 +126,10 @@ namespace Malware.MDKServices
             IsMDKProject = properties != null;
             Problems = new ReadOnlyCollection<HealthProblem>(_problems);
             if (!IsMDKProject)
+            {
+                analysisOptions.Echo?.Invoke($"{project.Name}: This is not an MDK project.");
                 _problems.Add(new HealthProblem(HealthCode.NotAnMDKProject, HealthSeverity.Critical, "This is not an MDK project."));
+            }
         }
 
         /// <summary>

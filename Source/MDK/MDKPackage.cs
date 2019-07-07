@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using EnvDTE;
+using EnvDTE80;
 using Malware.MDKServices;
 using MDK.Build;
 using MDK.Commands;
@@ -109,11 +110,8 @@ namespace MDK
         protected override async System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
             await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+            Echo("Initializing MDK");
             _solutionManager = new SolutionManager(this);
-            _solutionManager.BeginRecording();
-            _solutionManager.ProjectLoaded += OnProjectLoaded;
-            _solutionManager.SolutionLoaded += OnSolutionLoaded;
-            _solutionManager.SolutionClosed += OnSolutionClosed;
 
             // Make sure the dialog page is loaded, since the options are needed in other threads and not preloading it 
             // here will cause a threading exception.
@@ -141,9 +139,17 @@ namespace MDK
             UpdateDetectedDialog.ShowDialog(new UpdateDetectedDialogModel(detectedVersion));
         }
 
-        void OnShellActivated()
+        async void OnShellActivated()
         {
-            _solutionManager.EndRecording();
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
+            if (_solutionManager.Status == SolutionStatus.Loaded)
+            {
+                Echo("A solution is already loaded on start");
+                OnSolutionLoaded(DTE.Solution);
+            }
+            _solutionManager.ProjectLoaded += OnProjectLoaded;
+            _solutionManager.SolutionLoaded += OnSolutionLoaded;
+            _solutionManager.SolutionClosed += OnSolutionClosed;
         }
 
         void OnSolutionClosed(object sender, EventArgs e)
@@ -153,6 +159,7 @@ namespace MDK
 
         void OnSolutionLoaded(object sender, EventArgs e)
         {
+            Echo("Detected the loading of a solution");
             OnSolutionLoaded(DTE.Solution);
         }
 
@@ -164,6 +171,7 @@ namespace MDK
 
         async void OnProjectLoaded(Project project)
         {
+            Echo("Detected the loading of a project");
             HealthAnalysis analysis;
             try
             {
@@ -273,7 +281,8 @@ namespace MDK
                 GameAssemblyNames = GameAssemblyNames,
                 GameFiles = GameFiles,
                 UtilityAssemblyNames = UtilityAssemblyNames,
-                UtilityFiles = UtilityFiles
+                UtilityFiles = UtilityFiles,
+                Echo = v => Echo(v)
             };
 
         void PresentAnalysisResults(params HealthAnalysis[] analysis)
@@ -410,6 +419,42 @@ namespace MDK
                 Log = exception.ToString()
             };
             ErrorDialog.ShowDialog(errorDialogModel);
+        }
+
+        static readonly Guid OutputGuid = new Guid("9D599C61-0B50-46FD-9230-7709866F32B7");
+
+        /// <summary>
+        /// Echoes output information to the MDK dev console.
+        /// </summary>
+        /// <param name="values"></param>
+        public void Echo(params object[] values)
+        {
+            string message;
+            if (values == null || values.Length == 0)
+                message = "";
+            else
+                message = string.Join(" ", values.Select(TranslateForEcho));
+
+            EchoAsync(message);
+        }
+
+        async void EchoAsync(string message)
+        {
+            var output =  (IVsOutputWindow)await GetServiceAsync(typeof(SVsOutputWindow));
+            var paneGuid = OutputGuid;
+            output.GetPane(ref paneGuid, out var pane);
+            if (pane == null)
+            {
+                output.CreatePane(ref paneGuid, "MDK Dev Console", 1, 1);
+                output.GetPane(ref paneGuid, out pane);
+            }
+
+            pane.OutputString($"{message}\n");
+        }
+
+        string TranslateForEcho(object value)
+        {
+            return (value == null) ? "(null)" : value.ToString();
         }
     }
 }

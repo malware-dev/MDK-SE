@@ -47,5 +47,10 @@ namespace Malware.MDKServices
         /// A list of the utility files included by script projects
         /// </summary>
         public ImmutableArray<string> UtilityFiles;
+
+        /// <summary>
+        /// An optional method to echo progress
+        /// </summary>
+        public Action<string> Echo;
     }
 }
