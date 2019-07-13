@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Other>
-  <IsPrerelease>True</IsPrerelease>
+  <IsPrerelease>False</IsPrerelease>
   <HelpPageUrl>https://github.com/malware-dev/MDK-SE/wiki</HelpPageUrl>
   <ReleasePageUrl>https://github.com/malware-dev/MDK-SE/releases</ReleasePageUrl>
   <IssuesPageUrl>https://github.com/malware-dev/MDK-SE/issues</IssuesPageUrl>
