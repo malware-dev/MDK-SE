@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -160,7 +160,7 @@ namespace MDK.Build
         {
             var ident = new List<string>(10)
             {
-                typeDeclaration.Identifier.ToString()
+                $"{typeDeclaration.Identifier}{typeDeclaration.TypeParameterList}"
             };
             var parent = typeDeclaration.Parent;
             while (parent != null)
