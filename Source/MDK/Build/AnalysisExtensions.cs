@@ -53,6 +53,17 @@ namespace MDK.Build
         /// <returns></returns>
         public static string GetFullName(this ISymbol symbol, DeclarationFullNameFlags flags = DeclarationFullNameFlags.Default)
         {
+            if (symbol is INamedTypeSymbol namedType)
+            {
+              var declaratorSyntax = namedType
+                .DeclaringSyntaxReferences
+                .First()
+                .GetSyntax();
+              if (declaratorSyntax is TypeDeclarationSyntax typeDeclaration)
+              {
+                 return typeDeclaration.GetFullName(flags);
+              }
+            }
             var ident = new List<string>(10)
             {
                 symbol.Name
@@ -149,7 +160,7 @@ namespace MDK.Build
         {
             var ident = new List<string>(10)
             {
-                typeDeclaration.Identifier.ToString()
+                $"{typeDeclaration.Identifier}{typeDeclaration.TypeParameterList}"
             };
             var parent = typeDeclaration.Parent;
             while (parent != null)
