@@ -368,7 +368,9 @@ namespace MDK
                             DeployedScripts = deployedScripts,
                             CanShowMe = deployedScripts.Select(script => FormattedPath(script.Paths.OutputPath)).Distinct().Count() == 1
                         };
+#pragma warning disable 4014
                         bar.ShowAsync(ServiceProvider);
+#pragma warning restore 4014
                     }
                 }
                 else
