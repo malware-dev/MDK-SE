@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Xml;
+using System.Threading.Tasks;
 using System.Xml.Linq;
-using ParallelTasks;
 using Sandbox;
 using Sandbox.Game.Entities.Cube;
 using Sandbox.Game.World;
@@ -17,6 +14,7 @@ using Sandbox.ModAPI.Interfaces;
 using SpaceEngineers.Game;
 using VRage.Plugins;
 using VRage.Scripting;
+using VRage.Utils;
 using IMyFunctionalBlock = Sandbox.ModAPI.Ingame.IMyFunctionalBlock;
 using IMyTerminalBlock = Sandbox.ModAPI.Ingame.IMyTerminalBlock;
 
@@ -24,60 +22,78 @@ namespace Malware.MDKWhitelistExtractor
 {
     public class ExtractorPlugin : IPlugin
     {
+        const string ObjectBuilderPrefix = "MyObjectBuilder_";
         CommandLine _commandLine;
         bool _firstInit = true;
 
         public SpaceEngineersGame Game { get; private set; }
+
+        public void Dispose()
+        {
+        }
+
+        public void Init(object gameInstance)
+        {
+            _commandLine = new CommandLine(Environment.CommandLine);
+
+            Game = (SpaceEngineersGame) gameInstance;
+        }
+
+        public void Update()
+        {
+            if (_firstInit)
+            {
+                _firstInit = false;
+                MySession.AfterLoading += MySession_AfterLoading;
+                MySessionLoader.LoadInventoryScene();
+            }
+        }
 
         void WriteWhitelists(string[] targets)
         {
             var types = new List<string>();
             foreach (var item in MyScriptCompiler.Static.Whitelist.GetWhitelist())
             {
-                if (!item.Value.HasFlag(MyWhitelistTarget.Ingame))
-                {
-                    continue;
-                }
+                if (!item.Value.HasFlag(MyWhitelistTarget.Ingame)) continue;
                 types.Add(item.Key);
             }
+
             foreach (var target in targets)
                 File.WriteAllText(target, string.Join(Environment.NewLine, types));
         }
 
-        public void Dispose()
-        { }
-
-        public void Init(object gameInstance)
-        {
-            _commandLine = new CommandLine(Environment.CommandLine);
-
-            Game = (SpaceEngineersGame)gameInstance;
-        }
-
         void GrabTerminalActions(CommandLine commandLine)
         {
-            var targetsArgumentIndex = commandLine.IndexOf("-terminalcaches");
-            if (targetsArgumentIndex == -1 || targetsArgumentIndex == commandLine.Count - 1)
-                return;
-            var targetsArgument = commandLine[targetsArgumentIndex + 1];
-            var targets = targetsArgument.Split(';');
-
-            var gameAssembly = Game.GetType().Assembly;
-            var blockTypes = FindBlocks(gameAssembly).ToArray();
-            var blocks = new List<BlockInfo>();
-            foreach (var blockType in blockTypes)
+            try
             {
-                var instance = (IMyTerminalBlock)Activator.CreateInstance(blockType);
-                var actions = new List<ITerminalAction>(new List<ITerminalAction>());
-                var properties = new List<ITerminalProperty>();
-                instance.GetActions(actions);
-                instance.GetProperties(properties);
-                var blockInfo = new BlockInfo(blockType, FindInterface(blockType), actions, properties);
-                if (blockInfo.BlockInterfaceType != null)
-                    blocks.Add(blockInfo);
-            }
+                var targetsArgumentIndex = commandLine.IndexOf("-terminalcaches");
+                if (targetsArgumentIndex == -1 || targetsArgumentIndex == commandLine.Count - 1)
+                    return;
+                var targetsArgument = commandLine[targetsArgumentIndex + 1];
+                var targets = targetsArgument.Split(';');
 
-            WriteTerminals(blocks, targets);
+                var gameAssembly = Game.GetType().Assembly;
+                var blockTypes = FindBlocks(gameAssembly).ToArray();
+                var blocks = new List<BlockInfo>();
+                foreach (var blockType in blockTypes)
+                {
+                    var instance = (IMyTerminalBlock) Activator.CreateInstance(blockType);
+                    var actions = new List<ITerminalAction>(new List<ITerminalAction>());
+                    var properties = new List<ITerminalProperty>();
+                    instance.GetActions(actions);
+                    instance.GetProperties(properties);
+                    var blockInfo = new BlockInfo(blockType, FindTypeDefinition(blockType), FindInterface(blockType), actions, properties);
+                    if (blockInfo.BlockInterfaceType != null && blocks.All(b => b.BlockInterfaceType != blockInfo.BlockInterfaceType))
+                        blocks.Add(blockInfo);
+                }
+
+                WriteTerminals(blocks, targets);
+            }
+            catch (ReflectionTypeLoadException e)
+            {
+                foreach (var loaderException in e.LoaderExceptions) MyLog.Default.Error(loaderException.ToString());
+                throw;
+            }
         }
 
         void WriteTerminals(List<BlockInfo> blocks, string[] targets)
@@ -95,31 +111,43 @@ namespace Malware.MDKWhitelistExtractor
         {
             GrabWhitelist(_commandLine);
             GrabTerminalActions(_commandLine);
-            System.Threading.Tasks.Task.Run(async () =>
+            Task.Run(async () =>
             {
-                await System.Threading.Tasks.Task.Delay(TimeSpan.FromSeconds(5));
+                await Task.Delay(TimeSpan.FromSeconds(5));
                 MySandboxGame.ExitThreadSafe();
             });
         }
 
+        string FindTypeDefinition(Type block)
+        {
+            var attr = block.GetCustomAttribute<MyCubeBlockTypeAttribute>();
+            if (attr == null)
+                return null;
+            return attr.ObjectBuilderType.Name.StartsWith(ObjectBuilderPrefix) ? attr.ObjectBuilderType.Name.Substring(ObjectBuilderPrefix.Length) : attr.ObjectBuilderType.Name;
+        }
+
         Type FindInterface(Type block)
         {
-            var interfaces = block.GetInterfaces().Where(i => typeof(IMyTerminalBlock).IsAssignableFrom(i) && (i.Namespace?.EndsWith(".Ingame") ?? false)).ToArray();
-            var candidateInterfaces = interfaces.Where(iface =>
-                /* bad interface inheritance workaround */
-                    iface != typeof(IMyTerminalBlock) && iface != typeof(IMyFunctionalBlock) &&
-                    /* workaround end */
-                    !interfaces.Any(i => iface != i && iface.IsAssignableFrom(i))).ToArray();
-            return candidateInterfaces.SingleOrDefault();
+            var attr = block.GetCustomAttribute<MyTerminalInterfaceAttribute>();
+            return attr?.LinkedTypes.FirstOrDefault(l => l.Namespace?.EndsWith(".Ingame", StringComparison.OrdinalIgnoreCase) ?? false);
+            
+            //var interfaces = block.GetInterfaces().Where(i => typeof(IMyTerminalBlock).IsAssignableFrom(i) && (i.Namespace?.EndsWith(".Ingame") ?? false)).ToArray();
+            //var candidateInterfaces = interfaces.Where(iface =>
+            //    /* bad interface inheritance workaround */
+            //    iface != typeof(IMyTerminalBlock) && iface != typeof(IMyFunctionalBlock) &&
+            //    /* workaround end */
+            //    !interfaces.Any(i => iface != i && iface.IsAssignableFrom(i))).ToArray();
+            //return candidateInterfaces.SingleOrDefault();
         }
 
         IEnumerable<Type> FindBlocks(Assembly gameAssembly, HashSet<AssemblyName> visitedAssemblies = null)
         {
-            visitedAssemblies = visitedAssemblies ?? new HashSet<AssemblyName>(new AssemblyNameComparer());
+            visitedAssemblies ??= new HashSet<AssemblyName>(new AssemblyNameComparer());
             visitedAssemblies.Add(gameAssembly.GetName());
             var companyAttribute = gameAssembly.GetCustomAttribute<AssemblyCompanyAttribute>();
             if (companyAttribute?.Company == "Microsoft Corporation")
                 yield break;
+
             var types = gameAssembly.DefinedTypes.Where(type => type.HasAttribute<MyCubeBlockTypeAttribute>());
             foreach (var type in types)
             {
@@ -132,6 +160,7 @@ namespace Malware.MDKWhitelistExtractor
                     continue;
                 yield return type;
             }
+
             foreach (var assemblyName in gameAssembly.GetReferencedAssemblies())
             {
                 if (visitedAssemblies.Contains(assemblyName))
@@ -152,16 +181,6 @@ namespace Malware.MDKWhitelistExtractor
             WriteWhitelists(targets);
         }
 
-        public void Update()
-        {
-            if (_firstInit)
-            {
-                _firstInit = false;
-                MySession.AfterLoading += MySession_AfterLoading;
-                MySessionLoader.LoadInventoryScene();
-            }
-        }
-
         class AssemblyNameComparer : IEqualityComparer<AssemblyName>
         {
             public bool Equals(AssemblyName x, AssemblyName y)
@@ -177,15 +196,17 @@ namespace Malware.MDKWhitelistExtractor
 
         public class BlockInfo
         {
-            public BlockInfo(Type blockType, Type blockInterfaceType, List<ITerminalAction> actions, List<ITerminalProperty> properties)
+            public BlockInfo(Type blockType, string typeDefinition, Type blockInterfaceType, List<ITerminalAction> actions, List<ITerminalProperty> properties)
             {
                 BlockType = blockType;
+                TypeDefinition = typeDefinition;
                 BlockInterfaceType = blockInterfaceType;
                 Actions = new ReadOnlyCollection<ITerminalAction>(actions);
                 Properties = new ReadOnlyCollection<ITerminalProperty>(properties);
             }
 
             public Type BlockType { get; }
+            public string TypeDefinition { get; }
             public Type BlockInterfaceType { get; }
 
             public ReadOnlyCollection<ITerminalProperty> Properties { get; set; }
@@ -208,7 +229,7 @@ namespace Malware.MDKWhitelistExtractor
 
             public XElement ToXElement()
             {
-                var root = new XElement("block", new XAttribute("type", BlockInterfaceType.FullName ?? ""));
+                var root = new XElement("block", new XAttribute("type", BlockInterfaceType.FullName ?? ""), new XAttribute("typedefinition", TypeDefinition ?? ""));
                 foreach (var action in Actions)
                     root.Add(new XElement("action", new XAttribute("name", action.Id), new XAttribute("text", action.Name)));
                 foreach (var property in Properties)

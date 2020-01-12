@@ -63,6 +63,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Terminals.cs" />
+    <Compile Include="TypeDefinitions.cs" />
     <Compile Include="TypeExtensions.cs" />
     <Compile Include="Whitelist.cs" />
     <Compile Include="WhitelistAndTerminalCaches.cs" />
@@ -84,6 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="fixPak.zip" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MDKWhitelistExtractor\MDKWhitelistExtractor.csproj">
@@ -91,7 +93,23 @@
       <Name>MDKWhitelistExtractor</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <PackageReference Include="protobuf-net">
+      <Version>3.0.0-alpha.43</Version>
+    </PackageReference>
+    <PackageReference Include="System.Private.ServiceModel">
+      <Version>4.5.3</Version>
+    </PackageReference>
+    <PackageReference Include="System.Reflection.DispatchProxy">
+      <Version>4.5.1</Version>
+    </PackageReference>
+    <PackageReference Include="System.Security.Principal.Windows">
+      <Version>4.5.1</Version>
+    </PackageReference>
+    <PackageReference Include="System.ServiceModel.Primitives">
+      <Version>4.5.3</Version>
+    </PackageReference>
+  </ItemGroup>
   <Import Project="..\SteamAndSE\SteamAndSE.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

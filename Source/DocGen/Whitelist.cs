@@ -43,6 +43,8 @@ namespace DocGen
 
         public bool IsWhitelisted(Type type)
         {
+            if (type.IsGenericType && !type.IsGenericTypeDefinition)
+                type = type.GetGenericTypeDefinition();
             if (!IsWhitelisted(type.Assembly))
                 return false;
             return _entries.Any(key => key.IsMatch(type));

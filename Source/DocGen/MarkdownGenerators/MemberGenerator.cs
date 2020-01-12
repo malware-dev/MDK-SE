@@ -116,6 +116,10 @@ namespace DocGen.MarkdownGenerators
             await writer.EndCodeBlockAsync();
             if (overload.Documentation?.Summary != null)
                 await WriteDocumentation(api, overload.Documentation?.Summary, writer);
+            else
+            {
+
+            }
             if (methodInfo.ReturnType != typeof(void))
             {
                 await writer.WriteHeaderAsync(3, "Returns");

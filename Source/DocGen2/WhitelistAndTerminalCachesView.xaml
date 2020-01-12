@@ -1,0 +1,30 @@
+﻿<UserControl x:Class="Mal.DocGen2.WhitelistAndTerminalCachesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Mal.DocGen2"
+             mc:Ignorable="d"
+             Width="300"
+             BorderThickness="1" BorderBrush="LightGray"
+             d:DataContext="{d:DesignInstance local:WhitelistAndTerminalCachesViewModel}">
+    <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Border DockPanel.Dock="Top" Background="Black" Padding="8,4,8,4">
+            <TextBlock Foreground="White" FontWeight="Bold" FontSize="14">Update Whitelist and Terminal Cache</TextBlock>
+        </Border>
+        <DockPanel DockPanel.Dock="Bottom" Margin="8">
+            <Button DockPanel.Dock="Right" HorizontalAlignment="Right"
+                    Padding="16,0,16,0"
+                    Command="{Binding RunNowCommand}">
+                Run This
+            </Button>
+            <CheckBox>Run this when running all</CheckBox>
+        </DockPanel>
+        <TextBlock DockPanel.Dock="Bottom" Background="LightGray" Foreground="DarkSlateGray"
+                   Text="{Binding StatusText}" Margin="8" />
+        <TextBlock TextWrapping="Wrap" Margin="8">
+            This operation will start the game and use a plugin to extract certain information only available through a running game.
+            The plugin will shut town the game automatically when its job is complete.
+        </TextBlock>
+    </DockPanel>
+</UserControl>

@@ -241,7 +241,7 @@ namespace MDK.Build
             {
                 if (!triv.IsKind(SyntaxKind.WhitespaceTrivia))
                     return triv;
-
+                //return triv;
                 var loc = triv.GetLocation();
                 var ls = loc.GetLineSpan();
                 if (ls.StartLinePosition.Character != 0)

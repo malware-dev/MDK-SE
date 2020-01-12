@@ -27,9 +27,7 @@ namespace MDK.Build.Composers
         {
             var lines = str.Split('\n').ToList();
             for (var i = 0; i < lines.Count; i++)
-            {
                 lines[i] = lines[i].TrimEnd();
-            }
 
             while (lines.Count > 0 && lines.Last().Length == 0)
                 lines.RemoveAt(lines.Count - 1);

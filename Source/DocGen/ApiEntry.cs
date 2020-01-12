@@ -144,8 +144,8 @@ namespace DocGen
         static string XmlDocParameterStr(ProgrammableBlockApi api, ParameterInfo parameterInfo)
         {
             var type = parameterInfo.ParameterType.IsByRef || parameterInfo.ParameterType.IsPointer ? parameterInfo.ParameterType.GetElementType() : parameterInfo.ParameterType;
-            if (type.IsGenericType && !type.IsGenericTypeDefinition)
-                type = type.GetGenericTypeDefinition();
+            //if (type.IsGenericType && !type.IsGenericTypeDefinition)
+            //    type = type.GetGenericTypeDefinition();
             if (parameterInfo.ParameterType.IsByRef)
             {
                 if (type.FullName == null)
@@ -269,7 +269,7 @@ namespace DocGen
                 var prefix = "";
                 if (parameterInfo.Member.IsDefined(typeof(ExtensionAttribute), false) && index == 0)
                     prefix += "this\u00A0";
-                prefix += parameterInfo.ParameterType.IsByRef ? "ref\u00A0" : parameterInfo.ParameterType.IsPointer ? "*" : parameterInfo.IsOut ? "out\u00A0" : "";
+                prefix += parameterInfo.IsOut? "out\u00A0" : parameterInfo.ParameterType.IsPointer ? "*" : parameterInfo.ParameterType.IsByRef ? "ref\u00A0" : "";
                 var type = parameterInfo.ParameterType.IsByRef || parameterInfo.ParameterType.IsPointer ? parameterInfo.ParameterType.GetElementType() : parameterInfo.ParameterType;
                 segments.Add(prefix + Api.GetEntry(type, true).ToString(ForSubCalls(flags)));
             }
@@ -479,6 +479,10 @@ namespace DocGen
                 if (alias != null)
                     return alias;
             }
+
+            var nullableBase = Nullable.GetUnderlyingType(type);
+            if (nullableBase != null)
+                return $"{ToTypeString(nullableBase, flags)}?";
 
             var segments = new List<string>();
 

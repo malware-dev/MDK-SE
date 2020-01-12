@@ -10,7 +10,7 @@ namespace MDK
 	    /// <summary>
 		/// The current package version
 		/// </summary>
-		public static readonly Version Version = new Version("1.2.22");
+		public static readonly Version Version = new Version("1.2.23");
 
         /// <summary>
 		/// The required IDE version

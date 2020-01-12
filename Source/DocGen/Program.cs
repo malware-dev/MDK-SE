@@ -29,7 +29,7 @@ namespace DocGen
         async Task<int> Run(CommandLine commandLine)
         {
             var cts = new CancellationTokenSource();
-            var spinTask = Spin(cts.Token);
+            var spinTask = SpinAsync(cts.Token);
             try
             {
                 var path = Environment.CurrentDirectory;
@@ -66,7 +66,7 @@ namespace DocGen
             Terminals.Update(Path.Combine(path, "terminal.cache"), Path.Combine(output, "List-Of-Terminal-Properties-And-Actions.md"));
         }
 
-        async Task Spin(CancellationToken cancellationToken)
+        async Task SpinAsync(CancellationToken cancellationToken)
         {
             var l = Console.CursorLeft;
             var t = Console.CursorTop;
@@ -83,8 +83,7 @@ namespace DocGen
                 Console.SetCursorPosition(rl, rt);
                 try
                 {
-                    // ReSharper disable once MethodSupportsCancellation
-                    await Task.Delay(250);
+                    await Task.Delay(250, cancellationToken);
                 }
                 catch (TaskCanceledException)
                 {

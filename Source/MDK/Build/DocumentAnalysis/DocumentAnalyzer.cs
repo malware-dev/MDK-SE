@@ -160,9 +160,7 @@ namespace MDK.Build.DocumentAnalysis
                         i++;
                     node = node.WithOpenBraceToken(node.OpenBraceToken.WithTrailingTrivia(SyntaxFactory.EndOfLine("\n")));
                     if (i < trailingTrivia.Count)
-                    {
                         node = node.ReplaceNode(firstChild, firstChild.WithLeadingTrivia(firstChild.GetLeadingTrivia().InsertRange(0, trailingTrivia.Skip(i))));
-                    }
                 }
 
                 var lastChild = node.ChildNodes().LastOrDefault();
