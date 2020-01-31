@@ -164,8 +164,12 @@ namespace MDK.Build
                 var processor = new TypeTrimmer();
                 composition = await processor.ProcessAsync(composition, config);
             }
-
-            var composer = config.Options.Minify ? (ScriptComposer)new MinifyingComposer() : new DefaultComposer();
+            ScriptComposer composer;
+            switch (config.Options.MinifyLevel)
+            {
+                case MDKProjectOptions.MinificationLevel.Full: composer = (ScriptComposer)new MinifyingComposer(); break;
+                default: composer = new DefaultComposer(); break;
+            }
             var script = await ComposeScriptAsync(composition, composer, config).ConfigureAwait(false);
             Steps++;
 

@@ -36,8 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Sandbox.Common">
-      <HintPath>$(SEBinPath)\Sandbox.Common.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\..\..\..\Games\Steam\steamapps\common\SpaceEngineers\Bin64\Sandbox.Common.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

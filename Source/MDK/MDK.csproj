@@ -7,6 +7,10 @@
     </NuGetPackageImportStamp>
     <UseCodebase>true</UseCodebase>
     <TargetFrameworkProfile />
+    <!-- https://stackoverflow.com/questions/9281662/how-to-debug-visual-studio-extensions -->
+    <StartAction>Program</StartAction>
+    <StartProgram>$(DevEnvDir)\devenv.exe</StartProgram>
+    <StartArguments>/rootsuffix Exp</StartArguments>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>

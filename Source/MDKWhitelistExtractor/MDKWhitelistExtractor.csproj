@@ -47,31 +47,31 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="Sandbox.Common">
-      <HintPath>$(SEBinPath)\Sandbox.Common.dll</HintPath>
+      <HintPath>..\..\..\..\..\Games\Steam\steamapps\common\SpaceEngineers\Bin64\Sandbox.Common.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Sandbox.Game">
-      <HintPath>$(SEBinPath)\Sandbox.Game.dll</HintPath>
+      <HintPath>..\..\..\..\..\Games\Steam\steamapps\common\SpaceEngineers\Bin64\Sandbox.Game.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="SpaceEngineers.Game">
-      <HintPath>$(SEBinPath)\SpaceEngineers.Game.dll</HintPath>
+      <HintPath>..\..\..\..\..\Games\Steam\steamapps\common\SpaceEngineers\Bin64\SpaceEngineers.Game.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="VRage">
-      <HintPath>$(SEBinPath)\VRage.dll</HintPath>
+      <HintPath>..\..\..\..\..\Games\Steam\steamapps\common\SpaceEngineers\Bin64\VRage.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="VRage.Game">
-      <HintPath>$(SEBinPath)\VRage.Game.dll</HintPath>
+      <HintPath>..\..\..\..\..\Games\Steam\steamapps\common\SpaceEngineers\Bin64\VRage.Game.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="VRage.Library">
-      <HintPath>$(SEBinPath)\VRage.Library.dll</HintPath>
+      <HintPath>..\..\..\..\..\Games\Steam\steamapps\common\SpaceEngineers\Bin64\VRage.Library.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="VRage.Scripting">
-      <HintPath>$(SEBinPath)\VRage.Scripting.dll</HintPath>
+      <HintPath>..\..\..\..\..\Games\Steam\steamapps\common\SpaceEngineers\Bin64\VRage.Scripting.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
