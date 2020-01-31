@@ -167,7 +167,8 @@ namespace MDK.Build
             ScriptComposer composer;
             switch (config.Options.MinifyLevel)
             {
-                case MDKProjectOptions.MinificationLevel.Full: composer = (ScriptComposer)new MinifyingComposer(); break;
+                case MDKProjectOptions.MinificationLevel.Full: composer = new MinifyingComposer(); break;
+                case MDKProjectOptions.MinificationLevel.StripComments: composer = new StripCommentsComposer(); break;
                 default: composer = new DefaultComposer(); break;
             }
             var script = await ComposeScriptAsync(composition, composer, config).ConfigureAwait(false);

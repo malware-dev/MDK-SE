@@ -72,6 +72,8 @@
     <Compile Include="Build\Composers\Minifying\ModifierProtector.cs" />
     <Compile Include="Build\Annotations\PreserveDebugDumper.cs" />
     <Compile Include="Build\Composers\Minifying\SymbolRenamer.SymbolCharSet.cs" />
+    <Compile Include="Build\Composers\StripComments\CommentStripper.cs" />
+    <Compile Include="Build\Composers\StripComments\StripCommentsComposer.cs" />
     <Compile Include="Build\DocumentAnalysis\DocumentAnalysisResult.cs" />
     <Compile Include="Build\DocumentAnalysis\DocumentAnalyzer.cs" />
     <Compile Include="Build\DocumentAnalysis\ExtensionScriptPart.cs" />
