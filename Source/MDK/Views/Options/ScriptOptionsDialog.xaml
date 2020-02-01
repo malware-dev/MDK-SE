@@ -5,6 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:views="clr-namespace:MDK.Views"
+    xmlns:svcs="clr-namespace:Malware.MDKServices;assembly=MDKServices"
     xmlns:vs="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
     xmlns:local="clr-namespace:MDK.Views.Options"
     mc:Ignorable="d"
@@ -19,7 +20,9 @@
     Width="600"
     MinHeight="200"
     Height="200">
-
+    <Window.Resources>
+        <local:EnumToStringConverter x:Key="EnumToStringConverter" />
+    </Window.Resources>
     <Grid x:Name="Host" Margin="16"
           d:DataContext="{d:DesignInstance local:ScriptOptionsDialogModel}">
         <Grid.ColumnDefinitions>
@@ -64,10 +67,11 @@
             <ComboBox x:Name="MinifyLevelComboBox" Grid.Column="1" Grid.Row="3" VerticalAlignment="Center" Margin="2,2,0,2"
                   VerticalContentAlignment="Center" HorizontalAlignment="Left" Width="150"
                   ToolTip="Select script minification level"
-                  SelectedIndex="0" SelectedValuePath="Tag" SelectedValue="{Binding ActiveProject.Options.MinifyBinding, Mode=TwoWay}">
-                <ComboBoxItem Content="No changes" Tag="0"/>
-                <ComboBoxItem Content="Remove comments" Tag="1"/>
-                <ComboBoxItem Content="Full minification" Tag="255"/>
+                  SelectedIndex="0" SelectedValuePath="Tag" 
+                  SelectedValue="{Binding ActiveProject.Options.MinifyLevel, Mode=TwoWay, Converter={StaticResource EnumToStringConverter}, ConverterParameter={x:Type svcs:MinificationLevel}}">
+                <ComboBoxItem Content="No changes" Tag="None"/>
+                <ComboBoxItem Content="Remove comments" Tag="StripComments"/>
+                <ComboBoxItem Content="Full minification" Tag="Full"/>
             </ComboBox>
             <!--<CheckBox x:Name="MinifyCheckBox" 
                       Margin="2,8,2,2"

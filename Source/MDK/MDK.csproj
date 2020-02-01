@@ -135,6 +135,7 @@
     </Compile>
     <Compile Include="Views\MessageEventArgs.cs" />
     <Compile Include="Views\MessageEventType.cs" />
+    <Compile Include="Views\Options\EnumToStringConverter.cs" />
     <Compile Include="Views\ProjectHealth\Fixes\BackupFix.cs" />
     <Compile Include="Views\ProjectHealth\Fixes\BadOutputPathFix.cs" />
     <Compile Include="Views\ProjectHealth\Fixes\BadGamePathFix.cs" />

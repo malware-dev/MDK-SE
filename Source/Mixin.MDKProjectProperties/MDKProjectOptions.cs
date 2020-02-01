@@ -104,10 +104,15 @@ namespace Malware.MDKServices
 
             var namespaceElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKNamespace", nsm);
             var ns = ((string)namespaceElement)?.Trim();
-            var minifyElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKMinify/m:Level", nsm);
+
             MinificationLevel minify_level;
+            var minifyElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKMinify/m:Level", nsm);
+            var old_minifyElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKMinify/m:Enabled", nsm);
             if (!Enum.TryParse(((string)minifyElement ?? "None").Trim(), true, out minify_level))
-                minify_level = MinificationLevel.None;
+                minify_level = (string.Compare(((string)old_minifyElement ?? "no").Trim(), "yes", StringComparison.InvariantCultureIgnoreCase) == 0)
+                    ? MinificationLevel.Full
+                    : MinificationLevel.None;
+
             var trimTypesElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKTrimTypes/m:Enabled", nsm);
             var trimTypes = ((string)trimTypesElement ?? "no").Trim().Equals("yes", StringComparison.CurrentCultureIgnoreCase);
             var ignoredFolders = document.XPathSelectElements("./m:Project/m:PropertyGroup/m:MDKIgnore/m:Folder", nsm).Select(e => (string)e).ToArray();
@@ -130,20 +135,6 @@ namespace Malware.MDKServices
                     result.IgnoredFiles.Add(item);
             result.HasChanges = false;
             return result;
-        }
-        /// <summary> 
-        /// Describes script minification level. 
-        /// <para>Stored as enum item name, not as numeric value, in case a reordering/extension is needed.</para>
-        /// <para>However, due to complications with WPF, values of items in combobox should match these values.</para>
-        /// </summary>
-        public enum MinificationLevel
-        {
-            [Description("No minification")]
-            None = 0,
-            [Description("Only strip comments")]
-            StripComments = 1,
-            [Description("Full minification")]
-            Full = 255
         }
         MinificationLevel _minificationLevel;
         bool _hasChanges;
@@ -257,12 +248,6 @@ namespace Malware.MDKServices
             }
         }
 
-        public int MinifyBinding
-        {
-            get => (int)_minificationLevel;
-            set => MinifyLevel = (MinificationLevel)value;
-        }
-
         /// <summary>
         /// Determines whether this script should be excluded when running the Deploy All command.
         /// </summary>
@@ -331,6 +316,7 @@ namespace Malware.MDKServices
                 XElement nsElement = null;
                 XElement minifyGroupElement = null;
                 XElement minifyElement = null;
+                XElement old_minifyElement = null;
                 XElement trimTypesGroupElement = null;
                 XElement trimTypesElement = null;
                 XElement ignoreElement = null;
@@ -356,6 +342,7 @@ namespace Malware.MDKServices
                             nsElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKNamespace", nsm);
                             versionElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKVersion", nsm);
                             minifyGroupElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKMinify", nsm);
+                            old_minifyElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKMinify/m:Enabled", nsm);
                             minifyElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKMinify/m:Level", nsm);
                             trimTypesGroupElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKTrimTypes", nsm);
                             trimTypesElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKTrimTypes/m:Enabled", nsm);
@@ -414,6 +401,9 @@ namespace Malware.MDKServices
                 }
 
                 minifyElement.Value = MinifyLevel.ToString();
+
+                old_minifyElement?.Remove();
+
 
                 if (trimTypesGroupElement == null)
                 {
@@ -501,5 +491,19 @@ namespace Malware.MDKServices
 
             return false;
         }
+    }
+    /// <summary> 
+    /// Describes script minification level. 
+    /// <para>Stored as enum item name, not as numeric value, in case a reordering/extension is needed.</para>
+    /// <para>However, due to complications with WPF, values of items in combobox should match these values.</para>
+    /// </summary>
+    public enum MinificationLevel
+    {
+        /// <summary>No changes</summary>
+        None = 0,
+        /// <summary>Only strip comments</summary>
+        StripComments = 1,
+        /// <summary>Full minification</summary>
+        Full = 255
     }
 }
