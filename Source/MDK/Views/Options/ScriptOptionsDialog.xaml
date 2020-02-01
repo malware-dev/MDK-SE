@@ -73,13 +73,6 @@
                 <ComboBoxItem Content="Remove comments" Tag="StripComments"/>
                 <ComboBoxItem Content="Full minification" Tag="Full"/>
             </ComboBox>
-            <!--<CheckBox x:Name="MinifyCheckBox" 
-                      Margin="2,8,2,2"
-                      HorizontalAlignment="Left"
-                      IsChecked="{Binding ActiveProject.Options.Minify}">
-                <TextBlock TextWrapping="Wrap">Deployment will make your code as small as possible at the expense of readability.
-                    Use only if you know your code won't fit conventionally. Warning: Slow deployment.</TextBlock>
-            </CheckBox>-->
         </StackPanel>
 
         <Label Grid.Column="0" Grid.Row="4" Target="{Binding ElementName=ExcludeFromDeployAllCheckBox}" Margin="2">Exclude from Deploy All</Label>
