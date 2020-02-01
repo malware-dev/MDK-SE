@@ -107,11 +107,18 @@ namespace Malware.MDKServices
 
             MinificationLevel minify_level;
             var minifyElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKMinify/m:Level", nsm);
-            var old_minifyElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKMinify/m:Enabled", nsm);
-            if (!Enum.TryParse(((string)minifyElement ?? "None").Trim(), true, out minify_level))
-                minify_level = (string.Compare(((string)old_minifyElement ?? "no").Trim(), "yes", StringComparison.InvariantCultureIgnoreCase) == 0)
-                    ? MinificationLevel.Full
-                    : MinificationLevel.None;
+            if (minifyElement != null)
+            {
+                if (!Enum.TryParse(((string)minifyElement).Trim(), true, out minify_level))
+                    minify_level = MinificationLevel.None;
+            }
+            else
+            {
+                var old_minifyElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKMinify/m:Enabled", nsm);
+                minify_level = string.Equals(((string)old_minifyElement ?? "no").Trim(), "yes", StringComparison.InvariantCultureIgnoreCase)
+                        ? MinificationLevel.Full
+                        : MinificationLevel.None;
+            }
 
             var trimTypesElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKTrimTypes/m:Enabled", nsm);
             var trimTypes = ((string)trimTypesElement ?? "no").Trim().Equals("yes", StringComparison.CurrentCultureIgnoreCase);
