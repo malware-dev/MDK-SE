@@ -12,6 +12,9 @@ using Microsoft.CodeAnalysis.Simplification;
 
 namespace MDK.Build.Composers.Minifying
 {
+    /// <summary>
+    /// Simplified version of minifying rewriter that only removes trivia.
+    /// </summary>
     class CommentStripper : ProgramRewriter
     {
         HashSet<string> _externallyReferencedMembers = new HashSet<string>();
