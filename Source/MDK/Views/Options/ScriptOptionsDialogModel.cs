@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.ComponentModel;
 using System.Linq;
@@ -15,6 +16,7 @@ namespace MDK.Views.Options
     public class ScriptOptionsDialogModel : DialogViewModel
     {
         MDKProjectProperties _activeProject;
+        KeyValuePair<MinificationLevel, string> _selectedMinifier;
 
         /// <summary>
         /// Creates a new instance of <see cref="ScriptOptionsDialogModel"/>
@@ -25,8 +27,29 @@ namespace MDK.Views.Options
         {
             if (package == null)
                 throw new ArgumentNullException(nameof(package));
+            Minifiers = new Collection<KeyValuePair<MinificationLevel, string>>
+            {
+                new KeyValuePair<MinificationLevel, string>(MinificationLevel.None, "None"),
+                new KeyValuePair<MinificationLevel, string>(MinificationLevel.StripComments, "Strip Comments"),
+                new KeyValuePair<MinificationLevel, string>(MinificationLevel.Full, "Full"),
+            };
             ActiveProject = projectProperties ?? throw new ArgumentNullException(nameof(projectProperties));
+            _selectedMinifier = this.Minifiers.FirstOrDefault(m => ActiveProject.Options.MinifyLevel == m.Key);
         }
+
+        public KeyValuePair<MinificationLevel, string> SelectedMinifier
+        {
+            get => _selectedMinifier;
+            set
+            {
+                if (value.Equals(_selectedMinifier)) return;
+                _selectedMinifier = value;
+                ActiveProject.Options.MinifyLevel = value.Key;
+                OnPropertyChanged();
+            }
+        }
+
+        public Collection<KeyValuePair<MinificationLevel, string>> Minifiers { get; } = new Collection<KeyValuePair<MinificationLevel, string>>();
 
         /// <summary>
         /// The currently selected project
