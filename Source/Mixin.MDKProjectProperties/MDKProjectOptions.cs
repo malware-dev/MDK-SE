@@ -104,8 +104,22 @@ namespace Malware.MDKServices
 
             var namespaceElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKNamespace", nsm);
             var ns = ((string)namespaceElement)?.Trim();
-            var minifyElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKMinify/m:Enabled", nsm);
-            var minify = ((string)minifyElement ?? "no").Trim().Equals("yes", StringComparison.CurrentCultureIgnoreCase);
+
+            MinificationLevel minify_level;
+            var minifyElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKMinify/m:Level", nsm);
+            if (minifyElement != null)
+            {
+                if (!Enum.TryParse(((string)minifyElement).Trim(), true, out minify_level))
+                    minify_level = MinificationLevel.None;
+            }
+            else
+            {
+                var old_minifyElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKMinify/m:Enabled", nsm);
+                minify_level = string.Equals(((string)old_minifyElement ?? "no").Trim(), "yes", StringComparison.InvariantCultureIgnoreCase)
+                        ? MinificationLevel.Full
+                        : MinificationLevel.None;
+            }
+
             var trimTypesElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKTrimTypes/m:Enabled", nsm);
             var trimTypes = ((string)trimTypesElement ?? "no").Trim().Equals("yes", StringComparison.CurrentCultureIgnoreCase);
             var ignoredFolders = document.XPathSelectElements("./m:Project/m:PropertyGroup/m:MDKIgnore/m:Folder", nsm).Select(e => (string)e).ToArray();
@@ -116,7 +130,7 @@ namespace Malware.MDKServices
             {
                 Version = version,
                 Namespace = ns,
-                Minify = minify,
+                MinifyLevel = minify_level,
                 TrimTypes = trimTypes,
                 ExcludeFromDeployAll = excludeFromDeployAll
             };
@@ -129,8 +143,7 @@ namespace Malware.MDKServices
             result.HasChanges = false;
             return result;
         }
-
-        bool _minify;
+        MinificationLevel _minificationLevel;
         bool _hasChanges;
         string[] _ignoredFilesCache;
         string[] _ignoredFoldersCache;
@@ -229,14 +242,14 @@ namespace Malware.MDKServices
         /// <summary>
         /// Determines whether the script generated from this project should be run through the minifier
         /// </summary>
-        public bool Minify
+        public MinificationLevel MinifyLevel
         {
-            get => _minify;
+            get => _minificationLevel;
             set
             {
-                if (value == _minify)
+                if (value == _minificationLevel)
                     return;
-                _minify = value;
+                _minificationLevel = value;
                 HasChanges = true;
                 OnPropertyChanged();
             }
@@ -310,6 +323,7 @@ namespace Malware.MDKServices
                 XElement nsElement = null;
                 XElement minifyGroupElement = null;
                 XElement minifyElement = null;
+                XElement old_minifyElement = null;
                 XElement trimTypesGroupElement = null;
                 XElement trimTypesElement = null;
                 XElement ignoreElement = null;
@@ -335,7 +349,8 @@ namespace Malware.MDKServices
                             nsElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKNamespace", nsm);
                             versionElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKVersion", nsm);
                             minifyGroupElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKMinify", nsm);
-                            minifyElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKMinify/m:Enabled", nsm);
+                            old_minifyElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKMinify/m:Enabled", nsm);
+                            minifyElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKMinify/m:Level", nsm);
                             trimTypesGroupElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKTrimTypes", nsm);
                             trimTypesElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKTrimTypes/m:Enabled", nsm);
                             ignoreElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKIgnore", nsm);
@@ -388,11 +403,14 @@ namespace Malware.MDKServices
 
                 if (minifyElement == null)
                 {
-                    minifyElement = new XElement(XName.Get("Enabled", Xmlns));
+                    minifyElement = new XElement(XName.Get("Level", Xmlns));
                     minifyGroupElement.Add(minifyElement);
                 }
 
-                minifyElement.Value = Minify ? "yes" : "no";
+                minifyElement.Value = MinifyLevel.ToString();
+
+                old_minifyElement?.Remove();
+
 
                 if (trimTypesGroupElement == null)
                 {
@@ -480,5 +498,19 @@ namespace Malware.MDKServices
 
             return false;
         }
+    }
+    /// <summary> 
+    /// Describes script minification level. 
+    /// <para>Stored as enum item name, not as numeric value, in case a reordering/extension is needed.</para>
+    /// <para>However, due to complications with WPF, values of items in combobox should match these values.</para>
+    /// </summary>
+    public enum MinificationLevel
+    {
+        /// <summary>No changes</summary>
+        None = 0,
+        /// <summary>Only strip comments</summary>
+        StripComments = 1,
+        /// <summary>Full minification</summary>
+        Full = 255
     }
 }

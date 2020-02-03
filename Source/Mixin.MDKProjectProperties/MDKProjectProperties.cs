@@ -20,6 +20,7 @@ namespace Malware.MDKServices
         /// </summary>
         /// <param name="projectFileName">The file name of this project</param>
         /// <param name="projectName">The display name of this project</param>
+        /// <param name="echo">Debug message handler.</param>
         /// <returns></returns>
         public static MDKProjectProperties Load([NotNull] string projectFileName, string projectName = null, Action<string> echo = null)
         {

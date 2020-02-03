@@ -142,7 +142,7 @@ namespace Malware.MDKWhitelistExtractor
 
         IEnumerable<Type> FindBlocks(Assembly gameAssembly, HashSet<AssemblyName> visitedAssemblies = null)
         {
-            visitedAssemblies ??= new HashSet<AssemblyName>(new AssemblyNameComparer());
+            visitedAssemblies = visitedAssemblies ?? new HashSet<AssemblyName>(new AssemblyNameComparer());
             visitedAssemblies.Add(gameAssembly.GetName());
             var companyAttribute = gameAssembly.GetCustomAttribute<AssemblyCompanyAttribute>();
             if (companyAttribute?.Company == "Microsoft Corporation")

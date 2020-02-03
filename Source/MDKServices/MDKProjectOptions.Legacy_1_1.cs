@@ -8,7 +8,7 @@
                 return null;
             var options = new MDKProjectOptions(optionsFileName, true)
             {
-                Minify = scriptInfo.Minify,
+                MinifyLevel = scriptInfo.Minify ? MinificationLevel.Full : MinificationLevel.None,
                 TrimTypes = scriptInfo.TrimTypes
             };
             foreach (var ignore in scriptInfo.IgnoredFiles)

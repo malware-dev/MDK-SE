@@ -36,7 +36,6 @@ namespace MDK.VisualStudio
         /// <summary>
         /// Called to invoke this action
         /// </summary>
-        /// <param name="bar"></param>
         public virtual void Click() { Clicked?.Invoke(this, EventArgs.Empty); }
     }
 }

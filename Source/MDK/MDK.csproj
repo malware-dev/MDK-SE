@@ -68,6 +68,8 @@
     <Compile Include="Build\Composers\Minifying\ModifierProtector.cs" />
     <Compile Include="Build\Annotations\PreserveDebugDumper.cs" />
     <Compile Include="Build\Composers\Minifying\SymbolRenamer.SymbolCharSet.cs" />
+    <Compile Include="Build\Composers\StripComments\CommentStripper.cs" />
+    <Compile Include="Build\Composers\StripComments\StripCommentsComposer.cs" />
     <Compile Include="Build\DocumentAnalysis\DocumentAnalysisResult.cs" />
     <Compile Include="Build\DocumentAnalysis\DocumentAnalyzer.cs" />
     <Compile Include="Build\DocumentAnalysis\ExtensionScriptPart.cs" />
@@ -129,6 +131,7 @@
     </Compile>
     <Compile Include="Views\MessageEventArgs.cs" />
     <Compile Include="Views\MessageEventType.cs" />
+    <Compile Include="Views\Options\EnumToStringConverter.cs" />
     <Compile Include="Views\ProjectHealth\Fixes\BackupFix.cs" />
     <Compile Include="Views\ProjectHealth\Fixes\BadOutputPathFix.cs" />
     <Compile Include="Views\ProjectHealth\Fixes\BadGamePathFix.cs" />
