@@ -59,6 +59,7 @@ namespace MDK.Build.Composers.Minifying
                     case SyntaxKind.MultiLineDocumentationCommentTrivia:
                         while (index < leadingTrivia.Count && leadingTrivia[index].Kind() != SyntaxKind.EndOfLineTrivia)
                             index++;
+                        index--;
                         while (newTrivia.Count > 0 && newTrivia[newTrivia.Count - 1].Kind() == SyntaxKind.WhitespaceTrivia)
                             newTrivia.RemoveAt(newTrivia.Count - 1);
                         continue;
