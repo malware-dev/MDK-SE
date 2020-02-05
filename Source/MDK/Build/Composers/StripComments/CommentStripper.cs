@@ -18,7 +18,6 @@ namespace MDK.Build.Composers.Minifying
     class CommentStripper : ProgramRewriter
     {
         HashSet<string> _externallyReferencedMembers = new HashSet<string>();
-
         public CommentStripper() : base(true)
         { }
 
@@ -28,43 +27,59 @@ namespace MDK.Build.Composers.Minifying
 
             var newTrivia = new List<SyntaxTrivia>();
             var trivia = token.LeadingTrivia;
-            TrimTrivia(trivia, newTrivia);
+            TrimTrivia(trivia, newTrivia, false);
+            var previousToken = token.GetPreviousToken();
+            if ((previousToken != null) && TokenCollisionDetector.IsColliding(token.Kind(), previousToken.Kind()))
+                if (token.LeadingTrivia.Sum(t => t.FullSpan.Length) + previousToken.TrailingTrivia.Where(t => t.IsKind(SyntaxKind.WhitespaceTrivia)).Sum(t => t.FullSpan.Length) == 0)
+                    newTrivia.Add(SyntaxFactory.Whitespace(" "));
             token = token.WithLeadingTrivia(newTrivia);
             trivia = token.TrailingTrivia;
-            TrimTrivia(trivia, newTrivia);
+            TrimTrivia(trivia, newTrivia, true);
             token = token.WithTrailingTrivia(newTrivia);
 
             return token;
         }
-
-        void TrimTrivia(SyntaxTriviaList leadingTrivia, List<SyntaxTrivia> newTrivia)
+        /// <summary>
+        /// Removes trivia surrounding a meaningful token.
+        /// </summary>
+        /// <param name="trivia">List of trivia tokens to be processed.</param>
+        /// <param name="newTrivia">List of trivia tokens to be left in the script.</param>
+        /// <param name="trailingMode">If true, use special behaviour for trailing trivia.</param>
+        void TrimTrivia(SyntaxTriviaList trivia, List<SyntaxTrivia> newTrivia, bool trailingMode)
         {
+            bool lastPreserved = false;
             newTrivia.Clear();
-
-            for (var index = 0; index < leadingTrivia.Count; index++)
+            for (var index = 0; index < trivia.Count; index++)
             {
-                var trivia = leadingTrivia[index];
-                if (trivia.ShouldBePreserved())
+                var triviaItem = trivia[index];
+                if (triviaItem.ShouldBePreserved())
                 {
-                    newTrivia.Add(trivia);
+                    lastPreserved = true;
+                    newTrivia.Add(triviaItem);
                     continue;
                 }
-
-                switch (trivia.Kind())
+                if (lastPreserved && triviaItem.Kind() == SyntaxKind.WhitespaceTrivia)
+                {
+                    lastPreserved = false;
+                    continue;
+                }
+                switch (triviaItem.Kind())
                 {
                     case SyntaxKind.SingleLineCommentTrivia:
                     case SyntaxKind.MultiLineCommentTrivia:
                     case SyntaxKind.DocumentationCommentExteriorTrivia:
                     case SyntaxKind.SingleLineDocumentationCommentTrivia:
                     case SyntaxKind.MultiLineDocumentationCommentTrivia:
-                        while (index < leadingTrivia.Count && leadingTrivia[index].Kind() != SyntaxKind.EndOfLineTrivia)
+                        while (index < trivia.Count && trivia[index].Kind() != SyntaxKind.EndOfLineTrivia)
                             index++;
+                        if (trailingMode)
+                            index--;
                         while (newTrivia.Count > 0 && newTrivia[newTrivia.Count - 1].Kind() == SyntaxKind.WhitespaceTrivia)
                             newTrivia.RemoveAt(newTrivia.Count - 1);
                         continue;
 
                     default:
-                        newTrivia.Add(trivia);
+                        newTrivia.Add(triviaItem);
                         break;
                 }
             }
