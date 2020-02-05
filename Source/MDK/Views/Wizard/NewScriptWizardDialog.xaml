@@ -78,17 +78,16 @@
             </CheckBox>
         </StackPanel>
 
-        <Label Grid.Column="0" Grid.Row="3" Target="{Binding ElementName=MinifyCheckBox}" Margin="2">Minify</Label>
+        <Label Grid.Column="0" Grid.Row="3" Target="{Binding ElementName=MinifyCheckBox}" Margin="2">Minifier</Label>
         <StackPanel Grid.Column="1" Grid.Row="3" 
                     Margin ="2,2,2,16">
 
-            <CheckBox x:Name="MinifyCheckBox" 
-                  Margin="2,8,2,2"
-                  HorizontalAlignment="Left"
-                  IsChecked="{Binding Minify}">
-            <TextBlock TextWrapping="Wrap">Deployment will make your code as small as possible at the expense of readability.
-                Use only if you know your code won't fit conventionally. Warning: Slow deployment.</TextBlock>
-            </CheckBox>
+            <ComboBox x:Name="MinifyLevelComboBox" VerticalAlignment="Center" Margin="2,2,0,2"
+                      VerticalContentAlignment="Center" HorizontalAlignment="Left" Width="150"
+                      ToolTip="Select script minification level"
+                      ItemsSource="{Binding Minifiers}"
+                      DisplayMemberPath="Value"
+                      SelectedValue="{Binding SelectedMinifier}" />
         </StackPanel>
 
         <Label Grid.Column="0" Grid.Row="4" Target="{Binding ElementName=PromoteCheckBox}" Margin="2">Thumbnail promotes MDK</Label>

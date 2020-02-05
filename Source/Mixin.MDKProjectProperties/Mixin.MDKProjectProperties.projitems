@@ -15,5 +15,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)MDKProjectProperties.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MDKProjectProperties.GeneratedInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MDKProjectPropertiesException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MinifyLevel.cs" />
   </ItemGroup>
 </Project>

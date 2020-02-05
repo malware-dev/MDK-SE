@@ -9,7 +9,7 @@
       <Enabled>$mdktrimtypes$</Enabled>
     </MDKTrimTypes>
     <MDKMinify>
-      <Enabled>$mdkminify$</Enabled>
+      <Level>$mdkminify$</Level>
     </MDKMinify>
     <MDKIgnore>
       <Folder>mdk</Folder>

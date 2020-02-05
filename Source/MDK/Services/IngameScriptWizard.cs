@@ -55,9 +55,6 @@ namespace MDK.Services
             if (!TryGetFinalTrimTypes(props, out bool trimTypes))
                 throw new WizardCancelledException();
 
-            if (!TryGetFinalMinify(props, out bool minify))
-                throw new WizardCancelledException();
-
             if (!TryGetFinalPromoteMDK(props, out bool promoteMDK))
                 _promoteMDK = true;
 
@@ -66,7 +63,6 @@ namespace MDK.Services
                 GameBinPath = binPath,
                 OutputPath = outputPath,
                 TrimTypes = trimTypes,
-                Minify = minify,
                 PromoteMDK = promoteMDK
             };
             var result = NewScriptWizardDialog.ShowDialog(model);
@@ -78,7 +74,7 @@ namespace MDK.Services
             replacementsDictionary["$mdkoutputpath$"] = model.OutputPath;
             replacementsDictionary["$mdkinstallpath$"] = installPath;
             replacementsDictionary["$mdktrimtypes$"] = model.TrimTypes ? "yes" : "no";
-            replacementsDictionary["$mdkminify$"] = model.Minify ? "yes" : "no";
+            replacementsDictionary["$mdkminify$"] = model.SelectedMinifier.Key.ToString();
             replacementsDictionary["$mdkversion$"] = MDKPackage.Version.ToString();
             _promoteMDK = model.PromoteMDK;
         }
@@ -245,12 +241,6 @@ namespace MDK.Services
                 installPath = installDirectory.ToString().TrimEnd('\\');
                 return true;
             }
-        }
-
-        bool TryGetFinalMinify(Properties props, out bool minify)
-        {
-            minify = (bool)(props.Item(nameof(MDKOptions.Minify))?.Value ?? false);
-            return true;
         }
 
         bool TryGetFinalTrimTypes(Properties props, out bool trimTypes)

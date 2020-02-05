@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows;
+using Malware.MDKServices;
 using Malware.MDKUtilities;
 using MDK.Views;
 using Microsoft.VisualStudio.Shell;
@@ -18,7 +19,6 @@ namespace MDK.Services
     public class MDKOptions : UIElementDialogPage, INotifyPropertyChanged
     {
         string _gameBinPath;
-        bool _minify;
         string _outputPath;
         bool _useManualGameBinPath;
         bool _useManualOutputPath;
@@ -145,24 +145,6 @@ namespace MDK.Services
                 if (_trimTypes == value)
                     return;
                 _trimTypes = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Whether script projects should default to generating minified scripts.
-        /// </summary>
-        [Category("MDK/SE")]
-        [DisplayName("Minify scripts")]
-        [Description("Determines whether script projects should default to generating minified scripts. Does not affect existing projects.")]
-        public bool Minify
-        {
-            get => _minify;
-            set
-            {
-                if (_minify == value)
-                    return;
-                _minify = value;
                 OnPropertyChanged();
             }
         }

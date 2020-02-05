@@ -64,7 +64,7 @@
         <StackPanel Grid.Column="1" Grid.Row="3" 
                     Margin ="2,2,2,16">
 
-            <ComboBox x:Name="MinifyLevelComboBox" Grid.Column="1" Grid.Row="3" VerticalAlignment="Center" Margin="2,2,0,2"
+            <ComboBox x:Name="MinifyLevelComboBox" VerticalAlignment="Center" Margin="2,2,0,2"
                   VerticalContentAlignment="Center" HorizontalAlignment="Left" Width="150"
                   ToolTip="Select script minification level"
                   ItemsSource="{Binding Minifiers}"
@@ -84,12 +84,6 @@
             </CheckBox>
         </StackPanel>
 
-
-        <!--<CheckBox x:Name="MinifyCheckBox" Grid.Column="1" Grid.Row="3" VerticalAlignment="Center"
-                  Margin="2"
-                  VerticalContentAlignment="Center" HorizontalAlignment="Left"
-                  ToolTip="Check to perform a minification of the script"
-                  IsChecked="{Binding ActiveProject.Minify}" />-->
         <views:ButtonBar Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="5" VerticalAlignment="Bottom">
             <Button IsDefault="True" MinWidth="96" Margin="2,2,8,2" Command="{Binding SaveAndCloseCommand}">Update Options</Button>
             <Button IsCancel="True" MinWidth="96" Margin="0,2,2,2" Command="{Binding CancelCommand}">Cancel</Button>

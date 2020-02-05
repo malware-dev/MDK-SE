@@ -13,14 +13,14 @@ using JetBrains.Annotations;
 namespace Malware.MDKServices
 {
     /// <summary>
-    /// Represents a set of general options for an MDK project
+    ///     Represents a set of general options for an MDK project
     /// </summary>
     public partial class MDKProjectOptions : INotifyPropertyChanged
     {
         const string Xmlns = "http://schemas.microsoft.com/developer/msbuild/2003";
 
         /// <summary>
-        /// Loads options for a given MDK project
+        ///     Loads options for a given MDK project
         /// </summary>
         /// <param name="fileName">The file name of the options file</param>
         /// <returns></returns>
@@ -55,7 +55,7 @@ namespace Malware.MDKServices
         }
 
         /// <summary>
-        /// Loads options for a given MDK project
+        ///     Loads options for a given MDK project
         /// </summary>
         /// <param name="xmlContent">The content of the options file</param>
         /// <param name="fileName">The file name of the options file</param>
@@ -105,19 +105,19 @@ namespace Malware.MDKServices
             var namespaceElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKNamespace", nsm);
             var ns = ((string)namespaceElement)?.Trim();
 
-            MinificationLevel minify_level;
+            MinifyLevel minifyLevel;
             var minifyElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKMinify/m:Level", nsm);
             if (minifyElement != null)
             {
-                if (!Enum.TryParse(((string)minifyElement).Trim(), true, out minify_level))
-                    minify_level = MinificationLevel.None;
+                if (!Enum.TryParse(((string)minifyElement).Trim(), true, out minifyLevel))
+                    minifyLevel = MinifyLevel.None;
             }
             else
             {
-                var old_minifyElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKMinify/m:Enabled", nsm);
-                minify_level = string.Equals(((string)old_minifyElement ?? "no").Trim(), "yes", StringComparison.InvariantCultureIgnoreCase)
-                        ? MinificationLevel.Full
-                        : MinificationLevel.None;
+                var oldMinifyElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKMinify/m:Enabled", nsm);
+                minifyLevel = string.Equals(((string)oldMinifyElement ?? "no").Trim(), "yes", StringComparison.InvariantCultureIgnoreCase)
+                    ? MinifyLevel.Full
+                    : MinifyLevel.None;
             }
 
             var trimTypesElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKTrimTypes/m:Enabled", nsm);
@@ -130,25 +130,32 @@ namespace Malware.MDKServices
             {
                 Version = version,
                 Namespace = ns,
-                MinifyLevel = minify_level,
+                MinifyLevel = minifyLevel,
                 TrimTypes = trimTypes,
                 ExcludeFromDeployAll = excludeFromDeployAll
             };
             if (ignoredFolders.Length > 0)
+            {
                 foreach (var item in ignoredFolders)
                     result.IgnoredFolders.Add(item);
+            }
+
             if (ignoredFiles.Length > 0)
+            {
                 foreach (var item in ignoredFiles)
                     result.IgnoredFiles.Add(item);
+            }
+
             result.HasChanges = false;
             return result;
         }
-        MinificationLevel _minificationLevel;
+
+        MinifyLevel _minifyLevel;
         bool _hasChanges;
         string[] _ignoredFilesCache;
         string[] _ignoredFoldersCache;
         bool _trimTypes;
-        string _baseDir;
+        readonly string _baseDir;
         Version _version;
         string _ns;
         bool _excludeFromDeployAll;
@@ -164,12 +171,7 @@ namespace Malware.MDKServices
         }
 
         /// <summary>
-        /// Occurs when a tracked property changes.
-        /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        /// <summary>
-        /// Determines whether changes have been made to the options for this project
+        ///     Determines whether changes have been made to the options for this project
         /// </summary>
         public bool HasChanges
         {
@@ -184,17 +186,17 @@ namespace Malware.MDKServices
         }
 
         /// <summary>
-        /// Determines whether this is a valid MDK project
+        ///     Determines whether this is a valid MDK project
         /// </summary>
         public bool IsValid { get; }
 
         /// <summary>
-        /// Gets the project file name
+        ///     Gets the project file name
         /// </summary>
         public string FileName { get; }
 
         /// <summary>
-        /// The MDK version this options file was saved with
+        ///     The MDK version this options file was saved with
         /// </summary>
         public Version Version
         {
@@ -209,7 +211,8 @@ namespace Malware.MDKServices
         }
 
         /// <summary>
-        /// Determines whether the script generated from this project should be run through the type trimmer which removes unused types
+        ///     Determines whether the script generated from this project should be run through the type trimmer which removes
+        ///     unused types
         /// </summary>
         public bool TrimTypes
         {
@@ -225,7 +228,7 @@ namespace Malware.MDKServices
         }
 
         /// <summary>
-        /// Determines the main script namespace. Used by the analyzer for the inconsistent namespace warning.
+        ///     Determines the main script namespace. Used by the analyzer for the inconsistent namespace warning.
         /// </summary>
         public string Namespace
         {
@@ -240,23 +243,23 @@ namespace Malware.MDKServices
         }
 
         /// <summary>
-        /// Determines whether the script generated from this project should be run through the minifier
+        ///     Determines whether the script generated from this project should be run through the minifier
         /// </summary>
-        public MinificationLevel MinifyLevel
+        public MinifyLevel MinifyLevel
         {
-            get => _minificationLevel;
+            get => _minifyLevel;
             set
             {
-                if (value == _minificationLevel)
+                if (value == _minifyLevel)
                     return;
-                _minificationLevel = value;
+                _minifyLevel = value;
                 HasChanges = true;
                 OnPropertyChanged();
             }
         }
 
         /// <summary>
-        /// Determines whether this script should be excluded when running the Deploy All command.
+        ///     Determines whether this script should be excluded when running the Deploy All command.
         /// </summary>
         public bool ExcludeFromDeployAll
         {
@@ -272,14 +275,19 @@ namespace Malware.MDKServices
         }
 
         /// <summary>
-        /// A list of folders which code will not be included in neither analysis nor deployment
+        ///     A list of folders which code will not be included in neither analysis nor deployment
         /// </summary>
         public ObservableCollection<string> IgnoredFolders { get; } = new ObservableCollection<string>();
 
         /// <summary>
-        /// A list of files which code will not be included in neither analysis nor deployment
+        ///     A list of files which code will not be included in neither analysis nor deployment
         /// </summary>
         public ObservableCollection<string> IgnoredFiles { get; } = new ObservableCollection<string>();
+
+        /// <summary>
+        ///     Occurs when a tracked property changes.
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
 
         string FullyQualifiedFile(string path)
         {
@@ -296,12 +304,19 @@ namespace Malware.MDKServices
             return path + "\\";
         }
 
-        void OnIgnoredFilesChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs) { _ignoredFilesCache = null; }
+        void OnIgnoredFilesChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
+        {
+            _ignoredFilesCache = null;
+        }
 
-        void OnIgnoredFoldersChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs) { _ignoredFoldersCache = null; }
+        void OnIgnoredFoldersChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
+        {
+            _ignoredFoldersCache = null;
+        }
 
         /// <summary>
-        /// Commits all changes without saving. <see cref="HasChanges"/> will be false after this. This method is not required when calling <see cref="Save"/>.
+        ///     Commits all changes without saving. <see cref="HasChanges" /> will be false after this. This method is not required
+        ///     when calling <see cref="Save" />.
         /// </summary>
         public void Commit()
         {
@@ -310,7 +325,7 @@ namespace Malware.MDKServices
         }
 
         /// <summary>
-        /// Saves the options of this project
+        ///     Saves the options of this project
         /// </summary>
         public void Save()
         {
@@ -323,7 +338,7 @@ namespace Malware.MDKServices
                 XElement nsElement = null;
                 XElement minifyGroupElement = null;
                 XElement minifyElement = null;
-                XElement old_minifyElement = null;
+                XElement oldMinifyElement = null;
                 XElement trimTypesGroupElement = null;
                 XElement trimTypesElement = null;
                 XElement ignoreElement = null;
@@ -349,7 +364,7 @@ namespace Malware.MDKServices
                             nsElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKNamespace", nsm);
                             versionElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKVersion", nsm);
                             minifyGroupElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKMinify", nsm);
-                            old_minifyElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKMinify/m:Enabled", nsm);
+                            oldMinifyElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKMinify/m:Enabled", nsm);
                             minifyElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKMinify/m:Level", nsm);
                             trimTypesGroupElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKTrimTypes", nsm);
                             trimTypesElement = document.XPathSelectElement("./m:Project/m:PropertyGroup/m:MDKTrimTypes/m:Enabled", nsm);
@@ -409,7 +424,7 @@ namespace Malware.MDKServices
 
                 minifyElement.Value = MinifyLevel.ToString();
 
-                old_minifyElement?.Remove();
+                oldMinifyElement?.Remove();
 
 
                 if (trimTypesGroupElement == null)
@@ -471,14 +486,17 @@ namespace Malware.MDKServices
         }
 
         /// <summary>
-        /// Called whenever a trackable property changes
+        ///     Called whenever a trackable property changes
         /// </summary>
         /// <param name="propertyName"></param>
         [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) { PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)); }
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
 
         /// <summary>
-        /// Determines whether the given file path is within one of the ignored folders or files.
+        ///     Determines whether the given file path is within one of the ignored folders or files.
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns></returns>
@@ -498,19 +516,5 @@ namespace Malware.MDKServices
 
             return false;
         }
-    }
-    /// <summary> 
-    /// Describes script minification level. 
-    /// <para>Stored as enum item name, not as numeric value, in case a reordering/extension is needed.</para>
-    /// <para>However, due to complications with WPF, values of items in combobox should match these values.</para>
-    /// </summary>
-    public enum MinificationLevel
-    {
-        /// <summary>No changes</summary>
-        None = 0,
-        /// <summary>Only strip comments</summary>
-        StripComments = 1,
-        /// <summary>Full minification</summary>
-        Full = 255
     }
 }

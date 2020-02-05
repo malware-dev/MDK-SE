@@ -16,7 +16,7 @@ namespace MDK.Views.Options
     public class ScriptOptionsDialogModel : DialogViewModel
     {
         MDKProjectProperties _activeProject;
-        KeyValuePair<MinificationLevel, string> _selectedMinifier;
+        KeyValuePair<MinifyLevel, string> _selectedMinifier;
 
         /// <summary>
         /// Creates a new instance of <see cref="ScriptOptionsDialogModel"/>
@@ -27,17 +27,20 @@ namespace MDK.Views.Options
         {
             if (package == null)
                 throw new ArgumentNullException(nameof(package));
-            Minifiers = new Collection<KeyValuePair<MinificationLevel, string>>
+            Minifiers = new Collection<KeyValuePair<MinifyLevel, string>>
             {
-                new KeyValuePair<MinificationLevel, string>(MinificationLevel.None, "None"),
-                new KeyValuePair<MinificationLevel, string>(MinificationLevel.StripComments, "Strip Comments"),
-                new KeyValuePair<MinificationLevel, string>(MinificationLevel.Full, "Full"),
+                new KeyValuePair<MinifyLevel, string>(MinifyLevel.None, "None"),
+                new KeyValuePair<MinifyLevel, string>(MinifyLevel.StripComments, "Strip Comments"),
+                new KeyValuePair<MinifyLevel, string>(MinifyLevel.Full, "Full"),
             };
             ActiveProject = projectProperties ?? throw new ArgumentNullException(nameof(projectProperties));
             _selectedMinifier = this.Minifiers.FirstOrDefault(m => ActiveProject.Options.MinifyLevel == m.Key);
         }
 
-        public KeyValuePair<MinificationLevel, string> SelectedMinifier
+        /// <summary>
+        /// The currently selected minifier configuration
+        /// </summary>
+        public KeyValuePair<MinifyLevel, string> SelectedMinifier
         {
             get => _selectedMinifier;
             set
@@ -49,7 +52,10 @@ namespace MDK.Views.Options
             }
         }
 
-        public Collection<KeyValuePair<MinificationLevel, string>> Minifiers { get; } = new Collection<KeyValuePair<MinificationLevel, string>>();
+        /// <summary>
+        /// A list of available minifier configurations
+        /// </summary>
+        public Collection<KeyValuePair<MinifyLevel, string>> Minifiers { get; }
 
         /// <summary>
         /// The currently selected project
