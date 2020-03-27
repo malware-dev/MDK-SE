@@ -8,6 +8,9 @@ A toolkit to help with ingame script (programmable block) development for Keen S
 ### ...but it hasn't been updated for ages?
 Because there hasn't been any  _need_ to. It's for all intents and purposes "done". If and when something breaks it, either a Visual Studio update or an SE update, I will do my best to fix it. Or, obviously, if I come up with a feature I want... but for now, there's nothing to do. "But there's bugs", I hear you say. Yeah, there's some minor issues. But they're small enough that I can't manage to find the time to fix them. I have limited time for this and not much help...
 
+### Can I use this in VSCode?
+No. Visual Studio Code and Visual Studio has nothing in common outside of the name.
+
 ### General features
 * Helps you create a fully connected script project in Visual Studio, with all references in place
 * Requires that you have the game installed, but does _not_ require you to have it running
