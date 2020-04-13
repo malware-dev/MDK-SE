@@ -173,7 +173,7 @@ namespace Mal.DocGen2.Services.MarkdownGenerators
             foreach (var item in items)
             {
                 await writer.BeginTableCellAsync();
-                await writer.WriteAsync(MemberGenerator.LinkTo(item.ToString(ApiEntryStringFlags.ParameterTypes), item));
+                await writer.WriteAsync(MemberGenerator.LinkTo(item.ToString(ApiEntryStringFlags.ParameterTypes | ApiEntryStringFlags.Accessors), item));
                 await writer.EndTableCellAsync();
 
                 await writer.BeginTableCellAsync();
