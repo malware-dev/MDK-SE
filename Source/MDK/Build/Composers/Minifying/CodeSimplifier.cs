@@ -256,6 +256,8 @@ namespace MDK.Build.Composers.Minifying
             return false;
         }
 
+        static string GetFullName(INamedTypeSymbol symbol) => symbol.GetFullName(DeclarationFullNameFlags.WithoutNamespaceName);
+
         public async Task<ProgramComposition> ProcessAsync(ProgramComposition composition, MDKProjectProperties config)
         {
             var newDocument = await Simplifier.ReduceAsync(composition.Document).ConfigureAwait(false);
@@ -272,7 +274,16 @@ namespace MDK.Build.Composers.Minifying
                     {
                         var node = composition.RootNode.FindNode(location.Location.SourceSpan);
                         if (!IsInProgram(node))
+                        {
                             _externallyReferencedMembers.Add(typeUsage.FullName);
+                            if (typeUsage.Symbol is ITypeSymbol typeSymbol)
+                            {
+                                foreach (var interfaceName in typeSymbol.AllInterfaces.Select(GetFullName))
+                                    _externallyReferencedMembers.Add(interfaceName);
+                                if(typeSymbol.BaseType != null)
+                                    _externallyReferencedMembers.Add(GetFullName(typeSymbol.BaseType));
+                            }
+                        }
                     }
                 }
             }

@@ -57,8 +57,8 @@ namespace MDK.Build
             {
               var declaratorSyntax = namedType
                 .DeclaringSyntaxReferences
-                .First()
-                .GetSyntax();
+                .FirstOrDefault()
+                ?.GetSyntax();
               if (declaratorSyntax is TypeDeclarationSyntax typeDeclaration)
               {
                  return typeDeclaration.GetFullName(flags);
