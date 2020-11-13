@@ -169,6 +169,7 @@ namespace MDK.Build
             {
                 case MinifyLevel.Full: composer = new MinifyingComposer(); break;
                 case MinifyLevel.StripComments: composer = new StripCommentsComposer(); break;
+                case MinifyLevel.Lite: composer = new LiteComposer(); break;
                 default: composer = new DefaultComposer(); break;
             }
             var script = await ComposeScriptAsync(composition, composer, config).ConfigureAwait(false);

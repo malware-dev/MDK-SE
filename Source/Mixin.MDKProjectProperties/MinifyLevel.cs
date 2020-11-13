@@ -12,6 +12,10 @@
 
         /// <summary>Only strip comments</summary>
         StripComments = 1,
+        /// <summary>
+        /// Only Strip comments and whitespace
+        /// </summary>
+        Lite = 2,
 
         /// <summary>Full minification</summary>
         Full = 255
