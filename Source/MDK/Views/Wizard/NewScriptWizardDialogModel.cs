@@ -28,6 +28,7 @@ namespace MDK.Views.Wizard
             {
                 new KeyValuePair<MinifyLevel, string>(MinifyLevel.None, "None"),
                 new KeyValuePair<MinifyLevel, string>(MinifyLevel.StripComments, "Strip Comments"),
+                new KeyValuePair<MinifyLevel, string>(MinifyLevel.Lite, "Lite"),
                 new KeyValuePair<MinifyLevel, string>(MinifyLevel.Full, "Full")
             };
             _selectedMinifier = Minifiers.FirstOrDefault();
