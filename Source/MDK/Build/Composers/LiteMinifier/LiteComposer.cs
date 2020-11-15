@@ -24,7 +24,7 @@ namespace MDK.Build.Composers.Minifying
             var lineWrapper = new LineWrapper();
             composition = await lineWrapper.ProcessAsync(composition, config);
 
-            return await base.GenerateAsync(composition, config);
+            return await base.GenerateScriptAsync(composition);
         }
     }
 }
