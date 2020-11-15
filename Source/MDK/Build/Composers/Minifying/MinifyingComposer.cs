@@ -49,9 +49,7 @@ namespace MDK.Build.Composers.Minifying
         }
 
 
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         protected async Task<string> GenerateScriptAsync(ProgramComposition composition)
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
         {
             var root = composition.RootNode;
             composition = await composition.WithNewDocumentRootAsync(root);
