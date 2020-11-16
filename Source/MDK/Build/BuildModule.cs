@@ -190,6 +190,16 @@ namespace MDK.Build
             try
             {
                 var script = await composer.GenerateAsync(composition, config).ConfigureAwait(false);
+                if (script.Length >= 100000)
+                {
+                    ErrorTask lengthWarning = new ErrorTask()
+                    {
+                        ErrorCategory = TaskErrorCategory.Warning,
+                        CanDelete = true,
+                        Text = $"Script is exceeding the 100k limit with length {script.Length}"
+                    };
+                    await Console.Out.WriteLineAsync($"Script is exceeding the 100k limit with length {script.Length}");
+                }
                 return script;
             }
             catch (Exception e)
