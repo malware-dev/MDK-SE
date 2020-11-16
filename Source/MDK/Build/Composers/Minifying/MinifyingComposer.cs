@@ -48,7 +48,8 @@ namespace MDK.Build.Composers.Minifying
             return await GenerateScriptAsync(composition);
         }
 
-        async Task<string> GenerateScriptAsync(ProgramComposition composition)
+
+        protected async Task<string> GenerateScriptAsync(ProgramComposition composition)
         {
             var root = composition.RootNode;
             composition = await composition.WithNewDocumentRootAsync(root);

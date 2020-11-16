@@ -65,6 +65,7 @@
     <Compile Include="Build\BuildException.cs" />
     <Compile Include="Build\BuildModule.cs" />
     <Compile Include="Build\Composers\Default\NewlineCleaner.cs" />
+    <Compile Include="Build\Composers\LiteMinifier\LiteComposer.cs" />
     <Compile Include="Build\Composers\Minifying\ModifierProtector.cs" />
     <Compile Include="Build\Annotations\PreserveDebugDumper.cs" />
     <Compile Include="Build\Composers\Minifying\SymbolRenamer.SymbolCharSet.cs" />
