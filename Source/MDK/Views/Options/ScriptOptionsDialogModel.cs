@@ -31,6 +31,7 @@ namespace MDK.Views.Options
             {
                 new KeyValuePair<MinifyLevel, string>(MinifyLevel.None, "None"),
                 new KeyValuePair<MinifyLevel, string>(MinifyLevel.StripComments, "Strip Comments"),
+                new KeyValuePair<MinifyLevel, string>(MinifyLevel.Lite, "Lite (No Renaming)"),
                 new KeyValuePair<MinifyLevel, string>(MinifyLevel.Full, "Full"),
             };
             ActiveProject = projectProperties ?? throw new ArgumentNullException(nameof(projectProperties));
