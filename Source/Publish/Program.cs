@@ -94,7 +94,7 @@ namespace Malware.BuildForPublish
                     newVersion = new Version(version.Major, version.Minor, version.Build + 1);
                     break;
                 case ReleaseType.FeatureRelease:
-                    newVersion = new Version(version.Major, version.Minor + 1, version.Build);
+                    newVersion = new Version(version.Major, version.Minor + 1, 0);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(releaseType), releaseType, null);
