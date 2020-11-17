@@ -15,7 +15,6 @@ using SpaceEngineers.Game;
 using VRage.Plugins;
 using VRage.Scripting;
 using VRage.Utils;
-using IMyFunctionalBlock = Sandbox.ModAPI.Ingame.IMyFunctionalBlock;
 using IMyTerminalBlock = Sandbox.ModAPI.Ingame.IMyTerminalBlock;
 
 namespace Malware.MDKWhitelistExtractor
@@ -28,15 +27,13 @@ namespace Malware.MDKWhitelistExtractor
 
         public SpaceEngineersGame Game { get; private set; }
 
-        public void Dispose()
-        {
-        }
+        public void Dispose() { }
 
         public void Init(object gameInstance)
         {
             _commandLine = new CommandLine(Environment.CommandLine);
 
-            Game = (SpaceEngineersGame) gameInstance;
+            Game = (SpaceEngineersGame)gameInstance;
         }
 
         public void Update()
@@ -75,16 +72,25 @@ namespace Malware.MDKWhitelistExtractor
                 var gameAssembly = Game.GetType().Assembly;
                 var blockTypes = FindBlocks(gameAssembly).ToArray();
                 var blocks = new List<BlockInfo>();
-                foreach (var blockType in blockTypes)
+                var experimentalMode = MySandboxGame.Config.ExperimentalMode;
+                MySandboxGame.Config.ExperimentalMode = true;
+                try
                 {
-                    var instance = (IMyTerminalBlock) Activator.CreateInstance(blockType);
-                    var actions = new List<ITerminalAction>(new List<ITerminalAction>());
-                    var properties = new List<ITerminalProperty>();
-                    instance.GetActions(actions);
-                    instance.GetProperties(properties);
-                    var blockInfo = new BlockInfo(blockType, FindTypeDefinition(blockType), FindInterface(blockType), actions, properties);
-                    if (blockInfo.BlockInterfaceType != null && blocks.All(b => b.BlockInterfaceType != blockInfo.BlockInterfaceType))
-                        blocks.Add(blockInfo);
+                    foreach (var blockType in blockTypes)
+                    {
+                        var instance = (IMyTerminalBlock)Activator.CreateInstance(blockType);
+                        var actions = new List<ITerminalAction>(new List<ITerminalAction>());
+                        var properties = new List<ITerminalProperty>();
+                        instance.GetActions(actions);
+                        instance.GetProperties(properties);
+                        var blockInfo = new BlockInfo(blockType, FindTypeDefinition(blockType), FindInterface(blockType), actions, properties);
+                        if (blockInfo.BlockInterfaceType != null && blocks.All(b => b.BlockInterfaceType != blockInfo.BlockInterfaceType))
+                            blocks.Add(blockInfo);
+                    }
+                }
+                finally
+                {
+                    MySandboxGame.Config.ExperimentalMode = experimentalMode;
                 }
 
                 WriteTerminals(blocks, targets);
@@ -130,7 +136,7 @@ namespace Malware.MDKWhitelistExtractor
         {
             var attr = block.GetCustomAttribute<MyTerminalInterfaceAttribute>();
             return attr?.LinkedTypes.FirstOrDefault(l => l.Namespace?.EndsWith(".Ingame", StringComparison.OrdinalIgnoreCase) ?? false);
-            
+
             //var interfaces = block.GetInterfaces().Where(i => typeof(IMyTerminalBlock).IsAssignableFrom(i) && (i.Namespace?.EndsWith(".Ingame") ?? false)).ToArray();
             //var candidateInterfaces = interfaces.Where(iface =>
             //    /* bad interface inheritance workaround */

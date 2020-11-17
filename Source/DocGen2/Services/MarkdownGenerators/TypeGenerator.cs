@@ -89,8 +89,13 @@ namespace Mal.DocGen2.Services.MarkdownGenerators
                 return;
             await writer.BeginParagraphAsync();
             await writer.WriteLineAsync(MarkdownInline.Strong("Type Definitions:  "));
-            foreach (var definition in defs)
-                await writer.WriteUnorderedListItemAsync($"`{definition}`");
+
+            var lines = defs.Select(d => d.ToString())
+                .OrderBy(o => o)
+                .ToList();
+            foreach (var line in lines)
+                await writer.WriteUnorderedListItemAsync(line);
+
             await writer.EndParagraphAsync();
         }
 
@@ -121,8 +126,17 @@ namespace Mal.DocGen2.Services.MarkdownGenerators
         {
             await writer.BeginParagraphAsync();
             await writer.WriteLineAsync(MarkdownInline.Strong("Implements:  "));
-            foreach (var iface in entry.InheritedEntries)
-                await writer.WriteUnorderedListItemAsync(MemberGenerator.LinkTo(iface.ToString(ApiEntryStringFlags.ShortDisplayName), iface));
+
+            var lines = entry.InheritedEntries.Select(iface => new
+                {
+                    Text = iface.ToString(ApiEntryStringFlags.ShortDisplayName),
+                    Interface = iface
+                })
+                .OrderBy(o => o.Text)
+                .Select(o => MemberGenerator.LinkTo(o.Text, o.Interface))
+                .ToList();
+            foreach (var line in lines)
+                await writer.WriteUnorderedListItemAsync(line);
             await writer.EndParagraphAsync();
         }
 
@@ -130,8 +144,17 @@ namespace Mal.DocGen2.Services.MarkdownGenerators
         {
             await writer.BeginParagraphAsync();
             await writer.WriteLineAsync(MarkdownInline.Strong("Inheritors:  "));
-            foreach (var iface in entry.InheritorEntries)
-                await writer.WriteUnorderedListItemAsync(MemberGenerator.LinkTo(iface.ToString(ApiEntryStringFlags.ShortDisplayName), iface));
+
+            var lines = entry.InheritorEntries.Select(iface => new
+                {
+                    Text = iface.ToString(ApiEntryStringFlags.ShortDisplayName),
+                    Interface = iface
+                })
+                .OrderBy(o => o.Text)
+                .Select(o => MemberGenerator.LinkTo(o.Text, o.Interface))
+                .ToList();
+            foreach (var line in lines)
+                await writer.WriteUnorderedListItemAsync(line);
             await writer.EndParagraphAsync();
         }
 

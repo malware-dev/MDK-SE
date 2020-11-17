@@ -3,16 +3,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29609.76
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDKWhitelistExtractor", "..\MDKWhitelistExtractor\MDKWhitelistExtractor.csproj", "{02E93D45-C296-49F4-BEF2-3D5429549917}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDKWhitelistExtractor", "MDKWhitelistExtractor\MDKWhitelistExtractor.csproj", "{02E93D45-C296-49F4-BEF2-3D5429549917}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SteamAndSE", "..\SteamAndSE\SteamAndSE.shproj", "{9E28967B-803C-4CF2-9A9C-B8135C85266B}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SteamAndSE", "SteamAndSE\SteamAndSE.shproj", "{9E28967B-803C-4CF2-9A9C-B8135C85266B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocGen2", "..\DocGen2\DocGen2.csproj", "{76F6E75A-EA20-4BA8-8FA5-A1E713BFAFF4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocGen2", "DocGen2\DocGen2.csproj", "{76F6E75A-EA20-4BA8-8FA5-A1E713BFAFF4}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		..\SteamAndSE\SteamAndSE.projitems*{76f6e75a-ea20-4ba8-8fa5-a1e713bfaff4}*SharedItemsImports = 4
-		..\SteamAndSE\SteamAndSE.projitems*{9e28967b-803c-4cf2-9a9c-b8135c85266b}*SharedItemsImports = 13
+		SteamAndSE\SteamAndSE.projitems*{76f6e75a-ea20-4ba8-8fa5-a1e713bfaff4}*SharedItemsImports = 4
+		SteamAndSE\SteamAndSE.projitems*{9e28967b-803c-4cf2-9a9c-b8135c85266b}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
