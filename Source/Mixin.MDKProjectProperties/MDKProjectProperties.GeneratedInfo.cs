@@ -7,6 +7,6 @@ namespace Malware.MDKServices
 	    /// <summary>
 		/// The current package version this utility assembly targets
 		/// </summary>
-		public static readonly Version TargetPackageVersion = new Version("1.3.0");
+		public static readonly Version TargetPackageVersion = new Version("1.3.1");
 	}
 }
