@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Mal.DocGen2
+﻿namespace Mal.DocGen2
 {
     public class MainWindowModel: Model
     {
-        string _outputPath;
+        private string _outputPath;
 
         public MainWindowModel()
         {
@@ -22,9 +16,10 @@ namespace Mal.DocGen2
             {
                 if (value == _outputPath) return;
                 _outputPath = value;
-                this.GenerateTerminalDocumentViewModel.OutputPath = value;
-                this.GenerateApiDocumentsViewModel.OutputPath = value;
-                this.GenerateTypeDefListingViewModel.OutputPath = value;
+                GenerateTerminalDocumentViewModel.OutputPath = value;
+                GenerateApiDocumentsViewModel.OutputPath = value;
+                GenerateTypeDefListingViewModel.OutputPath = value;
+                GenerateSpritesViewModel.OutputPath = value;
                 OnPropertyChanged();
             }
         }
@@ -33,5 +28,6 @@ namespace Mal.DocGen2
         public WhitelistAndTerminalCachesViewModel WhitelistAndTerminalCachesViewModel { get; } = new WhitelistAndTerminalCachesViewModel();
         public GenerateTerminalDocumentViewModel GenerateTerminalDocumentViewModel { get; } = new GenerateTerminalDocumentViewModel();
         public GenerateTypeDefListingViewModel GenerateTypeDefListingViewModel { get; } = new GenerateTypeDefListingViewModel();
+        public GenerateSpritesViewModel GenerateSpritesViewModel { get; } = new GenerateSpritesViewModel();
     }
 }

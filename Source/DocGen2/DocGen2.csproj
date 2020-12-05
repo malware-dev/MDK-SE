@@ -77,12 +77,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="GenerateSpritesView.xaml.cs">
+      <DependentUpon>GenerateSpritesView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="GenerateTypeDefListingView.xaml.cs">
       <DependentUpon>GenerateTypeDefListingView.xaml</DependentUpon>
     </Compile>
     <Compile Include="GenerateApiDocumentsView.xaml.cs">
       <DependentUpon>GenerateApiDocumentsView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="GenerateSpritesViewModel.cs" />
     <Compile Include="GenerateTypeDefListingViewModel.cs" />
     <Compile Include="GenerateTerminalDocumentView.xaml.cs">
       <DependentUpon>GenerateTerminalDocumentView.xaml</DependentUpon>
@@ -111,6 +115,7 @@
     <Compile Include="Services\NamespaceRule.cs" />
     <Compile Include="Services\ProgrammableBlockApi.cs" />
     <Compile Include="Services\SpaceEngineersText.cs" />
+    <Compile Include="Services\Sprites.cs" />
     <Compile Include="Services\TypeDefinitions.cs" />
     <Compile Include="Services\Terminals.cs" />
     <Compile Include="Services\TypeExtensions.cs" />
@@ -133,10 +138,15 @@
     <Compile Include="Services\XmlDocs\XmlDoc.cs" />
     <Compile Include="Services\XmlDocs\XmlDocNode.cs" />
     <Compile Include="Services\XmlDocs\XmlDocWriteContext.cs" />
+    <Compile Include="TextureLoader.cs" />
     <Compile Include="WhitelistAndTerminalCachesView.xaml.cs">
       <DependentUpon>WhitelistAndTerminalCachesView.xaml</DependentUpon>
     </Compile>
     <Compile Include="WhitelistAndTerminalCachesViewModel.cs" />
+    <Page Include="GenerateSpritesView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="GenerateTypeDefListingView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -203,23 +213,29 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="DirectXTexNet">
+      <Version>1.0.0</Version>
+    </PackageReference>
     <PackageReference Include="JetBrains.Annotations">
-      <Version>2019.1.3</Version>
+      <Version>2020.3.0</Version>
     </PackageReference>
     <PackageReference Include="protobuf-net">
-      <Version>3.0.0-alpha.43</Version>
+      <Version>3.0.73</Version>
+    </PackageReference>
+    <PackageReference Include="System.Collections.Immutable">
+      <Version>5.0.0</Version>
     </PackageReference>
     <PackageReference Include="System.Private.ServiceModel">
-      <Version>4.5.3</Version>
+      <Version>4.8.0</Version>
     </PackageReference>
     <PackageReference Include="System.Reflection.DispatchProxy">
-      <Version>4.5.1</Version>
+      <Version>4.7.1</Version>
     </PackageReference>
     <PackageReference Include="System.Security.Principal.Windows">
-      <Version>4.5.1</Version>
+      <Version>5.0.0</Version>
     </PackageReference>
     <PackageReference Include="System.ServiceModel.Primitives">
-      <Version>4.5.3</Version>
+      <Version>4.8.0</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup />

@@ -10,17 +10,21 @@
     <PackageId>MDKAnalyzer</PackageId>
     <PackageVersion>1.0.0.0</PackageVersion>
     <Authors>Morten</Authors>
-    <PackageLicenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</PackageLicenseUrl>
-    <PackageProjectUrl>http://PROJECT_URL_HERE_OR_DELETE_THIS_LINE</PackageProjectUrl>
-    <PackageIconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</PackageIconUrl>
-    <RepositoryUrl>http://REPOSITORY_URL_HERE_OR_DELETE_THIS_LINE</RepositoryUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/malware-dev/MDK-SE</PackageProjectUrl>
+    <PackageIconUrl></PackageIconUrl>
+    <RepositoryUrl>d:\nuget</RepositoryUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Description>MDKAnalyzer</Description>
-    <PackageReleaseNotes>Summary of changes made in this release of the package.</PackageReleaseNotes>
-    <Copyright>Copyright</Copyright>
-    <PackageTags>MDKAnalyzer, analyzers</PackageTags>
+    <PackageReleaseNotes></PackageReleaseNotes>
+    <Copyright>Copyright © Morten Aune Lyrstad 2017</Copyright>
+    <PackageTags>MDK,MDKAnalyzer, analyzers</PackageTags>
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <RootNamespace>Malware.MDKAnalyzer</RootNamespace>
+    <Product>MDK/SE</Product>
+    <PackageLicenseFile>MIT License.txt</PackageLicenseFile>
+    <PackageIcon>malware64.png</PackageIcon>
+    <RepositoryType>file</RepositoryType>
   </PropertyGroup>
   
   <ItemGroup>
@@ -30,6 +34,9 @@
     <EmbeddedResource Remove="MDKAnalyzer.Vsix\**" />
     <None Remove="MDKAnalyzer.Test\**" />
     <None Remove="MDKAnalyzer.Vsix\**" />
+    <None Include="malware64.png" Pack="true" PackagePath="" />
+    <None Include="MIT License.txt" Pack="true" PackagePath="" />
+    
   </ItemGroup>
   
   <ItemGroup>
@@ -48,6 +55,9 @@
   </ItemGroup>
   
   <ItemGroup>
+    <Content Include="MIT License.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="terminal.cache">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

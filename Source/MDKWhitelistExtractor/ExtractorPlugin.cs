@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -48,15 +49,23 @@ namespace Malware.MDKWhitelistExtractor
 
         void WriteWhitelists(string[] targets)
         {
-            var types = new List<string>();
+            var ingameTypes = new List<string>();
+            var modTypes = new List<string>();
             foreach (var item in MyScriptCompiler.Static.Whitelist.GetWhitelist())
             {
-                if (!item.Value.HasFlag(MyWhitelistTarget.Ingame)) continue;
-                types.Add(item.Key);
+                if ((item.Value & MyWhitelistTarget.Ingame) != 0)
+                    ingameTypes.Add(item.Key);
+                if ((item.Value & MyWhitelistTarget.ModApi) != 0)
+                    modTypes.Add(item.Key);
             }
 
             foreach (var target in targets)
-                File.WriteAllText(target, string.Join(Environment.NewLine, types));
+            {
+                File.WriteAllText(target, string.Join(Environment.NewLine, ingameTypes));
+                var extension = Path.GetExtension(target);
+                var modTarget = Path.ChangeExtension(target, ".mod" + extension);
+                File.WriteAllText(modTarget, string.Join(Environment.NewLine, modTypes));
+            }
         }
 
         void GrabTerminalActions(CommandLine commandLine)

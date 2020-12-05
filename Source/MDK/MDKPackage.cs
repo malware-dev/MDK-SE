@@ -98,7 +98,14 @@ namespace MDK
         /// <inheritdoc />
         protected override void Dispose(bool disposing)
         {
-            _solutionManager?.Dispose();
+            //if (_solutionManager != null)
+            //{
+            //    _solutionManager?.Dispose();
+            //    _solutionManager.ProjectLoaded -= OnProjectLoaded;
+            //    _solutionManager.SolutionLoaded -= OnSolutionLoaded;
+            //    _solutionManager.SolutionClosed -= OnSolutionClosed;
+            //}
+
             _solutionManager = null;
             base.Dispose(disposing);
         }

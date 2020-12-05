@@ -7,13 +7,21 @@ using System.Threading.Tasks;
 
 namespace Mal.DocGen2.Services.Markdown
 {
-    class MarkdownWriter
+    internal class MarkdownWriter
     {
-        static readonly string[] NewLines = {"\r\n", "\n", "\r"};
-        static string SoftNewlines(string text) => Regex.Replace(text, @" *(?:\r\n|\n|\r)", $"  {Environment.NewLine}");
-        static string HtmlNewlines(string text) => Regex.Replace(text, @" *(?:\r\n|\n|\r)", "<br />");
+        private static readonly string[] NewLines = {"\r\n", "\n", "\r"};
 
-        static string TrimNewlines(string text)
+        private static string SoftNewlines(string text)
+        {
+            return Regex.Replace(text, @" *(?:\r\n|\n|\r)", $"  {Environment.NewLine}");
+        }
+
+        private static string HtmlNewlines(string text)
+        {
+            return Regex.Replace(text, @" *(?:\r\n|\n|\r)", "<br />");
+        }
+
+        private static string TrimNewlines(string text)
         {
             var lines = text.Split(NewLines, StringSplitOptions.None).ToList();
             while (lines.Count > 0 && string.IsNullOrWhiteSpace(lines[lines.Count - 1]))
@@ -23,8 +31,8 @@ namespace Mal.DocGen2.Services.Markdown
             return string.Join(Environment.NewLine, lines);
         }
 
-        readonly TextWriter _writer;
-        readonly Stack<ITransaction> _transaction = new Stack<ITransaction>();
+        private readonly TextWriter _writer;
+        private readonly Stack<ITransaction> _transaction = new Stack<ITransaction>();
 
         public MarkdownWriter(TextWriter writer)
         {
@@ -32,7 +40,7 @@ namespace Mal.DocGen2.Services.Markdown
             _transaction.Push(new RootTransaction(this));
         }
 
-        void EndTransaction(ITransaction transaction)
+        private void EndTransaction(ITransaction transaction)
         {
             if (_transaction.Count == 1)
                 throw new InvalidOperationException("No transaction to end");
@@ -41,9 +49,20 @@ namespace Mal.DocGen2.Services.Markdown
             _transaction.Pop();
         }
 
-        public Task WriteAsync(string text) => _transaction.Peek().WriteAsync(text);
-        public Task WriteLineAsync(string text) => _transaction.Peek().WriteLineAsync(text);
-        public Task WriteLineAsync() => WriteLineAsync("");
+        public Task WriteAsync(string text)
+        {
+            return _transaction.Peek().WriteAsync(text);
+        }
+
+        public Task WriteLineAsync(string text)
+        {
+            return _transaction.Peek().WriteLineAsync(text);
+        }
+
+        public Task WriteLineAsync()
+        {
+            return WriteLineAsync("");
+        }
 
         public Task BeginParagraphAsync()
         {
@@ -51,7 +70,10 @@ namespace Mal.DocGen2.Services.Markdown
             return Task.CompletedTask;
         }
 
-        public Task EndParagraphAsync() => ((ParagraphTransaction)_transaction.Peek()).CommitAsync();
+        public Task EndParagraphAsync()
+        {
+            return ((ParagraphTransaction)_transaction.Peek()).CommitAsync();
+        }
 
         public Task BeginCodeBlockAsync()
         {
@@ -59,7 +81,10 @@ namespace Mal.DocGen2.Services.Markdown
             return Task.CompletedTask;
         }
 
-        public Task EndCodeBlockAsync() => ((CodeTransaction)_transaction.Peek()).CommitAsync();
+        public Task EndCodeBlockAsync()
+        {
+            return ((CodeTransaction)_transaction.Peek()).CommitAsync();
+        }
 
         public async Task WriteHeaderAsync(int type, string text)
         {
@@ -81,7 +106,10 @@ namespace Mal.DocGen2.Services.Markdown
             return Task.CompletedTask;
         }
 
-        public Task EndTableAsync() => ((TableTransaction)_transaction.Peek()).CommitAsync();
+        public Task EndTableAsync()
+        {
+            return ((TableTransaction)_transaction.Peek()).CommitAsync();
+        }
 
         public Task BeginTableCellAsync()
         {
@@ -92,9 +120,38 @@ namespace Mal.DocGen2.Services.Markdown
             return Task.CompletedTask;
         }
 
-        public Task EndTableCellAsync() => ((TableCellTransaction)_transaction.Peek()).CommitAsync();
+        public Task EndTableCellAsync()
+        {
+            return ((TableCellTransaction)_transaction.Peek()).CommitAsync();
+        }
 
-        public Task FlushAsync() => _writer.FlushAsync();
+        public Task FlushAsync()
+        {
+            return _writer.FlushAsync();
+        }
+
+        public async Task WriteImageLinkAsync(string description, string imageUrl)
+        {
+            await WriteAsync("![");
+            await WriteAsync(description);
+            await WriteAsync("](");
+            await WriteAsync(imageUrl);
+            await WriteAsync(")");
+        }
+
+        public async Task WriteLinkAsync(string description, string url)
+        {
+            await WriteAsync("[");
+            await WriteAsync(description);
+            await WriteAsync("](");
+            await WriteAsync(url);
+            await WriteAsync(")");
+        }
+
+        public Task WriteRulerAsync()
+        {
+            return WriteLineAsync("- - -");
+        }
 
         public interface ITransaction
         {
@@ -103,33 +160,50 @@ namespace Mal.DocGen2.Services.Markdown
             Task CommitAsync();
         }
 
-        class RootTransaction : ITransaction
+        private class RootTransaction: ITransaction
         {
-            MarkdownWriter _writer;
+            private readonly MarkdownWriter _writer;
 
             public RootTransaction(MarkdownWriter writer)
             {
                 _writer = writer;
             }
 
-            public Task WriteAsync(string text) => _writer._writer.WriteAsync(text);
-            public Task WriteLineAsync(string text) => _writer._writer.WriteLineAsync(text);
-            public Task CommitAsync() => Task.CompletedTask;
+            public Task WriteAsync(string text)
+            {
+                return _writer._writer.WriteAsync(text);
+            }
+
+            public Task WriteLineAsync(string text)
+            {
+                return _writer._writer.WriteLineAsync(text);
+            }
+
+            public Task CommitAsync()
+            {
+                return Task.CompletedTask;
+            }
         }
 
-        class ParagraphTransaction : ITransaction
+        private class ParagraphTransaction: ITransaction
         {
-            MarkdownWriter _writer;
-            StringWriter _buffer = new StringWriter();
+            private readonly MarkdownWriter _writer;
+            private readonly StringWriter _buffer = new StringWriter();
 
             public ParagraphTransaction(MarkdownWriter writer)
             {
                 _writer = writer;
             }
 
-            public Task WriteAsync(string text) => _buffer.WriteAsync(text);
+            public Task WriteAsync(string text)
+            {
+                return _buffer.WriteAsync(text);
+            }
 
-            public Task WriteLineAsync(string text) => _buffer.WriteLineAsync(text);
+            public Task WriteLineAsync(string text)
+            {
+                return _buffer.WriteLineAsync(text);
+            }
 
             public async Task CommitAsync()
             {
@@ -140,19 +214,25 @@ namespace Mal.DocGen2.Services.Markdown
             }
         }
 
-        class CodeTransaction : ITransaction
+        private class CodeTransaction: ITransaction
         {
-            MarkdownWriter _writer;
-            StringWriter _buffer = new StringWriter();
+            private readonly MarkdownWriter _writer;
+            private readonly StringWriter _buffer = new StringWriter();
 
             public CodeTransaction(MarkdownWriter writer)
             {
                 _writer = writer;
             }
 
-            public Task WriteAsync(string text) => _buffer.WriteAsync(text);
+            public Task WriteAsync(string text)
+            {
+                return _buffer.WriteAsync(text);
+            }
 
-            public Task WriteLineAsync(string text) => _buffer.WriteLineAsync(text);
+            public Task WriteLineAsync(string text)
+            {
+                return _buffer.WriteLineAsync(text);
+            }
 
             public async Task CommitAsync()
             {
@@ -165,11 +245,11 @@ namespace Mal.DocGen2.Services.Markdown
             }
         }
 
-        class TableTransaction : ITransaction
+        private class TableTransaction: ITransaction
         {
-            readonly string[] _headers;
-            MarkdownWriter _writer;
-            List<string> _cells = new List<string>();
+            private readonly string[] _headers;
+            private readonly MarkdownWriter _writer;
+            private readonly List<string> _cells = new List<string>();
 
             public TableTransaction(MarkdownWriter writer, string[] headers)
             {
@@ -177,9 +257,15 @@ namespace Mal.DocGen2.Services.Markdown
                 _headers = headers;
             }
 
-            public Task WriteAsync(string text) => throw new InvalidOperationException("Begin a cell first");
+            public Task WriteAsync(string text)
+            {
+                throw new InvalidOperationException("Begin a cell first");
+            }
 
-            public Task WriteLineAsync(string text) => throw new InvalidOperationException("Begin a cell first");
+            public Task WriteLineAsync(string text)
+            {
+                throw new InvalidOperationException("Begin a cell first");
+            }
 
             public async Task CommitAsync()
             {
@@ -191,10 +277,10 @@ namespace Mal.DocGen2.Services.Markdown
                 await _writer.WriteAsync(string.Join("|", Enumerable.Range(0, _headers.Length).Select(n => "---")));
                 await _writer.WriteLineAsync("|");
 
-                var rows = (int)Math.Ceiling(_cells.Count / 2.0);
+                var rows = (int)Math.Ceiling(_cells.Count / (double)_headers.Length);
                 for (var row = 0; row < rows; row++)
                 {
-                    var range = _cells.Skip(row * 2).Take(_headers.Length);
+                    var range = _cells.Skip(row * _headers.Length).Take(_headers.Length);
                     await _writer.WriteAsync("|");
                     await _writer.WriteAsync(string.Join("|", range));
                     await _writer.WriteLineAsync("|");
@@ -209,11 +295,11 @@ namespace Mal.DocGen2.Services.Markdown
             }
         }
 
-        class TableCellTransaction : ITransaction
+        private class TableCellTransaction: ITransaction
         {
-            readonly MarkdownWriter _writer;
-            readonly TableTransaction _table;
-            StringWriter _buffer = new StringWriter();
+            private readonly MarkdownWriter _writer;
+            private readonly TableTransaction _table;
+            private readonly StringWriter _buffer = new StringWriter();
 
             public TableCellTransaction(MarkdownWriter writer, TableTransaction table)
             {
@@ -221,14 +307,20 @@ namespace Mal.DocGen2.Services.Markdown
                 _table = table;
             }
 
-            public Task WriteAsync(string text) => _buffer.WriteAsync(text);
+            public Task WriteAsync(string text)
+            {
+                return _buffer.WriteAsync(text);
+            }
 
-            public Task WriteLineAsync(string text) => _buffer.WriteLineAsync(text);
+            public Task WriteLineAsync(string text)
+            {
+                return _buffer.WriteLineAsync(text);
+            }
 
             public Task CommitAsync()
             {
                 _writer.EndTransaction(this);
-                _table.AddCell(HtmlNewlines(HtmlNewlines(TrimNewlines(_buffer.ToString()))));
+                _table.AddCell(HtmlNewlines(TrimNewlines(_buffer.ToString())));
                 return Task.CompletedTask;
             }
         }

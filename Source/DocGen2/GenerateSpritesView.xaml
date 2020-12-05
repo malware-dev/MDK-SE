@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="Mal.DocGen2.GenerateSpritesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Mal.DocGen2"
+             mc:Ignorable="d"
+             Width="300"
+             BorderThickness="1" BorderBrush="LightGray"
+             d:DataContext="{d:DesignInstance local:GenerateSpritesViewModel}">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="converters/visibility" />
+    </UserControl.Resources>
+    <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Border DockPanel.Dock="Top" Background="Black" Padding="8,4,8,4">
+            <TextBlock Foreground="White" FontWeight="Bold" FontSize="14">Sprites</TextBlock>
+        </Border>
+        <DockPanel DockPanel.Dock="Bottom" Margin="8">
+            <Button DockPanel.Dock="Right" HorizontalAlignment="Right"
+                    Padding="16,0,16,0"
+                    Command="{Binding RunNowCommand}">
+                Run This
+            </Button>
+            <CheckBox>Run this when running all</CheckBox>
+        </DockPanel>
+        <ProgressBar DockPanel.Dock="Bottom" IsIndeterminate="True" Margin="8" Height="16" Visibility="{Binding IsWorking, Converter={StaticResource converters/visibility}}" />
+        <TextBlock TextWrapping="Wrap" Margin="8">
+            Generates the sprite listing.
+        </TextBlock>
+    </DockPanel>
+</UserControl>

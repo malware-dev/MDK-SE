@@ -48,7 +48,7 @@ namespace MDK.Build.DocumentAnalysis
                     continue;
                 break;
             }
-
+            
             int? sortWeight = null;
             if (mdkOptions != null)
             {
