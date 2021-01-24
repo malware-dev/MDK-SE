@@ -19,7 +19,7 @@ namespace MDK.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Text {
@@ -472,6 +472,15 @@ namespace MDK.Resources {
         internal static string MDKPackage_Deploy_Rejected_DeploymentInProgress {
             get {
                 return ResourceManager.GetString("MDKPackage_Deploy_Rejected_DeploymentInProgress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deploy exceeds in-game script character limit of 500,000 characters. Your script has a length of {0:N0} characters..
+        /// </summary>
+        internal static string MDKPackage_Deploy_Too_Long_Warning {
+            get {
+                return ResourceManager.GetString("MDKPackage_Deploy_Too_Long_Warning", resourceCulture);
             }
         }
         
