@@ -494,6 +494,15 @@ namespace MDK.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Deployment Warning.
+        /// </summary>
+        internal static string MDKPackage_Deploy_Warning_Title {
+            get {
+                return ResourceManager.GetString("MDKPackage_Deploy_Warning_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error Analyzing Project.
         /// </summary>
         internal static string MDKPackage_OnProjectLoaded_ErrorAnalyzingProject {
