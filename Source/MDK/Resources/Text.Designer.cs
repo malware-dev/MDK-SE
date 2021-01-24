@@ -476,7 +476,7 @@ namespace MDK.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Deploy exceeds in-game script character limit of 500,000 characters. Your script has a length of {0:N0} characters..
+        ///   Looks up a localized string similar to Deploy exceeds in-game script character limit of 100,000 characters. Your script has a length of {0:N0} characters..
         /// </summary>
         internal static string MDKPackage_Deploy_Too_Long_Warning {
             get {
