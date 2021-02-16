@@ -11,6 +11,12 @@ Because there hasn't been any  _need_ to. It's for all intents and purposes "don
 ### Can I use this in VSCode?
 No. Visual Studio Code and Visual Studio has nothing in common outside of the name.
 
+### Visual Studio is Throwing Errors!
+If you see an error in Visual Studio like:
+>Unable to create project (MDK.Services.IngameScriptWizard does not exist)
+
+Make sure you're up to date with the latest version of Visual Studio.
+
 ### General features
 * Helps you create a fully connected script project in Visual Studio, with all references in place
 * Requires that you have the game installed, but does _not_ require you to have it running
