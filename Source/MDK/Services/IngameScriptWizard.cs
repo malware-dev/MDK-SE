@@ -69,10 +69,12 @@ namespace MDK.Services
             if (result == false)
                 throw new WizardCancelledException();
 
+            
+
             replacementsDictionary["$mdkusemanualgamebinpath$"] = !string.Equals(model.GameBinPath, binPath, StringComparison.CurrentCultureIgnoreCase) ? "yes" : "no";
-            replacementsDictionary["$mdkgamebinpath$"] = model.GameBinPath;
-            replacementsDictionary["$mdkoutputpath$"] = model.OutputPath;
-            replacementsDictionary["$mdkinstallpath$"] = installPath;
+            replacementsDictionary["$mdkgamebinpath$"] = System.Security.SecurityElement.Escape(model.GameBinPath);
+            replacementsDictionary["$mdkoutputpath$"] = System.Security.SecurityElement.Escape(model.OutputPath);
+            replacementsDictionary["$mdkinstallpath$"] = System.Security.SecurityElement.Escape(installPath);
             replacementsDictionary["$mdktrimtypes$"] = model.TrimTypes ? "yes" : "no";
             replacementsDictionary["$mdkminify$"] = model.SelectedMinifier.Key.ToString();
             replacementsDictionary["$mdkversion$"] = MDKPackage.Version.ToString();

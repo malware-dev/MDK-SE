@@ -18,15 +18,18 @@
             <Label Margin="8" VerticalAlignment="Center">Output Folder</Label>
             <TextBox Width="512" Margin="8" VerticalAlignment="Center" Text="{Binding OutputPath}" />
         </StackPanel>
-        <WrapPanel Margin="16,16,0,0" Grid.Row="1">
-            <docGen2:WhitelistAndTerminalCachesView Margin="0,0,16,16"
-                                                    DataContext="{Binding WhitelistAndTerminalCachesViewModel}" />
-            <docGen2:GenerateTerminalDocumentView Margin="0,0,16,16"
-                                                  DataContext="{Binding GenerateTerminalDocumentViewModel}" />
-            <docGen2:GenerateApiDocumentsView Margin="0,0,16,16" DataContext="{Binding GenerateApiDocumentsViewModel}" />
-            <docGen2:GenerateTypeDefListingView Margin="0,0,16,16"
-                                                DataContext="{Binding GenerateTypeDefListingViewModel}" />
-            <docGen2:GenerateSpritesView Margin="0,0,16,16" DataContext="{Binding GenerateSpritesViewModel}" />
-        </WrapPanel>
+        <ScrollViewer Margin="16,16,0,0" Grid.Row="1">
+            <WrapPanel>
+                <docGen2:WhitelistAndTerminalCachesView Margin="0,0,16,16"
+                                                        DataContext="{Binding WhitelistAndTerminalCachesViewModel}" />
+                <docGen2:GenerateTerminalDocumentView Margin="0,0,16,16"
+                                                      DataContext="{Binding GenerateTerminalDocumentViewModel}" />
+                <docGen2:GenerateApiDocumentsView Margin="0,0,16,16"
+                                                  DataContext="{Binding GenerateApiDocumentsViewModel}" />
+                <docGen2:GenerateTypeDefListingView Margin="0,0,16,16"
+                                                    DataContext="{Binding GenerateTypeDefListingViewModel}" />
+                <docGen2:GenerateSpritesView Margin="0,0,16,16" DataContext="{Binding GenerateSpritesViewModel}" />
+            </WrapPanel>
+        </ScrollViewer>
     </Grid>
 </Window>
