@@ -4,18 +4,18 @@ using Microsoft.VisualStudio.Shell;
 
 namespace MDK 
 {
-    [InstalledProductRegistration("#110", "#112", "1.3", IconResourceID = 400)] // Info on this package for Help/About
+    [InstalledProductRegistration("#110", "#112", "1.4", IconResourceID = 400)] // Info on this package for Help/About
 	public partial class MDKPackage 
     {
 	    /// <summary>
 		/// The current package version
 		/// </summary>
-		public static readonly Version Version = new Version("1.3.1");
+		public static readonly Version Version = new Version("1.4.0");
 
         /// <summary>
 		/// The required IDE version
 		/// </summary>
-		public static readonly Version RequiredIdeVersion = new Version("15.0");
+		public static readonly Version RequiredIdeVersion = new Version("16.8");
 
 	    /// <summary>
 		/// Determines whether this version is a prerelease version

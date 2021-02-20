@@ -5,5 +5,5 @@
   <ReleasePageUrl>https://github.com/malware-dev/MDK-SE/releases</ReleasePageUrl>
   <IssuesPageUrl>https://github.com/malware-dev/MDK-SE/issues</IssuesPageUrl>
   <ApiPageUrl>https://github.com/malware-dev/MDK-SE/wiki/api</ApiPageUrl>
-  <RequiredIdeVersion>15.0</RequiredIdeVersion>
+  <RequiredIdeVersion>16.8</RequiredIdeVersion>
 </Other>
