@@ -111,6 +111,12 @@ namespace Malware.MDKServices
                     Include = "MDKUtilities",
                     HintPath = @"$(MDKInstallPath)\MDKUtilities.dll",
                     Private = true
+                },
+                new AssemblyReference
+                {
+                    Include = "System.Collections.Immutable",
+                    HintPath = @"$(MDKGameBinPath)\System.Collections.Immutable.dll",
+                    Private = false
                 }
             });
 

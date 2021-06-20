@@ -54,16 +54,18 @@ namespace Mal.DocGen2.Services
                     var i = type.LastIndexOf('.');
                     var typeDisplayName = type.Substring(i + 1);
                     var link = $"{type}";
-                    document.Append("**").Append(item.Key).Append("** ([").Append(typeDisplayName).Append("](").Append(link).AppendLine("))  ");
+                    document.Append($"<a name=\"{Uri.EscapeUriString($"blocks-{item.Key}")}\">**").Append(item.Key).Append("**</a> ([").Append(typeDisplayName).Append("](").Append(link).AppendLine("))  ");
                 }
                 else
-                    document.Append("**").Append(item.Key).AppendLine("**  ");
+                    document.Append($"<a name=\"{Uri.EscapeUriString($"blocks-{item.Key}")}\">**").Append(item.Key).AppendLine("**</a>  ");
 
                 foreach (var subgroup in item.OrderBy(g => g.Size))
                 {
                     document.Append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
                         .Append(subgroup.Size).Append(": `").Append(subgroup).AppendLine("`  ");
                 }
+
+                document.AppendLine("  ");
             }
 
             var other = _definitions.Where(d => d.Group != "Blocks").ToList();
@@ -72,8 +74,8 @@ namespace Mal.DocGen2.Services
                 document.Append("## ").Append(group.Key).AppendLine("  ");
                 foreach (var item in group.OrderBy(g => g.DisplayName))
                 {
-                    document.Append("**").Append(item.DisplayName).AppendLine("**  ");
-                    document.Append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`").Append(item).AppendLine("`  ");
+                    document.Append($"**<a name=\"{Uri.EscapeUriString($"{group.Key}-{item.DisplayName}")}\">").Append(item.DisplayName).AppendLine("</a>**  ");
+                    document.Append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`").Append(item).AppendLine("`  ").AppendLine("  ");
                 }
 
                 document.AppendLine();
@@ -171,6 +173,19 @@ namespace Mal.DocGen2.Services
                 }
             }
 
+            var ammoMagazineDefinitions = document.XPathSelectElements(@"/Definitions/AmmoMagazines/AmmoMagazine");
+            foreach (var ammoMagazineDefinition in ammoMagazineDefinitions)
+            {
+                var idElement = ammoMagazineDefinition.Element("Id");
+                var typeId = (string)idElement?.Element("TypeId") ?? (string)idElement?.Attribute("Type");
+                var subtypeId = (string)idElement?.Element("SubtypeId") ?? (string)idElement?.Attribute("Typeid");
+                var displayName = text.Get((string)ammoMagazineDefinition.Element("DisplayName"));
+                lock (_definitions)
+                {
+                    _definitions.Add(new Definition(GroupOf(typeId), null, displayName, null, typeId, subtypeId));
+                }
+            }
+
             var blueprintDefinitions = document.XPathSelectElements(@"/Definitions/Blueprints/Blueprint");
             foreach (var blueprintDefinition in blueprintDefinitions)
             {
@@ -195,6 +210,7 @@ namespace Mal.DocGen2.Services
                 case "GasContainerObject":
                 case "PhysicalGunObject": return "Tools";
                 case "Blueprint": return "Blueprints";
+                case "AmmoMagazine": return "Ammo Magazines";
                 default: return "Other";
             }
         }

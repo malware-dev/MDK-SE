@@ -1,21 +1,23 @@
-﻿using System;
-using System.Diagnostics;
-using EnvDTE;
+﻿using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using Task = System.Threading.Tasks.Task;
 
 // ReSharper disable SuspiciousTypeConversion.Global
 
 namespace Malware.MDKServices
 {
     /// <summary>
-    /// Extension helper method for the Visual Studio DTE
+    ///     Extension helper method for the Visual Studio DTE
     /// </summary>
     public static class DTEExtensions
     {
         /// <summary>
-        /// Determines whether a project is currently loaded.
+        ///     Determines whether a project is currently loaded.
         /// </summary>
         /// <param name="project"></param>
         /// <returns></returns>
@@ -47,10 +49,10 @@ namespace Malware.MDKServices
 
 
         /// <summary>
-        /// Unload a project
+        ///     Unload a project
         /// </summary>
         /// <param name="project"></param>
-        public static UnloadedProjectHandle Unload(this EnvDTE.Project project)
+        public static UnloadedProjectHandle Unload(this Project project)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             var serviceProvider = new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)project.DTE);
@@ -78,11 +80,11 @@ namespace Malware.MDKServices
         //}
 
         /// <summary>
-        /// A handle for controlling a previously unloaded project
+        ///     A handle for controlling a previously unloaded project
         /// </summary>
         public class UnloadedProjectHandle
         {
-            IVsSolution4 _solutionService4;
+            readonly IVsSolution4 _solutionService4;
             Guid _projectGuid;
 
             internal UnloadedProjectHandle(IVsSolution4 solutionService4, Project project, Guid projectGuid)
@@ -93,17 +95,30 @@ namespace Malware.MDKServices
             }
 
             /// <summary>
-            /// The unloaded project
+            ///     The unloaded project
             /// </summary>
             public Project Project { get; }
 
             /// <summary>
-            /// Reload the project
+            ///     Reload the project
             /// </summary>
-            public void Reload()
+            public async Task<bool> ReloadAsync()
             {
-                ThreadHelper.ThrowIfNotOnUIThread();
-                _solutionService4.ReloadProject(ref _projectGuid);
+                await Task.Delay(250);
+                try
+                {
+                    ThreadHelper.ThrowIfNotOnUIThread();
+                    _solutionService4.UnloadProject(ref _projectGuid, (int)_VSProjectUnloadStatus.UNLOADSTATUS_LoadPendingIfNeeded);
+                    await Task.Delay(250);
+                    _solutionService4.ReloadProject(ref _projectGuid);
+                    await Task.Delay(250);
+                    _solutionService4.EnsureProjectIsLoaded(ref _projectGuid, (int)__VSBSLFLAGS.VSBSLFLAGS_None);
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
             }
         }
     }

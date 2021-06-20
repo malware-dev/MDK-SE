@@ -42,7 +42,7 @@ namespace Mal.DocGen2.Services
             var document = new StringBuilder();
             var blocks = Blocks.OrderBy(b => GetBlockName(b.BlockInterfaceType)).ToList();
             document.AppendLine("## Overview");
-            document.AppendLine("**Note: Terminal actions and properties are for all intents and purposes obsolete since all vanilla block interfaces now contain proper API access to all this information. It is highly recommended you use those for less overhead.**");
+            document.AppendLine("**Note: Terminal actions and properties are for all intents and purposes obsolete since all vanilla block interfaces now contain proper API access to _most of_ this information. It is highly recommended you use those for less overhead.**");
             document.AppendLine();
 
             foreach (var block in blocks)

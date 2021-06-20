@@ -575,7 +575,7 @@ namespace MDK.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The upgrade process has been completed. It is recommended that you do a complete Build|Clean Solution + Build|Rebuild Solution to make sure all Visual Studio caches are updated..
+        ///   Looks up a localized string similar to The upgrade process has been completed. It is recommended to restart Visual Studio in order to reload the extensions and analyzers..
         /// </summary>
         internal static string ProjectHealthDialogModel_RunUpgrades_Description {
             get {
