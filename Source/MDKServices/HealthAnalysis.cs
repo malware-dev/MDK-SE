@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using EnvDTE;
 using Microsoft.VisualStudio.Shell;
 using System.Runtime.InteropServices;
+using VSLangProj;
 
 namespace Malware.MDKServices
 {
@@ -30,14 +31,33 @@ namespace Malware.MDKServices
         /// <param name="solution"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static Task<HealthAnalysis[]> AnalyzeAsync(Solution solution, HealthAnalysisOptions options) => System.Threading.Tasks.Task.WhenAll(solution.Projects.Cast<Project>().Select(project => System.Threading.Tasks.Task.Run(() => Analyze(project, options))));
+        public static Task<HealthAnalysis[]> AnalyzeAsync(Solution solution, HealthAnalysisOptions options) {
+            var projectTaks = GetProjects(solution.Projects.Cast<Project>()).Select(project => System.Threading.Tasks.Task.Run(() => Analyze(project, options)));
+            return System.Threading.Tasks.Task.WhenAll(projectTaks);
+        }
+
+        private const string C_SHARP_PROJECT_KIND = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}";
+
+        private static IEnumerable<Project> GetProjects(IEnumerable<Project> projects) {
+            var result = new List<Project>();
+            foreach (var project in projects) {
+                if (new Guid(project.Kind) == new Guid(C_SHARP_PROJECT_KIND))
+                    result.Add(project);
+                else if (project.ProjectItems != null)
+                {
+                    result.AddRange(GetProjects(project.ProjectItems.Cast<ProjectItem>().Select(x => x.SubProject).OfType<Project>()));
+                }
+            }
+            return result;
+        }
 
         // ReSharper disable once InconsistentNaming
         private const int RPC_E_SERVERCALL_RETRYLATER = unchecked((int)0x8001010A);
 
+
         static HealthAnalysis Analyze(Project project, HealthAnalysisOptions options)
         {
-            options.Echo?.Invoke("Analyzing project...");
+            options.Echo?.Invoke($"{project.Name}: Analyzing project...");
             while (true)
             {
                 try
