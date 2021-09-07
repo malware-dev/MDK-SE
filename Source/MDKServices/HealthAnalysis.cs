@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EnvDTE;
 using Microsoft.VisualStudio.Shell;
+using System.Runtime.InteropServices;
 
 namespace Malware.MDKServices
 {
@@ -31,13 +32,28 @@ namespace Malware.MDKServices
         /// <returns></returns>
         public static Task<HealthAnalysis[]> AnalyzeAsync(Solution solution, HealthAnalysisOptions options) => System.Threading.Tasks.Task.WhenAll(solution.Projects.Cast<Project>().Select(project => System.Threading.Tasks.Task.Run(() => Analyze(project, options))));
 
+        // ReSharper disable once InconsistentNaming
+        private const int RPC_E_SERVERCALL_RETRYLATER = unchecked((int)0x8001010A);
+
         static HealthAnalysis Analyze(Project project, HealthAnalysisOptions options)
         {
             options.Echo?.Invoke("Analyzing project...");
-            if (!project.IsLoaded())
+            while (true)
             {
-                options.Echo?.Invoke("Project is not loaded.");
-                return new HealthAnalysis(project, null, options);
+                try
+                {
+                    if (!project.IsLoaded())
+                    {
+                        options.Echo?.Invoke("Project is not loaded.");
+                        return new HealthAnalysis(project, null, options);
+                    }
+
+                    break;
+                }
+                catch (COMException ce) when (ce.HResult == RPC_E_SERVERCALL_RETRYLATER)
+                {
+                    System.Threading.Thread.Sleep(500);
+                }
             }
 
             var projectInfo = MDKProjectProperties.Load(project.FullName, project.Name, options.Echo);
