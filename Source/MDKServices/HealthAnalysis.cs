@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using EnvDTE;
 using Microsoft.VisualStudio.Shell;
 using System.Runtime.InteropServices;
-using VSLangProj;
 
 namespace Malware.MDKServices
 {
