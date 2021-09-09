@@ -1,62 +1,79 @@
-﻿using System;
+﻿using EnvDTE;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using EnvDTE;
-using Microsoft.VisualStudio.Shell;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace Malware.MDKServices
 {
     /// <summary>
-    /// A service to analyze the validity and health of a project, determining whether or not it's an MDK project in the first place
-    /// and the general health state of the project if it is.
+    ///     A service to analyze the validity and health of a project, determining whether or not it's an MDK project in the
+    ///     first place
+    ///     and the general health state of the project if it is.
     /// </summary>
     public class HealthAnalysis
     {
+        // ReSharper disable once InconsistentNaming
+        private const int RPC_E_SERVERCALL_RETRYLATER = unchecked((int)0x8001010A);
+
+        // ReSharper disable once InconsistentNaming
+        private static readonly Guid C_SHARP_PROJECT_KIND = new Guid("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}");
+
         /// <summary>
-        /// Analyze an individual project
+        ///     Analyze an individual project
         /// </summary>
         /// <param name="project"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static Task<HealthAnalysis> AnalyzeAsync(Project project, HealthAnalysisOptions options) => System.Threading.Tasks.Task.Run(() => Analyze(project, options));
+        public static Task<HealthAnalysis> AnalyzeAsync(Project project, HealthAnalysisOptions options) => Task.Run(() => Analyze(project, options));
 
         /// <summary>
-        /// Analyze an entire solution's worth of projects
+        ///     Analyze an entire solution's worth of projects
         /// </summary>
         /// <param name="solution"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static Task<HealthAnalysis[]> AnalyzeAsync(Solution solution, HealthAnalysisOptions options) {
-            var projectTaks = GetProjects(solution.Projects.Cast<Project>()).Select(project => System.Threading.Tasks.Task.Run(() => Analyze(project, options)));
-            return System.Threading.Tasks.Task.WhenAll(projectTaks);
+        public static Task<HealthAnalysis[]> AnalyzeAsync(Solution solution, HealthAnalysisOptions options)
+        {
+            var projectTaks = GetProjects(solution.Projects.Cast<Project>()).Select(project => Task.Run(() => Analyze(project, options)));
+            return Task.WhenAll(projectTaks);
         }
 
-        private const string C_SHARP_PROJECT_KIND = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}";
-
-        private static IEnumerable<Project> GetProjects(IEnumerable<Project> projects) {
+        private static IEnumerable<Project> GetProjects(IEnumerable<Project> projects)
+        {
             var result = new List<Project>();
-            foreach (var project in projects) {
-                if (new Guid(project.Kind) == new Guid(C_SHARP_PROJECT_KIND))
-                    result.Add(project);
-                else if (project.ProjectItems != null)
-                {
-                    result.AddRange(GetProjects(project.ProjectItems.Cast<ProjectItem>().Select(x => x.SubProject).OfType<Project>()));
-                }
-            }
+            GetProjects(projects, result);
             return result;
         }
 
-        // ReSharper disable once InconsistentNaming
-        private const int RPC_E_SERVERCALL_RETRYLATER = unchecked((int)0x8001010A);
+        private static void GetProjects(IEnumerable<Project> projects, List<Project> result)
+        {
+            if (projects == null)
+                return;
 
+            foreach (var project in projects)
+            {
+                if (project == null)
+                    continue;
+
+                if (new Guid(project.Kind) == C_SHARP_PROJECT_KIND)
+                {
+                    result.Add(project);
+                    continue;
+                }
+
+                if (project.ProjectItems != null)
+                    GetProjects(project.ProjectItems.Cast<ProjectItem>().Select(x => x.SubProject), result);
+            }
+        }
 
         static HealthAnalysis Analyze(Project project, HealthAnalysisOptions options)
         {
             options.Echo?.Invoke($"{project.Name}: Analyzing project...");
+            int repetitions = 60;
             while (true)
             {
                 try
@@ -72,6 +89,15 @@ namespace Malware.MDKServices
                 catch (COMException ce) when (ce.HResult == RPC_E_SERVERCALL_RETRYLATER)
                 {
                     System.Threading.Thread.Sleep(500);
+                    repetitions--;
+                    if (repetitions <= 0)
+                    {
+                        if (!project.IsLoaded())
+                        {
+                            options.Echo?.Invoke("Error: RPC service was busy for 30 seconds. Could not analyze project.");
+                            return new HealthAnalysis(project, null, options);
+                        }
+                    }
                 }
             }
 
@@ -143,7 +169,7 @@ namespace Malware.MDKServices
             return analysis;
         }
 
-        List<HealthProblem> _problems = new List<HealthProblem>();
+        readonly List<HealthProblem> _problems = new List<HealthProblem>();
 
         HealthAnalysis(Project project, MDKProjectProperties properties, HealthAnalysisOptions analysisOptions)
         {
@@ -156,6 +182,7 @@ namespace Malware.MDKServices
             {
                 // Ignored. Ugly but necessary hack.
             }
+
             Properties = properties;
             AnalysisOptions = analysisOptions;
             IsMDKProject = properties != null;
@@ -168,37 +195,37 @@ namespace Malware.MDKServices
         }
 
         /// <summary>
-        /// Gets the file name of the analyzed project.
+        ///     Gets the file name of the analyzed project.
         /// </summary>
         public string FileName { get; }
 
         /// <summary>
-        /// The project this health analysis is about
+        ///     The project this health analysis is about
         /// </summary>
         public Project Project { get; }
 
         /// <summary>
-        /// MDK project properties
+        ///     MDK project properties
         /// </summary>
         public MDKProjectProperties Properties { get; }
 
         /// <summary>
-        /// Contains the options used when running this analysis
+        ///     Contains the options used when running this analysis
         /// </summary>
         public HealthAnalysisOptions AnalysisOptions { get; }
 
         /// <summary>
-        /// Whether or not this is an MDK project
+        ///     Whether or not this is an MDK project
         /// </summary>
         public bool IsMDKProject { get; }
 
         /// <summary>
-        /// Determines overall whether this project is a healthy MDK project.
+        ///     Determines overall whether this project is a healthy MDK project.
         /// </summary>
         public bool IsHealthy => _problems.Count == 0;
 
         /// <summary>
-        /// A list of problems in this project (if any)
+        ///     A list of problems in this project (if any)
         /// </summary>
         public ReadOnlyCollection<HealthProblem> Problems { get; }
     }
