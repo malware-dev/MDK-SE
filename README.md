@@ -17,6 +17,9 @@ If you see an error in Visual Studio like:
 
 Make sure you're up to date with the latest version of Visual Studio.
 
+### Visual Studio 2022 Support...?
+Microsoft made some rather major changes to how extensions work with Visual Studio, meaning that I would have to keep two separate versions around to support VS2022. _Eventually_ I will likely get around to doing that, but I'm afraid '19 will have to be the running version for now.
+
 ### General features
 * Helps you create a fully connected script project in Visual Studio, with all references in place
 * Requires that you have the game installed, but does _not_ require you to have it running
