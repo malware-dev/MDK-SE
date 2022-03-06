@@ -32,7 +32,7 @@ Microsoft made some rather major changes to how extensions work with Visual Stud
 
 ### Quick links
 * [MDK/SE Wiki page](https://github.com/malware-dev/MDK-SE/wiki)  
-* [Getting Started](https://github.com/malware-dev/MDK-SE/wiki/Getting-Started)
+* [Getting Started with MDK](https://github.com/malware-dev/MDK-SE/wiki/Getting-Started-with-MDK)
 * [Quick Introduction to Space Engineers Ingame Scripts](https://github.com/malware-dev/MDK-SE/wiki/Quick-Introduction-to-Space-Engineers-Ingame-Scripts)  
   (You don't have to use the extension to get something out of this guide)
 * [Contributing to MDK](https://github.com/malware-dev/MDK-SE/blob/master/CONTRIBUTING.md)
