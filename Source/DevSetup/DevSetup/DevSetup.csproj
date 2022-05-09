@@ -113,6 +113,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <Import Project="..\..\SteamAndSE\SteamAndSE.projitems" Label="Shared" />
+  <Import Project="..\..\Mixin.SteamAndSE\Mixin.SteamAndSE.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
