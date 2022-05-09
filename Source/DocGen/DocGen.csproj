@@ -110,6 +110,6 @@
       <Version>4.5.3</Version>
     </PackageReference>
   </ItemGroup>
-  <Import Project="..\SteamAndSE\SteamAndSE.projitems" Label="Shared" />
+  <Import Project="..\Mixin.SteamAndSE\Mixin.SteamAndSE.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -5,12 +5,12 @@ VisualStudioVersion = 15.0.26730.8
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevSetup", "DevSetup\DevSetup.csproj", "{C519B191-4510-48D6-BC6C-0E7CEF573617}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SteamAndSE", "..\SteamAndSE\SteamAndSE.shproj", "{9E28967B-803C-4CF2-9A9C-B8135C85266B}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Mixin.SteamAndSE", "..\Mixin.SteamAndSE\Mixin.SteamAndSE.shproj", "{9E28967B-803C-4CF2-9A9C-B8135C85266B}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		..\SteamAndSE\SteamAndSE.projitems*{9e28967b-803c-4cf2-9a9c-b8135c85266b}*SharedItemsImports = 13
-		..\SteamAndSE\SteamAndSE.projitems*{c519b191-4510-48d6-bc6c-0e7cef573617}*SharedItemsImports = 4
+		..\Mixin.SteamAndSE\Mixin.SteamAndSE.projitems*{9e28967b-803c-4cf2-9a9c-b8135c85266b}*SharedItemsImports = 13
+		..\Mixin.SteamAndSE\Mixin.SteamAndSE.projitems*{c519b191-4510-48d6-bc6c-0e7cef573617}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
