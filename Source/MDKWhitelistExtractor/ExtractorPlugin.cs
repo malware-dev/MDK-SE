@@ -160,7 +160,7 @@ namespace Malware.MDKWhitelistExtractor
             visitedAssemblies = visitedAssemblies ?? new HashSet<AssemblyName>(new AssemblyNameComparer());
             visitedAssemblies.Add(gameAssembly.GetName());
             var companyAttribute = gameAssembly.GetCustomAttribute<AssemblyCompanyAttribute>();
-            if (companyAttribute?.Company == "Microsoft Corporation")
+            if (companyAttribute?.Company == "Microsoft Corporation" || companyAttribute?.Company == "ProtoBuf.Net.Core")
                 yield break;
 
             var types = gameAssembly.DefinedTypes.Where(type => type.HasAttribute<MyCubeBlockTypeAttribute>());
