@@ -86,6 +86,17 @@ namespace Mal.DocGen2.Services.Markdown
             return ((CodeTransaction)_transaction.Peek()).CommitAsync();
         }
 
+        public Task BeginQuoteAsync()
+        {
+            _transaction.Push(new QuoteTransaction(this));
+            return Task.CompletedTask;
+        }
+
+        public Task EndQuoteAsync()
+        {
+            return ((QuoteTransaction)_transaction.Peek()).CommitAsync();
+        }
+
         public async Task WriteHeaderAsync(int type, string text)
         {
             await WriteAsync(new string('#', type));
@@ -210,6 +221,39 @@ namespace Mal.DocGen2.Services.Markdown
                 _writer.EndTransaction(this);
                 var content = SoftNewlines(TrimNewlines(_buffer.ToString()));
                 await _writer.WriteLineAsync(content);
+                await _writer.WriteLineAsync();
+            }
+        }
+
+        private class QuoteTransaction: ITransaction
+        {
+            private readonly MarkdownWriter _writer;
+            private readonly StringWriter _buffer = new StringWriter();
+
+            public QuoteTransaction(MarkdownWriter writer)
+            {
+                _writer = writer;
+            }
+
+            public Task WriteAsync(string text)
+            {
+                return _buffer.WriteAsync(text);
+            }
+
+            public Task WriteLineAsync(string text)
+            {
+                return _buffer.WriteLineAsync(text);
+            }
+
+            public async Task CommitAsync()
+            {
+                _writer.EndTransaction(this);
+                var finalLines = TrimNewlines(_buffer.ToString()).Split(NewLines, StringSplitOptions.None);
+                for (var i = 0; i < finalLines.Length; i++)
+                {
+                    finalLines[i] = "> " + finalLines[i];
+                }
+                await _writer.WriteLineAsync(string.Join($"  {Environment.NewLine}", finalLines));
                 await _writer.WriteLineAsync();
             }
         }

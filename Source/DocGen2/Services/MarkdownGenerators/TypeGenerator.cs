@@ -160,12 +160,23 @@ namespace Mal.DocGen2.Services.MarkdownGenerators
 
         async Task WriteMembers(ProgrammableBlockApi api, ApiEntry entry, MarkdownWriter writer)
         {
-            var memberEntries = AllInheritedEntriesOf(entry).ToList();
+            var memberEntries = AllInheritedEntriesOf(entry).OrderByDescending(m => m.IsStatic).ThenBy(m => InheritanceWeight(entry, m)).ThenBy(m => m.Name).ToList();
             await WriteTable("Fields", memberEntries.Where(m => m.Member is FieldInfo), api, entry, writer);
             await WriteTable("Events", memberEntries.Where(m => m.Member is EventInfo), api, entry, writer);
             await WriteTable("Properties", memberEntries.Where(m => m.Member is PropertyInfo), api, entry, writer);
             await WriteTable("Constructors", memberEntries.Where(m => m.Member is ConstructorInfo), api, entry, writer);
             await WriteTable("Methods", memberEntries.Where(m => m.Member is MethodInfo), api, entry, writer);
+        }
+
+        private int InheritanceWeight(ApiEntry entry, ApiEntry apiEntry)
+        {
+            var weight = 0;
+            var obsoleteAttribute = apiEntry.Member.GetCustomAttribute<ObsoleteAttribute>(false);
+            if (obsoleteAttribute != null)
+                weight += 100;
+            if (apiEntry.DeclaringEntry != entry)
+                weight++;
+            return weight;
         }
 
         IEnumerable<ApiEntry> AllInheritedEntriesOf(ApiEntry entry)
@@ -192,14 +203,18 @@ namespace Mal.DocGen2.Services.MarkdownGenerators
             if (items.Count == 0)
                 return;
             await writer.WriteHeaderAsync(4, title);
-            await writer.BeginTableAsync("Member", "Description");
+            //await writer.BeginTableAsync("Member", "Description");
             foreach (var item in items)
             {
-                await writer.BeginTableCellAsync();
-                await writer.WriteAsync(MemberGenerator.LinkTo(item.ToString(ApiEntryStringFlags.ParameterTypes | ApiEntryStringFlags.Accessors), item));
-                await writer.EndTableCellAsync();
+                //await writer.BeginTableCellAsync();
+                await writer.BeginParagraphAsync();
+                const ApiEntryStringFlags Flags = ApiEntryStringFlags.ParameterTypes | ApiEntryStringFlags.Accessors | ApiEntryStringFlags.Instantiation | ApiEntryStringFlags.ReturnValue | ApiEntryStringFlags.GenericParameters | ApiEntryStringFlags.ParameterNames;
+                await writer.WriteAsync(MemberGenerator.LinkTo(item.ToString(Flags), item));
+                await writer.EndParagraphAsync();
+                //await writer.EndTableCellAsync();
 
-                await writer.BeginTableCellAsync();
+                await writer.BeginQuoteAsync();
+                //await writer.BeginTableCellAsync();
                 var obsoleteAttribute = item.Member.GetCustomAttribute<ObsoleteAttribute>(false);
                 if (obsoleteAttribute != null)
                 {
@@ -220,11 +235,12 @@ namespace Mal.DocGen2.Services.MarkdownGenerators
                     await writer.WriteAsync(MarkdownInline.Emphasized($"Inherited from {MemberGenerator.LinkTo(item.DeclaringEntry.ToString(ApiEntryStringFlags.ShortDisplayName), item.DeclaringEntry)}"));
                     await writer.EndParagraphAsync();
                 }
+                await writer.EndQuoteAsync();
 
-                await writer.EndTableCellAsync();
+                //await writer.EndTableCellAsync();
             }
 
-            await writer.EndTableAsync();
+            //await writer.EndTableAsync();
         }
 
         IEnumerable<string> AncestorsOf(ApiEntry entry)

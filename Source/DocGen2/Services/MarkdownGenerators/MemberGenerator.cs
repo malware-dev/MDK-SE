@@ -4,6 +4,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Mal.DocGen2.Services.Markdown;
+using System.Text.RegularExpressions;
+using System.Windows.Navigation;
 
 namespace Mal.DocGen2.Services.MarkdownGenerators
 {
@@ -22,8 +24,33 @@ namespace Mal.DocGen2.Services.MarkdownGenerators
 
         public static string LinkTo(string text, ApiEntry entry)
         {
-            if (ShouldBeIgnored(entry))
-                return text;
+            string escape(string s) => Regex.Replace(s, @"[<>[\]]", match =>
+            {
+                var v = match.ToString();
+                switch (v)
+                {
+                    case "<":
+                        return "&lt;";
+                    case ">":
+                        return "&gt;";
+                    case "[":
+                        return "&#91";
+                    case "]":
+                        return "&#93;";
+                    default:
+                        return $"\\{v}";
+                }
+            });
+
+            text = escape(text);
+
+            switch (ShouldBeIgnored(entry))
+            {
+                case IgnoreReason.NoLinkNeeded:
+                    return text;
+                case IgnoreReason.Prohibited:
+                    return text + " <sub>prohibited</sub>";
+            }
 
             if (MicrosoftLink.IsMsType(entry.Member))
             {
@@ -36,28 +63,37 @@ namespace Mal.DocGen2.Services.MarkdownGenerators
                     fullName = type.FullName?.Replace('`', '-');
                 }
 
-                return MarkdownInline.HRef(text, $"https://docs.microsoft.com/en-us/dotnet/api/{fullName}?view=netframework-4.6");
+                return MarkdownInline.HRef(text, escape($"https://docs.microsoft.com/en-us/dotnet/api/{fullName}?view=netframework-4.6"));
             }
 
-            return MarkdownInline.HRef(text, Path.GetFileNameWithoutExtension(entry.SuggestedFileName));
+            return MarkdownInline.HRef(text, escape(Path.GetFileNameWithoutExtension(entry.SuggestedFileName)));
         }
 
-        public static bool ShouldBeIgnored(ApiEntry apiEntry)
+        public enum IgnoreReason
+        {
+            No,
+            NoLinkNeeded,
+            Prohibited
+        }
+
+        public static IgnoreReason ShouldBeIgnored(ApiEntry apiEntry)
         {
             //if (!apiEntry.IsWhitelisted)
             //    return true;
             if (apiEntry.Member.DeclaringType?.IsEnum ?? false)
-                return true;
+                return IgnoreReason.NoLinkNeeded;
             if (apiEntry.Member.DeclaringType?.FullName == "Sandbox.Game.Localization.MySpaceTexts")
-                return true;
+                return IgnoreReason.NoLinkNeeded;
             if (apiEntry.Member.DeclaringType?.FullName == "VRageMath.Color")
-                return true;
-            return false;
+                return IgnoreReason.NoLinkNeeded;
+            if (!apiEntry.IsWhitelisted)
+                return IgnoreReason.Prohibited;
+            return IgnoreReason.No;
         }
 
         public override async Task Generate(DirectoryInfo directory, ProgrammableBlockApi api)
         {
-            var tasks = api.Entries.Where(e => !(e.Member is Type) && !ShouldBeIgnored(e)).GroupBy(e => e.SuggestedFileName).Select(g => GeneratePage(api, directory, g));
+            var tasks = api.Entries.Where(e => !(e.Member is Type) && ShouldBeIgnored(e) == IgnoreReason.No).GroupBy(e => e.SuggestedFileName).Select(g => GeneratePage(api, directory, g));
             await Task.WhenAll(tasks);
         }
 

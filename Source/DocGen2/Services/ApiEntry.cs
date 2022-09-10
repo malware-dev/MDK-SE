@@ -1,12 +1,14 @@
-﻿using System;
+﻿using Mal.DocGen2.Services.XmlDocs;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
-using Mal.DocGen2.Services.XmlDocs;
+using System.Text.RegularExpressions;
 
 namespace Mal.DocGen2.Services
 {
@@ -168,10 +170,23 @@ namespace Mal.DocGen2.Services
             }
         }
 
-        List<ApiEntry> _inheritedEntries = new List<ApiEntry>();
-        List<ApiEntry> _inheritorEntries = new List<ApiEntry>();
-        List<ApiEntry> _memberEntries = new List<ApiEntry>();
-        Dictionary<ApiEntryStringFlags, string> _stringCache = new Dictionary<ApiEntryStringFlags, string>();
+        static string ToSafeFileName(string path)
+        {
+            var builder = new StringBuilder(path);
+            for (var i = 0; i < builder.Length; i++)
+            {
+                if (InvalidCharacters.Contains(builder[i]))
+                    builder[i] = '_';
+            }
+
+            builder.Append(".md");
+            return builder.ToString();
+        }
+
+        readonly List<ApiEntry> _inheritedEntries = new List<ApiEntry>();
+        readonly List<ApiEntry> _inheritorEntries = new List<ApiEntry>();
+        readonly List<ApiEntry> _memberEntries = new List<ApiEntry>();
+        readonly Dictionary<ApiEntryStringFlags, string> _stringCache = new Dictionary<ApiEntryStringFlags, string>();
 
         ApiEntry(ProgrammableBlockApi api, MemberInfo member, string assemblyName, string namespaceName, string name, string xmlDocKey, bool isWhitelisted)
         {
@@ -192,17 +207,6 @@ namespace Mal.DocGen2.Services
         }
 
         public string SuggestedFileName { get; set; }
-
-        static string ToSafeFileName(string path)
-        {
-            var builder = new StringBuilder(path);
-            for (var i = 0; i < builder.Length; i++)
-                if (InvalidCharacters.Contains(builder[i]))
-                    builder[i] = '_';
-
-            builder.Append(".md");
-            return builder.ToString();
-        }
 
         public XmlDoc Documentation { get; set; }
         public ProgrammableBlockApi Api { get; }
@@ -268,13 +272,55 @@ namespace Mal.DocGen2.Services
                 var prefix = "";
                 if (parameterInfo.Member.IsDefined(typeof(ExtensionAttribute), false) && index == 0)
                     prefix += "this\u00A0";
-                prefix += parameterInfo.IsOut? "out\u00A0" : parameterInfo.ParameterType.IsPointer ? "*" : parameterInfo.ParameterType.IsByRef ? "ref\u00A0" : "";
+                prefix += parameterInfo.IsOut ? "out\u00A0" : parameterInfo.ParameterType.IsPointer ? "*" : parameterInfo.ParameterType.IsByRef ? "ref\u00A0" : "";
                 var type = parameterInfo.ParameterType.IsByRef || parameterInfo.ParameterType.IsPointer ? parameterInfo.ParameterType.GetElementType() : parameterInfo.ParameterType;
                 segments.Add(prefix + Api.GetEntry(type, true).ToString(ForSubCalls(flags)));
             }
 
             if (flags.HasFlag(ApiEntryStringFlags.ParameterNames))
                 segments.Add(parameterInfo.Name);
+
+            if (parameterInfo.HasDefaultValue)
+            {
+                if (parameterInfo.ParameterType.IsEnum)
+                {
+                    return $"{string.Join(" ", segments)} = {parameterInfo.ParameterType.Name}.{parameterInfo.DefaultValue}";
+                }
+
+                var defaultValue = parameterInfo.DefaultValue;
+                switch (defaultValue)
+                {
+                    case byte byteValue:
+                        return $"{string.Join(" ", segments)} = {byteValue}";
+                    case sbyte sbyteValue:
+                        return $"{string.Join(" ", segments)} = {sbyteValue}";
+                    case short shortValue:
+                        return $"{string.Join(" ", segments)} = {shortValue}";
+                    case ushort ushortValue:
+                        return $"{string.Join(" ", segments)} = {ushortValue}";
+                    case int intValue:
+                        return $"{string.Join(" ", segments)} = {intValue}";
+                    case uint uintValue:
+                        return $"{string.Join(" ", segments)} = {uintValue}";
+                    case long longValue:
+                        return $"{string.Join(" ", segments)} = {longValue}";
+                    case ulong ulongValue:
+                        return $"{string.Join(" ", segments)} = {ulongValue}";
+                    case float floatValue:
+                        return $"{string.Join(" ", segments)} = {floatValue}";
+                    case double doubleValue:
+                        return $"{string.Join(" ", segments)} = {doubleValue}";
+                    case decimal decimalValue:
+                        return $"{string.Join(" ", segments)} = {decimalValue}";
+                    case string stringValue:
+                        return $"{string.Join(" ", segments)} = \"{Regex.Replace(stringValue, "[\\\"]", match => $"\\{match}")}\"";
+                    default:
+                        if (parameterInfo.ParameterType.IsClass)
+                            return $"{string.Join(" ", segments)} = null";
+                        else
+                            return $"{string.Join(" ", segments)} = default";
+                }
+            }
 
             return string.Join(" ", segments);
         }
@@ -288,6 +334,9 @@ namespace Mal.DocGen2.Services
                 buffer.Append(" ");
             }
 
+            if (flags.HasFlag(ApiEntryStringFlags.Instantiation) && constructorInfo.IsStatic)
+                buffer.Append("static ");
+
             if (flags.HasFlag(ApiEntryStringFlags.DeclaringTypes))
             {
                 foreach (var item in DeclarersOf(constructorInfo.DeclaringType, true).Reverse())
@@ -296,6 +345,7 @@ namespace Mal.DocGen2.Services
                     buffer.Append(".");
                 }
             }
+
             if (flags.HasFlag(ApiEntryStringFlags.CliNames))
                 buffer.Append(constructorInfo.Name);
             else
@@ -317,6 +367,9 @@ namespace Mal.DocGen2.Services
             var segments = new List<string>();
             if (flags.HasFlag(ApiEntryStringFlags.Modifiers))
                 segments.Add(methodInfo.GetModifiers().ToCodeString());
+
+            if (flags.HasFlag(ApiEntryStringFlags.Instantiation) && methodInfo.IsStatic)
+                segments.Add("static");
 
             if (flags.HasFlag(ApiEntryStringFlags.ReturnValue))
             {
@@ -349,7 +402,7 @@ namespace Mal.DocGen2.Services
                 {
                     var genericArguments = methodInfo.GetGenericArguments();
                     buffer.Append("<");
-                    buffer.Append(string.Join(", ", genericArguments.Select(arg => arg.Name)));
+                    buffer.Append(string.Join(", ", genericArguments.Select(arg => Api.GetEntry(arg).ToString(ForSubCalls(flags)))));
                     buffer.Append(">");
                 }
             }
@@ -373,6 +426,9 @@ namespace Mal.DocGen2.Services
 
             if (flags.HasFlag(ApiEntryStringFlags.Modifiers))
                 segments.Add(propertyInfo.GetModifiers().ToCodeString());
+
+            if (flags.HasFlag(ApiEntryStringFlags.Instantiation) && (propertyInfo.GetMethod ?? propertyInfo.SetMethod).IsStatic)
+                segments.Add("static");
 
             if (flags.HasFlag(ApiEntryStringFlags.ReturnValue))
                 segments.Add(Api.GetEntry(propertyInfo.PropertyType, true).ToString(ForSubCalls(flags)));
@@ -401,6 +457,7 @@ namespace Mal.DocGen2.Services
                         segments.Add(modifier.ToCodeString());
                     segments.Add("get;");
                 }
+
                 var setter = propertyInfo.SetMethod;
                 if (setter != null && !setter.IsPrivate)
                 {
@@ -409,6 +466,7 @@ namespace Mal.DocGen2.Services
                         segments.Add(modifier.ToCodeString());
                     segments.Add("set;");
                 }
+
                 segments.Add("}");
             }
 
@@ -421,6 +479,9 @@ namespace Mal.DocGen2.Services
 
             if (flags.HasFlag(ApiEntryStringFlags.Modifiers))
                 segments.Add(fieldInfo.GetModifiers().ToCodeString());
+
+            if (!fieldInfo.DeclaringType.IsEnum && flags.HasFlag(ApiEntryStringFlags.Instantiation) && fieldInfo.IsStatic)
+                segments.Add("static");
 
             if (flags.HasFlag(ApiEntryStringFlags.ReturnValue))
                 segments.Add(Api.GetEntry(fieldInfo.FieldType, true).ToString(ForSubCalls(flags)));
@@ -447,6 +508,9 @@ namespace Mal.DocGen2.Services
 
             if (flags.HasFlag(ApiEntryStringFlags.Modifiers))
                 segments.Add(eventInfo.GetModifiers().ToCodeString());
+
+            if (flags.HasFlag(ApiEntryStringFlags.Instantiation) && (eventInfo.AddMethod ?? eventInfo.RemoveMethod).IsStatic)
+                segments.Add("static");
 
             if (flags.HasFlag(ApiEntryStringFlags.ReturnValue))
                 segments.Add(Api.GetEntry(eventInfo.EventHandlerType, true).ToString(ForSubCalls(flags)));
@@ -485,6 +549,9 @@ namespace Mal.DocGen2.Services
 
             var segments = new List<string>();
 
+            if ((!type.IsEnum && (type.GetModifiers() & TypeModifiers.Static) != 0))
+                segments.Add("static");
+
             if (flags.HasFlag(ApiEntryStringFlags.Namespaces))
                 segments.Add(type.Namespace);
 
@@ -505,11 +572,12 @@ namespace Mal.DocGen2.Services
                 if (flags.HasFlag(ApiEntryStringFlags.GenericParameters))
                 {
                     var genericArguments = type.GetGenericArguments();
-                    name += $"<{string.Join(", ", genericArguments.Select(arg => arg.IsGenericParameter ? arg.Name : arg.FullName))}>";
+                    name += $"<{string.Join(", ", genericArguments.Select(arg => arg.IsGenericParameter ? arg.Name : Api.GetEntry(arg)?.ToString(ForSubCalls(flags)) ?? arg.Name ))}>";
                 }
 
                 segments.Add(name);
             }
+
             var fullName = string.Join(".", segments);
 
             if (flags.HasFlag(ApiEntryStringFlags.Inheritance) && (BaseEntry != null || InheritedEntries.Count > 0))
@@ -543,7 +611,7 @@ namespace Mal.DocGen2.Services
             return fullName;
         }
 
-        ApiEntryStringFlags ForSubCalls(ApiEntryStringFlags flags) => flags & ~(ApiEntryStringFlags.Accessors | ApiEntryStringFlags.Inheritance | ApiEntryStringFlags.Modifiers);
+        ApiEntryStringFlags ForSubCalls(ApiEntryStringFlags flags) => ApiEntryStringFlags.GenericParameters | flags & ~(ApiEntryStringFlags.Accessors | ApiEntryStringFlags.Inheritance | ApiEntryStringFlags.Modifiers);
 
         public void ResolveLinks()
         {
