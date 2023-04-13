@@ -6,8 +6,6 @@
     <Icon>MixinProjectTemplate.ico</Icon>
     <AppliesTo>CSharp</AppliesTo>
     <ProjectType>CSharp</ProjectType>
-    <RequiredFrameworkVersion>4.6.1</RequiredFrameworkVersion>
-    <MaxFrameworkVersion>4.6.1</MaxFrameworkVersion>
     <NumberOfParentCategoriesToRollUp>2</NumberOfParentCategoriesToRollUp>
     <SortOrder>1100</SortOrder>
     <TemplateID>44308989-CB02-4956-9207-9E240CEF4DFF</TemplateID>

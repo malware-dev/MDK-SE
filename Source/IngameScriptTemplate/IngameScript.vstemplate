@@ -6,8 +6,6 @@
     <Icon>IngameScript.ico</Icon>
     <AppliesTo>CSharp</AppliesTo>
     <ProjectType>CSharp</ProjectType>
-    <RequiredFrameworkVersion>4.6.1</RequiredFrameworkVersion>
-    <MaxFrameworkVersion>4.6.1</MaxFrameworkVersion>
     <NumberOfParentCategoriesToRollUp>2</NumberOfParentCategoriesToRollUp>
     <SortOrder>1000</SortOrder>
     <TemplateID>e8dc9f0e-c9d8-400b-b23d-b61e738f2a72</TemplateID>

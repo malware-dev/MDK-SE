@@ -7,7 +7,6 @@
     <TemplateID>f8451166-5b1e-4d52-8765-159447f3ef5f</TemplateID>
     <ProjectType>CSharp</ProjectType>
     <AppliesTo>CSharp + SharedAssetsProject</AppliesTo>
-    <RequiredFrameworkVersion>2.0</RequiredFrameworkVersion>
     <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
     <DefaultName>Class.cs</DefaultName>
   </TemplateData>

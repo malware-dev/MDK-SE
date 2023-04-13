@@ -7,7 +7,6 @@
     <TemplateID>8ce6c376-3acc-4993-ab91-80d55cdd8ddc</TemplateID>
     <ProjectType>CSharp</ProjectType>
     <AppliesTo>CSharp + SharedAssetsProject</AppliesTo>
-    <RequiredFrameworkVersion>2.0</RequiredFrameworkVersion>
     <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
     <DefaultName>Instructions.readme</DefaultName>
   </TemplateData>

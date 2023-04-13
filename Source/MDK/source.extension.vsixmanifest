@@ -15,7 +15,7 @@ Space Engineers is trademarked to Keen Software House. This toolkit is fan-made,
     <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[16.8, 17.0)" />
   </Installation>
   <Dependencies>
-    <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.6.1,)" />
+    <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.8,)" />
     <!--<Dependency Id="Microsoft.VisualStudio.MPF.15.0" DisplayName="Visual Studio MPF 15.0" d:Source="Installed" Version="[15.0]" />-->
   </Dependencies>
   <Assets>
