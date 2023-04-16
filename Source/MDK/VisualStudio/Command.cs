@@ -48,6 +48,7 @@ namespace MDK.VisualStudio
         /// </summary>
         public virtual void Initialize()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (!(ServiceProvider.GetService(typeof(IMenuCommandService)) is OleMenuCommandService commandService))
             {
                 Package.LogPackageError(GetType().FullName, new InvalidOperationException("Cannot retrieve menu command service"));

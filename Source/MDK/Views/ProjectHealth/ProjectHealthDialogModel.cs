@@ -2,6 +2,7 @@
 using Malware.MDKServices;
 using MDK.Resources;
 using MDK.Views.ProjectHealth.Fixes;
+using Microsoft.VisualStudio.Shell;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -132,6 +133,7 @@ namespace MDK.Views.ProjectHealth
         /// </summary>
         protected override bool OnSave()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (!SaveAndCloseCommand.IsEnabled)
                 return false;
             if (!_isCompleted)
@@ -141,6 +143,7 @@ namespace MDK.Views.ProjectHealth
 
         async void RunUpgrades()
         {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             try
             {
                 SaveAndCloseCommand.IsEnabled = false;

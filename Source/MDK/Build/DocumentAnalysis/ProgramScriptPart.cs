@@ -76,9 +76,9 @@ namespace MDK.Build.DocumentAnalysis
 
                 // Skip the whitespace and line the brace itself is on
                 var i = 0;
-                while (i < trailingTrivia.Count && trailingTrivia[i].Kind() == SyntaxKind.WhitespaceTrivia)
+                while (i < trailingTrivia.Count && trailingTrivia[i].IsKind(SyntaxKind.WhitespaceTrivia))
                     i++;
-                if (i < trailingTrivia.Count && trailingTrivia[i].Kind() == SyntaxKind.EndOfLineTrivia)
+                if (i < trailingTrivia.Count && trailingTrivia[i].IsKind(SyntaxKind.EndOfLineTrivia))
                     i++;
                 for (; i < trailingTrivia.Count; i++)
                     buffer.Append(trailingTrivia[i].ToFullString());

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Malware.MDKServices;
@@ -21,7 +20,7 @@ namespace Malware.MDKAnalyzer
             = new DiagnosticDescriptor("MissingWhitelistRule", "Missing Or Corrupted Whitelist Cache", "The whitelist cache could not be loaded. Please run Tools | MDK | Refresh Whitelist Cache to attempt repair.", "Whitelist", DiagnosticSeverity.Error, true);
 
         internal static readonly DiagnosticDescriptor NoOptionsRule
-            = new DiagnosticDescriptor("MissingOptionsRule", "Missing Or Corrupted Options", "The MDK.options.props could not be loaded.", "Whitelist", DiagnosticSeverity.Error, true);
+            = new DiagnosticDescriptor("MissingOptionsRule", "Missing Or Corrupted Options", "The MDK.options.props could not be loaded", "Whitelist", DiagnosticSeverity.Error, true);
 
         internal static readonly DiagnosticDescriptor ProhibitedMemberRule
             = new DiagnosticDescriptor("ProhibitedMemberRule", "Prohibited Type Or Member", "The type or member '{0}' is prohibited in Space Engineers", "Whitelist", DiagnosticSeverity.Error, true);
@@ -30,11 +29,11 @@ namespace Malware.MDKAnalyzer
             = new DiagnosticDescriptor("ProhibitedLanguageElement", "Prohibited Language Element", "The language element '{0}' is prohibited in Space Engineers", "Whitelist", DiagnosticSeverity.Error, true);
 
         internal static readonly DiagnosticDescriptor InconsistentNamespaceDeclarationRule
-            = new DiagnosticDescriptor("InconsistentNamespaceDeclaration", "Inconsistent Namespace Declaration", "All ingame script code should be within the {0} namespace in order to avoid problems.", "Whitelist", DiagnosticSeverity.Warning, true);
+            = new DiagnosticDescriptor("InconsistentNamespaceDeclaration", "Inconsistent Namespace Declaration", "All ingame script code should be within the {0} namespace in order to avoid problems", "Whitelist", DiagnosticSeverity.Warning, true);
 
-        Whitelist _whitelist = new Whitelist();
-        List<Uri> _ignoredFolders = new List<Uri>();
-        List<Uri> _ignoredFiles = new List<Uri>();
+        readonly Whitelist _whitelist = new Whitelist();
+        readonly List<Uri> _ignoredFolders = new List<Uri>();
+        readonly List<Uri> _ignoredFiles = new List<Uri>();
         Uri _basePath;
         string _namespaceName;
 
@@ -48,8 +47,10 @@ namespace Malware.MDKAnalyzer
 
         public override void Initialize(AnalysisContext context)
         {
+            context.EnableConcurrentExecution();
+            context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
             context.RegisterCompilationStartAction(LoadWhitelist);
-        }  
+        }
 
         void LoadWhitelist(CompilationStartAnalysisContext context)
         {
@@ -208,7 +209,7 @@ namespace Malware.MDKAnalyzer
             }
 
             // Destructors are unpredictable so they cannot be allowed
-            if (node.Kind() == SyntaxKind.DestructorDeclaration)
+            if (node.IsKind(SyntaxKind.DestructorDeclaration))
             {
                 var kw = ((DestructorDeclarationSyntax)node).Identifier;
                 var diagnostic = Diagnostic.Create(ProhibitedLanguageElementRule, kw.GetLocation(), kw.ToString());

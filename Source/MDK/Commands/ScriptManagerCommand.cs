@@ -19,6 +19,7 @@ namespace MDK.Commands
 
         protected override void OnExecute()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (!TryGetValidProject(out MDKProjectProperties projectInfo))
             {
                 VsShellUtilities.ShowMessageBox(ServiceProvider, Text.BlueprintManagerCommand_OnExecute_NoMDKProjectsDescription, Text.BlueprintManagerCommand_OnExecute_NoMDKProjects, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);

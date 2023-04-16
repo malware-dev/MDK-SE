@@ -1,5 +1,6 @@
 ﻿using System;
 using EnvDTE;
+using Microsoft;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -12,8 +13,8 @@ namespace MDK.VisualStudio
     public class SolutionManager : IDisposable, IVsSolutionEvents, IVsSolutionLoadEvents
     {
         bool _isDisposed;
-        uint _solutionEventsCookie;
-        IVsSolution _solutionCtl;
+        readonly uint _solutionEventsCookie;
+        readonly IVsSolution _solutionCtl;
 
         /// <summary>
         /// Creates a new instance of <see cref="SolutionManager"/>
@@ -23,6 +24,7 @@ namespace MDK.VisualStudio
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             _solutionCtl = (IVsSolution)serviceProvider.GetService(typeof(SVsSolution));
+            Assumes.Present(_solutionCtl);
             _solutionCtl.AdviseSolutionEvents(this, out _solutionEventsCookie);
         }
 
@@ -58,6 +60,7 @@ namespace MDK.VisualStudio
         {
             get
             {
+                ThreadHelper.ThrowIfNotOnUIThread();
                 _solutionCtl.GetProperty((int)__VSPROPID4.VSPROPID_IsSolutionFullyLoaded, out var isFullyLoadedV); 
                 _solutionCtl.GetProperty((int)__VSPROPID.VSPROPID_IsSolutionOpening, out var isOpeningV); 
                 _solutionCtl.GetProperty((int)__VSPROPID2.VSPROPID_IsSolutionClosing, out var isClosingV);
@@ -74,7 +77,10 @@ namespace MDK.VisualStudio
         /// <inheritdoc />
         ~SolutionManager()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+#pragma warning disable VSTHRD010
             Dispose(false);
+#pragma warning restore VSTHRD010
         }
 
         /// <inheritdoc />
@@ -83,6 +89,7 @@ namespace MDK.VisualStudio
             if (_isDisposed)
                 return;
             _isDisposed = true;
+            ThreadHelper.ThrowIfNotOnUIThread();
             Dispose(true);
             GC.SuppressFinalize(this);
         }

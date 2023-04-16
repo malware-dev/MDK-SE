@@ -81,7 +81,7 @@ namespace MDK.Build.Composers.Minifying
         public override SyntaxToken VisitToken(SyntaxToken token)
         {
             token = base.VisitToken(token);
-            if (token.Kind() == SyntaxKind.None)
+            if (token.IsKind(SyntaxKind.None))
                 return token;
 
             if (token.ShouldBePreserved())
@@ -101,7 +101,7 @@ namespace MDK.Build.Composers.Minifying
 
             _isPreservedBlock = false;
 
-            if (token.Kind() == SyntaxKind.None)
+            if (token.IsKind(SyntaxKind.None))
                 return token;
 
             var span = token.GetLocation().GetLineSpan();

@@ -86,18 +86,18 @@ namespace MDK.Build.Annotations
                     if (trivia.GetStructure() is RegionDirectiveTriviaSyntax regionDirective)
                     {
                         list.AddRange(regionDirective.GetLeadingTrivia());
-                        while (list.Count > 0 && list[list.Count - 1].Kind() == SyntaxKind.WhitespaceTrivia)
+                        while (list.Count > 0 && list[list.Count - 1].IsKind(SyntaxKind.WhitespaceTrivia))
                             list.RemoveAt(list.Count - 1);
-                        list.AddRange(regionDirective.GetTrailingTrivia().SkipWhile(t => t.Kind() == SyntaxKind.EndOfLineTrivia));
+                        list.AddRange(regionDirective.GetTrailingTrivia().SkipWhile(t => t.IsKind(SyntaxKind.EndOfLineTrivia)));
                         continue;
                     }
 
                     if (trivia.GetStructure() is EndRegionDirectiveTriviaSyntax endRegionDirective)
                     {
                         list.AddRange(endRegionDirective.GetLeadingTrivia());
-                        while (list.Count > 0 && list[list.Count - 1].Kind() == SyntaxKind.WhitespaceTrivia)
+                        while (list.Count > 0 && list[list.Count - 1].IsKind(SyntaxKind.WhitespaceTrivia))
                             list.RemoveAt(list.Count - 1);
-                        list.AddRange(endRegionDirective.GetTrailingTrivia().SkipWhile(t => t.Kind() == SyntaxKind.EndOfLineTrivia));
+                        list.AddRange(endRegionDirective.GetTrailingTrivia().SkipWhile(t => t.IsKind(SyntaxKind.EndOfLineTrivia)));
                         continue;
                     }
                 }

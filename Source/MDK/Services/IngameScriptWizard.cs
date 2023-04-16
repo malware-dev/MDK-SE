@@ -143,11 +143,20 @@ namespace MDK.Services
 
         bool TryGetProperties(IServiceProvider serviceProvider, out Properties props)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             while (true)
             {
                 try
                 {
                     var dte = (DTE)serviceProvider.GetService(typeof(DTE));
+                    if (dte == null)
+                    {
+                        var res = VsShellUtilities.ShowMessageBox(serviceProvider, Text.IngameScriptWizard_TryGetProperties_MDKSettingsNotFoundDescription, Text.IngameScriptWizard_TryGetProperties_MDKSettingsNotFound, OLEMSGICON.OLEMSGICON_CRITICAL, OLEMSGBUTTON.OLEMSGBUTTON_RETRYCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_SECOND);
+                        if (res == 4)
+                            continue;
+                        props = null;
+                        return false;
+                    }
                     props = dte.Properties["MDK/SE", "Options"];
                 }
                 catch (COMException)
@@ -164,6 +173,7 @@ namespace MDK.Services
 
         bool TryGetFinalBinPath(IServiceProvider serviceProvider, Properties props, out string binPath)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             while (true)
             {
                 var useBinPath = (bool)props.Item(nameof(MDKOptions.UseManualGameBinPath)).Value;
@@ -196,6 +206,7 @@ namespace MDK.Services
 
         bool TryGetFinalOutputPath(IServiceProvider serviceProvider, Properties props, out string outputPath)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             while (true)
             {
                 var useOutputPath = (bool)props.Item(nameof(MDKOptions.UseManualOutputPath)).Value;
@@ -247,12 +258,14 @@ namespace MDK.Services
 
         bool TryGetFinalTrimTypes(Properties props, out bool trimTypes)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             trimTypes = (bool)(props.Item(nameof(MDKOptions.TrimTypes))?.Value ?? false);
             return true;
         }
 
         bool TryGetFinalPromoteMDK(Properties props, out bool promoteMDK)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             promoteMDK = (bool)(props.Item(nameof(MDKOptions.PromoteMDK))?.Value ?? false);
             return true;
         }

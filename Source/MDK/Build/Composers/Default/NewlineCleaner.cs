@@ -14,7 +14,7 @@ namespace MDK.Build.Composers.Default
         public override SyntaxTrivia VisitTrivia(SyntaxTrivia trivia)
         {
             trivia = base.VisitTrivia(trivia);
-            if (trivia.Kind() == SyntaxKind.EndOfLineTrivia && trivia.ToString() == "\r\n")
+            if (trivia.IsKind(SyntaxKind.EndOfLineTrivia) && trivia.ToString() == "\r\n")
             {
                 trivia = SyntaxFactory.EndOfLine("\n");
             }

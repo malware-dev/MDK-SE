@@ -116,8 +116,8 @@ namespace MDK
         /// </summary>
         protected override async System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
-            await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-            Echo("Initializing MDK");
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+            Echo(new[] { "Initializing MDK" });
             _solutionManager = new SolutionManager(this);
 
             // Make sure the dialog page is loaded, since the options are needed in other threads and not preloading it 
@@ -148,10 +148,10 @@ namespace MDK
 
         async void OnShellActivated()
         {
-            await JoinableTaskFactory.SwitchToMainThreadAsync();
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             if (_solutionManager.Status == SolutionStatus.Loaded)
             {
-                Echo("A solution is already loaded on start");
+                Echo(new[] { "A solution is already loaded on start" });
                 OnSolutionLoaded(DTE.Solution);
             }
             _solutionManager.ProjectLoaded += OnProjectLoaded;
@@ -166,7 +166,8 @@ namespace MDK
 
         void OnSolutionLoaded(object sender, EventArgs e)
         {
-            Echo("Detected the loading of a solution");
+            ThreadHelper.ThrowIfNotOnUIThread();
+            Echo(new[] { "Detected the loading of a solution" });
             OnSolutionLoaded(DTE.Solution);
         }
 
@@ -176,13 +177,13 @@ namespace MDK
                 OnProjectLoaded(e.Project);
         }
 
-        async void OnProjectLoaded(Project project)
+        void OnProjectLoaded(Project project)
         {
-            Echo("Detected the loading of a project");
+            Echo(new[] { "Detected the loading of a project" });
             HealthAnalysis analysis;
             try
             {
-                analysis = await HealthAnalysis.AnalyzeAsync(project, GetAnalysisOptions());
+                analysis = HealthAnalysis.Analyze(project, GetAnalysisOptions());
             }
             catch (Exception e)
             {
@@ -201,12 +202,12 @@ namespace MDK
             PresentAnalysisResults(analysis);
         }
 
-        async void OnSolutionLoaded(Solution solution)
+        void OnSolutionLoaded(Solution solution)
         {
             HealthAnalysis[] analyses;
             try
             {
-                analyses = await HealthAnalysis.AnalyzeAsync(solution, GetAnalysisOptions());
+                analyses = HealthAnalysis.Analyze(solution, GetAnalysisOptions());
             }
             catch (Exception e)
             {
@@ -230,11 +231,11 @@ namespace MDK
             if (!_hasCheckedForUpdates)
             {
                 _hasCheckedForUpdates = true;
-                CheckForUpdatesAsync();
+                CheckForUpdates();
             }
         }
 
-        async void CheckForUpdatesAsync()
+        async void CheckForUpdates()
         {
             if (!Options.NotifyUpdates)
                 return;
@@ -272,6 +273,7 @@ namespace MDK
             }
             catch (Exception e)
             {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                 LogPackageError("CheckForUpdates", e);
                 // We don't want to make a fuss about this.
                 return null;
@@ -289,7 +291,7 @@ namespace MDK
                 GameFiles = GameFiles,
                 UtilityAssemblyNames = UtilityAssemblyNames,
                 UtilityFiles = UtilityFiles,
-                Echo = v => Echo(v)
+                Echo = v => Echo(new[] { v })
             };
 
         void PresentAnalysisResults(params HealthAnalysis[] analysis)
@@ -310,6 +312,7 @@ namespace MDK
         /// <returns></returns>
         public async Task<bool> DeployAsync(Project project = null, bool nonBlocking = false)
         {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             var dte = DTE;
 
             if (IsDeploying)
@@ -444,12 +447,15 @@ namespace MDK
             else
                 message = string.Join(" ", values.Select(TranslateForEcho));
 
-            EchoAsync(message);
+            Echo(message);
         }
 
-        async void EchoAsync(string message)
+        async void Echo(string message)
         {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             var output =  (IVsOutputWindow)await GetServiceAsync(typeof(SVsOutputWindow));
+            if (output == null)
+                return;
             var paneGuid = OutputGuid;
             output.GetPane(ref paneGuid, out var pane);
             if (pane == null)
@@ -458,7 +464,7 @@ namespace MDK
                 output.GetPane(ref paneGuid, out pane);
             }
 
-            pane.OutputString($"{message}\n");
+            pane.OutputStringThreadSafe($"{message}\n");
         }
 
         string TranslateForEcho(object value)

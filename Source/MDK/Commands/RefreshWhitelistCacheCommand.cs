@@ -24,6 +24,7 @@ namespace MDK.Commands
 
         protected override void OnExecute()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             var package = (MDKPackage)Package;
 
             if (RefreshWhitelistCacheDialog.ShowDialog(new RefreshWhitelistCacheDialogModel(package, package.DTE)) == true)

@@ -7,6 +7,7 @@ using Malware.MDKServices;
 using MDK.Resources;
 using MDK.Views.BlueprintManager;
 using MDK.VisualStudio;
+using Microsoft.VisualStudio.Shell;
 
 namespace MDK.Views.DeploymentBar
 {
@@ -44,6 +45,7 @@ namespace MDK.Views.DeploymentBar
 
         void ShowMeLink_OnClicked(object sender, EventArgs e)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             Close();
             var distinctPaths = DeployedScripts.Select(script => FormattedPath(script.Paths.OutputPath)).Distinct().ToArray();
             if (distinctPaths.Length == 1)
@@ -56,6 +58,7 @@ namespace MDK.Views.DeploymentBar
 
         async void CopyLink_OnClicked(object sender, EventArgs e)
         {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             Close();
             var item = _deployedScripts.FirstOrDefault();
             var path = Path.Combine(FormattedPath(item.Paths.OutputPath), item.Name, "script.cs");

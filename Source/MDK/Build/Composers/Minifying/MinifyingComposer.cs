@@ -49,6 +49,11 @@ namespace MDK.Build.Composers.Minifying
         }
 
 
+        /// <summary>
+        /// Generate the final script after all processors have run.
+        /// </summary>
+        /// <param name="composition"></param>
+        /// <returns></returns>
         protected async Task<string> GenerateScriptAsync(ProgramComposition composition)
         {
             var root = composition.RootNode;

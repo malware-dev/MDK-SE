@@ -30,9 +30,12 @@ namespace MDK.VisualStudio
         /// <param name="serviceProvider">The Visual Studio service provider</param>
         /// <param name="text">A text label describing the action being performed</param>
         /// <param name="maxValue">The total number of steps to be performed</param>
+#pragma warning disable VSTHRD010
         public StatusBarProgressBar(IServiceProvider serviceProvider, string text, int maxValue)
             : this(serviceProvider)
+#pragma warning restore VSTHRD010
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             _text = text;
             _maxValue = maxValue;
             IsEnabled = true;
@@ -46,6 +49,7 @@ namespace MDK.VisualStudio
             get => _isEnabled;
             set
             {
+                ThreadHelper.ThrowIfNotOnUIThread();
                 if (_isEnabled == value)
                     return;
                 _isEnabled = value;
@@ -61,6 +65,7 @@ namespace MDK.VisualStudio
             get => _text;
             set
             {
+                ThreadHelper.ThrowIfNotOnUIThread();
                 if (_text == value)
                     return;
                 _text = value;
@@ -78,6 +83,7 @@ namespace MDK.VisualStudio
             get => _value;
             set
             {
+                ThreadHelper.ThrowIfNotOnUIThread();
                 value = Math.Max(0, Math.Min(MaxValue, value));
                 if (_value == value)
                     return;
@@ -96,6 +102,7 @@ namespace MDK.VisualStudio
             get => _maxValue;
             set
             {
+                ThreadHelper.ThrowIfNotOnUIThread();
                 value = Math.Max(0, value);
                 if (_maxValue == value)
                     return;
@@ -119,6 +126,7 @@ namespace MDK.VisualStudio
         /// <inheritdoc />
         protected override void Dispose(bool disposing)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (disposing)
                 IsEnabled = false;
             base.Dispose(disposing);
@@ -126,11 +134,13 @@ namespace MDK.VisualStudio
 
         void IProgress<float>.Report(float value)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             Value = (int)(value * MaxValue);
         }
 
         void IProgress<int>.Report(int value)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             Value = value;
         }
     }
