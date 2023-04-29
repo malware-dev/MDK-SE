@@ -58,7 +58,8 @@ namespace Malware.MDKServices
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             var serviceProvider = new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)project.DTE);
-            var solutionService = (IVsSolution)serviceProvider.GetService(typeof(SVsSolution))!;
+            var solutionService = (IVsSolution)serviceProvider.GetService(typeof(SVsSolution));
+            if (solutionService == null) throw new ArgumentNullException(nameof(solutionService));
             var hr = solutionService.GetProjectOfUniqueName(project.UniqueName, out IVsHierarchy projectHierarchy);
             ErrorHandler.ThrowOnFailure(hr);
             hr = solutionService.GetGuidOfProject(projectHierarchy, out Guid projectGuid);
