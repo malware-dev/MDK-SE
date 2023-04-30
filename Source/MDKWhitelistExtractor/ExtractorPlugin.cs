@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Digi.BuildInfo.Features.LiveData;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -8,11 +9,17 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Sandbox;
+using Sandbox.Definitions;
 using Sandbox.Game.Entities.Cube;
 using Sandbox.Game.World;
+using Sandbox.Graphics.GUI;
 using Sandbox.ModAPI;
 using Sandbox.ModAPI.Interfaces;
 using SpaceEngineers.Game;
+using SpaceEngineers.Game.GUI;
+using System.Text;
+using VRage;
+using VRage.Game.ModAPI;
 using VRage.Plugins;
 using VRage.Scripting;
 using VRage.Utils;
@@ -32,18 +39,26 @@ namespace Malware.MDKWhitelistExtractor
 
         public void Init(object gameInstance)
         {
+            Debugger.Launch();
+            MyLog.Default.Info("Extractor Plugin Loaded.");
             _commandLine = new CommandLine(Environment.CommandLine);
 
             Game = (SpaceEngineersGame)gameInstance;
         }
 
-        public void Update()
+        public async void Update()
         {
             if (_firstInit)
             {
                 _firstInit = false;
-                MySession.AfterLoading += MySession_AfterLoading;
-                MySessionLoader.LoadInventoryScene();
+                await Task.Delay(TimeSpan.FromSeconds(1));
+                MySandboxGame.Static.Invoke(() =>
+                {
+                    MySession.AfterLoading += MySession_AfterLoading;
+                    var screen = MyScreenManager.GetFirstScreenOfType<MyGuiScreenMainMenu>();
+                    var button = (MyGuiControlButton)screen.Controls.FirstOrDefault(c => c is MyGuiControlButton button && MyTexts.Get(MyCommonTexts.ScreenMenuButtonInventory).EqualsStrFast(button.Text));
+                    button.PressButton();
+                }, "ExtractorPlugin");
             }
         }
 
@@ -78,24 +93,70 @@ namespace Malware.MDKWhitelistExtractor
                 var targetsArgument = commandLine[targetsArgumentIndex + 1];
                 var targets = targetsArgument.Split(';');
 
-                var gameAssembly = Game.GetType().Assembly;
-                var blockTypes = FindBlocks(gameAssembly).ToArray();
+                //var gameAssembly = Game.GetType().Assembly;
+                //var blockTypes = FindBlocks(gameAssembly).ToArray();
                 var blocks = new List<BlockInfo>();
                 var experimentalMode = MySandboxGame.Config.ExperimentalMode;
                 MySandboxGame.Config.ExperimentalMode = true;
                 try
                 {
-                    foreach (var blockType in blockTypes)
+                    // +MyCubeBlockDefinition
+                    foreach (var definition in MyDefinitionManager.Static.GetAllDefinitions())
                     {
-                        var instance = (IMyTerminalBlock)Activator.CreateInstance(blockType);
-                        var actions = new List<ITerminalAction>(new List<ITerminalAction>());
-                        var properties = new List<ITerminalProperty>();
-                        instance.GetActions(actions);
-                        instance.GetProperties(properties);
-                        var blockInfo = new BlockInfo(blockType, FindTypeDefinition(blockType), FindInterface(blockType), actions, properties);
-                        if (blockInfo.BlockInterfaceType != null && blocks.All(b => b.BlockInterfaceType != blockInfo.BlockInterfaceType))
-                            blocks.Add(blockInfo);
+                        if (definition is MyCubeBlockDefinition cbd)
+                        {
+                            TempBlockSpawn.Spawn(cbd, callback: slim =>
+                            {
+                                if (slim.FatBlock is not IMyTerminalBlock block)
+                                    return;
+                                var infoAttribute = block.GetType().GetCustomAttribute<MyTerminalInterfaceAttribute>();
+                                if (infoAttribute == null)
+                                {
+                                    MyLog.Default.Info($"Could not get any info for {cbd.Id} because there's no interface attribute");
+                                    return;
+                                }
+
+                                var ingameType = infoAttribute.LinkedTypes.FirstOrDefault(t => t.Namespace?.EndsWith(".Ingame") ?? false);
+                                if (ingameType == null)
+                                {
+                                    MyLog.Default.Info($"Could not get any info for {cbd.Id} because there's no ingame interface in the interface attribute");
+                                    return;
+                                }
+
+
+                                var actions = new List<ITerminalAction>(new List<ITerminalAction>());
+                                var properties = new List<ITerminalProperty>();
+                                block.GetActions(actions);
+                                block.GetProperties(properties);
+
+                                MyLog.Default.Info($"Got {actions.Count} actions and {properties.Count} properties from {cbd.Id}");
+
+                                //instance.GetActions(actions);
+                                //instance.GetProperties(properties);
+                                var blockInfo = new BlockInfo(block.GetType(), FindTypeDefinition(block.GetType()), ingameType, actions, properties);
+                                if (blockInfo.BlockInterfaceType != null && blocks.All(b => b.BlockInterfaceType != blockInfo.BlockInterfaceType))
+                                    blocks.Add(blockInfo);
+                            });
+                        }
                     }
+
+
+                    //    var terminalController = (IMyTerminalActionsHelper)MyTerminalControlFactoryHelper.Static;
+                    //    foreach (var blockType in blockTypes)
+                    //    {
+                    //        //var instance = (IMyTerminalBlock)Activator.CreateInstance(blockType);
+                    //        var actions = new List<ITerminalAction>(new List<ITerminalAction>());
+                    //        var properties = new List<ITerminalProperty>();
+                    //        terminalController.GetActions(blockType, actions);
+                    //        terminalController.GetProperties(blockType, properties);
+                    //        MyLog.Default.Info($"Got {actions.Count} actions and {properties.Count} properties from {blockType.Name}");
+
+                    //        //instance.GetActions(actions);
+                    //        //instance.GetProperties(properties);
+                    //        var blockInfo = new BlockInfo(blockType, FindTypeDefinition(blockType), FindInterface(blockType), actions, properties);
+                    //        if (blockInfo.BlockInterfaceType != null && blocks.All(b => b.BlockInterfaceType != blockInfo.BlockInterfaceType))
+                    //            blocks.Add(blockInfo);
+                    //    }
                 }
                 finally
                 {
@@ -122,15 +183,17 @@ namespace Malware.MDKWhitelistExtractor
                 document.Save(target);
         }
 
-        void MySession_AfterLoading()
+        async void MySession_AfterLoading()
         {
-            GrabWhitelist(_commandLine);
-            GrabTerminalActions(_commandLine);
-            Task.Run(async () =>
+            await Task.Delay(TimeSpan.FromSeconds(1));
+
+            MySandboxGame.Static.Invoke(() =>
             {
-                await Task.Delay(TimeSpan.FromSeconds(5));
-                MySandboxGame.ExitThreadSafe();
-            });
+                GrabWhitelist(_commandLine);
+                GrabTerminalActions(_commandLine);
+            }, "ExtractorPlugin");
+            await Task.Delay(TimeSpan.FromSeconds(3));
+            MySandboxGame.ExitThreadSafe();
         }
 
         string FindTypeDefinition(Type block)
@@ -145,14 +208,6 @@ namespace Malware.MDKWhitelistExtractor
         {
             var attr = block.GetCustomAttribute<MyTerminalInterfaceAttribute>();
             return attr?.LinkedTypes.FirstOrDefault(l => l.Namespace?.EndsWith(".Ingame", StringComparison.OrdinalIgnoreCase) ?? false);
-
-            //var interfaces = block.GetInterfaces().Where(i => typeof(IMyTerminalBlock).IsAssignableFrom(i) && (i.Namespace?.EndsWith(".Ingame") ?? false)).ToArray();
-            //var candidateInterfaces = interfaces.Where(iface =>
-            //    /* bad interface inheritance workaround */
-            //    iface != typeof(IMyTerminalBlock) && iface != typeof(IMyFunctionalBlock) &&
-            //    /* workaround end */
-            //    !interfaces.Any(i => iface != i && iface.IsAssignableFrom(i))).ToArray();
-            //return candidateInterfaces.SingleOrDefault();
         }
 
         IEnumerable<Type> FindBlocks(Assembly gameAssembly, HashSet<AssemblyName> visitedAssemblies = null)

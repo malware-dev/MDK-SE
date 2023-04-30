@@ -24,7 +24,7 @@
                    Text="{Binding StatusText}" Margin="8" />
         <TextBlock TextWrapping="Wrap" Margin="8">
             This operation will start the game and use a plugin to extract certain information only available through a running game.
-            The plugin will shut town the game automatically when its job is complete.
+            The plugin will shut down the game automatically when its job is complete.
         </TextBlock>
     </DockPanel>
 </UserControl>
