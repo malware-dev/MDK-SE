@@ -54,6 +54,10 @@
       <HintPath>$(SEBinPath)\Sandbox.Game.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Sandbox.Graphics">
+      <HintPath>$(SEBinPath)\Sandbox.Graphics.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="SpaceEngineers.Game">
       <HintPath>$(SEBinPath)\SpaceEngineers.Game.dll</HintPath>
       <Private>False</Private>
@@ -74,9 +78,14 @@
       <HintPath>$(SEBinPath)\VRage.Scripting.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="VRageMath">
+      <HintPath>$(SEBinPath)\VRage.Math.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandLine.cs" />
+    <Compile Include="Digi\TempBlockSpawn.cs" />
     <Compile Include="ExtractorPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
