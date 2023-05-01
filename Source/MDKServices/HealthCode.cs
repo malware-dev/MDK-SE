@@ -48,6 +48,11 @@
         /// <summary>
         /// The whitelist cache file is outdated.
         /// </summary>
-        OutdatedWhitelist
+        OutdatedWhitelist,
+
+        /// <summary>
+        /// The project is not referencing the correct .NET version.
+        /// </summary>
+        BadDotNetVersion
     }
 }

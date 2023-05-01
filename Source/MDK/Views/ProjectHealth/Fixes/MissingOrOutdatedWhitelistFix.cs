@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using Malware.MDKServices;
+using System.Threading.Tasks;
 
 namespace MDK.Views.ProjectHealth.Fixes
 {
@@ -9,7 +10,7 @@ namespace MDK.Views.ProjectHealth.Fixes
     {
         public MissingOrOutdatedWhitelistFix() : base(4000, HealthCode.MissingWhitelist) { }
 
-        public override void Apply(HealthAnalysis analysis, FixStatus status)
+        public override Task ApplyAsync(HealthAnalysis analysis, FixStatus status)
         {
             status.Description = "Restoring whitelist cache";
             var sourceFileName = Path.Combine(analysis.Properties.Paths.InstallPath, "Analyzers\\whitelist.cache");
@@ -19,6 +20,7 @@ namespace MDK.Views.ProjectHealth.Fixes
             File.Copy(sourceFileName, targetFileName, true);
             Include(analysis, targetFileName);
             status.Description = "Restored whitelist cache";
+            return Task.CompletedTask;
         }
 
         public override bool IsApplicableTo(HealthAnalysis project) => project.Problems.Any(p => p.Code == HealthCode.MissingWhitelist || p.Code == HealthCode.OutdatedWhitelist);

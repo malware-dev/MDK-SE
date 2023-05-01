@@ -321,4 +321,7 @@
   <data name="ProjectHealthDialogModel_RunUpgrades_Description" xml:space="preserve">
     <value>The upgrade process has been completed. It is recommended to restart Visual Studio in order to reload the extensions and analyzers.</value>
   </data>
+  <data name="BadDotNetVersionFix_Apply_NoTargetFrameworkProperty" xml:space="preserve">
+	  <value>Unable to specify .NET version 4.8 because the project has no such property.</value>
+  </data>
 </root>

@@ -148,6 +148,13 @@ namespace Malware.MDKServices
                 analysis._problems.Add(new HealthProblem(HealthCode.Outdated, HealthSeverity.Critical, "This project format is outdated"));
             }
 
+            var property = project.Properties.Item("TargetFrameworkMoniker");
+            if (!(property.Value is string moniker) || moniker != ".NETFramework,Version=v4.8")
+            {
+                options.Echo?.Invoke($"{project.Name}: This project is not referencing .NET 4.8.");
+                analysis._problems.Add(new HealthProblem(HealthCode.BadDotNetVersion, HealthSeverity.Critical, "This project is not referencing .NET 4.8"));
+            }
+
             var whitelistFileName = Path.Combine(Path.GetDirectoryName(project.FullName), "mdk\\whitelist.cache");
 
             if (!projectInfo.Paths.IsValid)

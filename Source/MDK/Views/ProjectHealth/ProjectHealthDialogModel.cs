@@ -26,9 +26,11 @@ namespace MDK.Views.ProjectHealth
             new OutdatedFix(), 
             new BadInstallPathFix(), 
             new MissingPathsFileFix(), 
-            new MissingOrOutdatedWhitelistFix(), 
             new BadGamePathFix(), 
-            new BadOutputPathFix()
+            new BadOutputPathFix(),
+            new BadDotNetVersionFix(),
+            new MissingOrOutdatedWhitelistFix(),
+            new DeleteBinObjFix()
         }.OrderBy(f => f.SortIndex).ToList();
 
         string _okText = "Repair";
@@ -167,14 +169,21 @@ namespace MDK.Views.ProjectHealth
                 {
                     var handle = project.Project.Unload();
                     var fixes = _fixes.Where(f => f.IsApplicableTo(project));
-                    foreach (var fix in fixes)
+                    foreach (var fix in fixes.Where(f => !f.NeedsLoadedProject))
                     {
                         var status = new FixStatus();
                         _fixStatuses.Add(status);
-                        await Task.Run(() => fix.Apply(project, status));
+                        await fix.ApplyAsync(project, status);
                     }
 
                     await handle.ReloadAsync();
+
+                    foreach (var fix in fixes.Where(f => f.NeedsLoadedProject))
+                    {
+                        var status = new FixStatus();
+                        _fixStatuses.Add(status);
+                        await fix.ApplyAsync(project, status);
+                    }
                 }
 
                 _isCompleted = true;

@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Malware.MDKServices;
+using MDK.Resources;
+using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
-using Malware.MDKServices;
-using MDK.Resources;
 
 namespace MDK.Views.ProjectHealth.Fixes
 {
@@ -12,16 +13,33 @@ namespace MDK.Views.ProjectHealth.Fixes
     {
         const string Xmlns = "http://schemas.microsoft.com/developer/msbuild/2003";
 
-        protected Fix(int sortIndex, HealthCode code)
+        /// <summary>
+        ///     Create a fix that is always applied. See <seealso cref="Fix(int, HealthCode, bool)" />
+        ///     to make a healthcode violation specific fix.
+        /// </summary>
+        /// <param name="sortIndex"></param>
+        /// <param name="needsLoadedProject"></param>
+        protected Fix(int sortIndex, bool needsLoadedProject = false): this(sortIndex, HealthCode.Healthy, needsLoadedProject) { }
+
+        /// <summary>
+        ///     Create a fix that is applied when a specific healthcode violation is detected.
+        ///     See <seealso cref="Fix(int, bool)" /> to make a fix that is always applied.
+        /// </summary>
+        /// <param name="sortIndex"></param>
+        /// <param name="code"></param>
+        /// <param name="needsLoadedProject"></param>
+        protected Fix(int sortIndex, HealthCode code, bool needsLoadedProject = false)
         {
             SortIndex = sortIndex;
             Code = code;
+            NeedsLoadedProject = needsLoadedProject;
         }
 
         public int SortIndex { get; }
         public HealthCode? Code { get; }
+        public bool NeedsLoadedProject { get; }
 
-        public abstract void Apply(HealthAnalysis analysis, FixStatus status);
+        public abstract Task ApplyAsync(HealthAnalysis analysis, FixStatus status);
 
         protected void Include(HealthAnalysis analysis, string fileName)
         {
@@ -29,10 +47,7 @@ namespace MDK.Views.ProjectHealth.Fixes
             XmlNameTable nameTable;
             using (var streamReader = File.OpenText(analysis.FileName))
             {
-                var readerSettings = new XmlReaderSettings
-                {
-                    IgnoreWhitespace = true
-                };
+                var readerSettings = new XmlReaderSettings { IgnoreWhitespace = true };
 
                 var xmlReader = XmlReader.Create(streamReader, readerSettings);
                 document = XDocument.Load(xmlReader);
@@ -73,6 +88,6 @@ namespace MDK.Views.ProjectHealth.Fixes
             document.Save(analysis.FileName);
         }
 
-        public virtual bool IsApplicableTo(HealthAnalysis project) => project.Problems.Any(p => p.Code == Code);
+        public virtual bool IsApplicableTo(HealthAnalysis project) => Code == HealthCode.Healthy || project.Problems.Any(p => p.Code == Code);
     }
 }

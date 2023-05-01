@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using Malware.MDKServices;
-using Malware.MDKUtilities;
+using System.Threading.Tasks;
 
 namespace MDK.Views.ProjectHealth.Fixes
 {
@@ -8,7 +8,7 @@ namespace MDK.Views.ProjectHealth.Fixes
     {
         public BadGamePathFix() : base(3000, HealthCode.BadGamePath) { }
 
-        public override void Apply(HealthAnalysis analysis, FixStatus status)
+        public override Task ApplyAsync(HealthAnalysis analysis, FixStatus status)
         {
             status.Description = "Fixing bad game path";
             var path = analysis.AnalysisOptions.DefaultGameBinPath;
@@ -16,12 +16,13 @@ namespace MDK.Views.ProjectHealth.Fixes
             {
                 status.Description = "Cannot find game path";
                 status.Failed = true;
-                return;
+                return Task.CompletedTask;
             }
 
             analysis.Properties.Paths.GameBinPath = path;
             analysis.Properties.Paths.Save();
             status.Description = "Fixed bad game path";
+            return Task.CompletedTask;
         }
     }
 }

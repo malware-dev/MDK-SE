@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using Malware.MDKServices;
+using System.Threading.Tasks;
 
 namespace MDK.Views.ProjectHealth.Fixes
 {
@@ -87,18 +88,21 @@ namespace MDK.Views.ProjectHealth.Fixes
 
         public BackupFix() : base(0, HealthCode.Healthy) { }
 
-        public override void Apply(HealthAnalysis analysis, FixStatus status)
+        public override async Task ApplyAsync(HealthAnalysis analysis, FixStatus status)
         {
             status.Description = "Creating a backup in the parent folder...";
-            var directory = Path.GetDirectoryName(analysis.FileName) ?? ".\\";
-            if (!directory.EndsWith("\\"))
-                directory += "\\";
-            var zipFileName = $"{Path.GetFileNameWithoutExtension(analysis.FileName)}_Backup_{DateTime.Now:yyyy-MM-dd-HHmmssfff}.zip";
-            var tmpZipName = Path.Combine(Path.GetTempPath(), zipFileName);
-            ZipHelper.CreateFromDirectory(directory, tmpZipName, CompressionLevel.Fastest, false, path => OnlyInterestingFiles(directory, path));
-            var backupDirectory = new DirectoryInfo(Path.Combine(directory, "..\\"));
-            File.Copy(tmpZipName, Path.Combine(backupDirectory.FullName, zipFileName));
-            File.Delete(tmpZipName);
+            await Task.Run(() =>
+            {
+                var directory = Path.GetDirectoryName(analysis.FileName) ?? ".\\";
+                if (!directory.EndsWith("\\"))
+                    directory += "\\";
+                var zipFileName = $"{Path.GetFileNameWithoutExtension(analysis.FileName)}_Backup_{DateTime.Now:yyyy-MM-dd-HHmmssfff}.zip";
+                var tmpZipName = Path.Combine(Path.GetTempPath(), zipFileName);
+                ZipHelper.CreateFromDirectory(directory, tmpZipName, CompressionLevel.Fastest, false, path => OnlyInterestingFiles(directory, path));
+                var backupDirectory = new DirectoryInfo(Path.Combine(directory, "..\\"));
+                File.Copy(tmpZipName, Path.Combine(backupDirectory.FullName, zipFileName));
+                File.Delete(tmpZipName);
+            });
             status.Description = "Backup created";
         }
 

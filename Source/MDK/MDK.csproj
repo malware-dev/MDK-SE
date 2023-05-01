@@ -12,6 +12,9 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup>
     <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -135,9 +138,11 @@
     <Compile Include="Views\MessageEventType.cs" />
     <Compile Include="Views\Options\EnumToStringConverter.cs" />
     <Compile Include="Views\ProjectHealth\Fixes\BackupFix.cs" />
+    <Compile Include="Views\ProjectHealth\Fixes\BadDotNetVersionFix.cs" />
     <Compile Include="Views\ProjectHealth\Fixes\BadOutputPathFix.cs" />
     <Compile Include="Views\ProjectHealth\Fixes\BadGamePathFix.cs" />
     <Compile Include="Views\ProjectHealth\Fixes\BadInstallPathFix.cs" />
+    <Compile Include="Views\ProjectHealth\Fixes\DeleteBinObjFix.cs" />
     <Compile Include="Views\ProjectHealth\Fixes\Fix.cs" />
     <Compile Include="Views\ProjectHealth\Fixes\MissingPathsFileFix.cs" />
     <Compile Include="Views\ProjectHealth\Fixes\MissingOrOutdatedWhitelistFix.cs" />
@@ -403,9 +408,6 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.5.33428.388" ExcludeAssets="runtime">
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Threading">
-      <Version>17.5.22</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.5.4074">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

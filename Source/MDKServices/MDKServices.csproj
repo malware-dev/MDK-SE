@@ -43,9 +43,6 @@
     <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.VisualStudio.RemoteControl, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.VisualStudio.RemoteControl.16.3.44\lib\net45\Microsoft.VisualStudio.RemoteControl.dll</HintPath>
-    </Reference>
     <Reference Include="netstandard" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -95,9 +92,6 @@
     <PackageReference Include="JetBrains.Annotations" Version="2022.3.1" />
     <PackageReference Include="Microsoft.VisualStudio.SDK">
       <Version>17.5.33428.388</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Threading">
-      <Version>17.5.22</Version>
     </PackageReference>
     <!--<PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.0.32112.339" ExcludeAssets="runtime" />-->
     <!--<PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.4.2119" />-->
