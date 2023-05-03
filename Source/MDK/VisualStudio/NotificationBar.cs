@@ -89,10 +89,12 @@ namespace MDK.VisualStudio
         {
             if (IsShown)
                 throw new InvalidOperationException("Bar is already shown");
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             ServiceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-            if (serviceProvider.GetService(typeof(SVsShell)) is IVsShell shell)
+            try
             {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                if (serviceProvider.GetService(typeof(SVsShell)) is not IVsShell shell) return null;
+
                 shell.GetProperty((int)__VSSPROPID7.VSSPROPID_MainWindowInfoBarHost, out var obj);
                 var host = (IVsInfoBarHost)obj;
                 if (host == null)
@@ -113,13 +115,14 @@ namespace MDK.VisualStudio
                     }
                 }
                 var response = await _tcs.Task;
+                return response;
+            }
+            finally
+            {
                 _tcs = null;
                 _element = null;
                 ServiceProvider = null;
-                return response;
             }
-
-            return null;
         }
 
         /// <summary>
