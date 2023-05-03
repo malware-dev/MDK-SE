@@ -18,7 +18,7 @@ If you see an error in Visual Studio like:
 Make sure you're up to date with the latest version of Visual Studio.
 
 ### Visual Studio 2022 Support...?
-Microsoft made some rather major changes to how extensions work with Visual Studio, meaning that I would have to keep two separate versions around to support VS2022. I have decided that this is the perfect opportunity for me to make MDK2, since it would take time either way. I have no idea when this will be finished, however.
+... is in preview right now (see releases) and will be publicly released very soon once I feel it has been thoroughly enough tested.
 
 ### General features
 * Helps you create a fully connected script project in Visual Studio, with all references in place
