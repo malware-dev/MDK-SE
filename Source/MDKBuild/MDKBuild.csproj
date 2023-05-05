@@ -3,7 +3,7 @@
     <TargetFrameworks>net48;net7.0</TargetFrameworks>
     <RootNamespace>MDK.Build</RootNamespace>
     <SignAssembly>True</SignAssembly>
-    <AssemblyOriginatorKeyFile>C:\Users\theso\source\repos\MDK-SE\Source\MDK\Key.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\MDK\Key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2022.3.1" />
