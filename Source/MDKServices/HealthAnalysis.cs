@@ -137,7 +137,7 @@ namespace Malware.MDKServices
                 if (!File.Exists(vrageRef))
                 {
                     options.Echo?.Invoke($"{project.Name}: Invalid game path.");
-                    analysis._problems.Add(new HealthProblem(HealthCode.BadGamePath, HealthSeverity.Critical, "Invalid game path"));
+                    analysis._problems.Add(new HealthProblem(HealthCode.BadGamePath, HealthSeverity.Warning, "Invalid game path, check Manual Path in Options"));
                 }
 
                 var outputPath = projectInfo.Paths.OutputPath.TrimEnd('/', '\\');
@@ -222,7 +222,7 @@ namespace Malware.MDKServices
         /// <summary>
         ///     Determines overall whether this project is a healthy MDK project.
         /// </summary>
-        public bool IsHealthy => _problems.Count == 0;
+        public bool IsHealthy => _problems.Count(s => s.Severity >= HealthSeverity.Critical) == 0;
 
         /// <summary>
         ///     A list of problems in this project (if any)
