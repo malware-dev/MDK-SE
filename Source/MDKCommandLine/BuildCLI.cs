@@ -9,12 +9,12 @@ namespace MDK
     {
         abstract class Command
         {
-            internal class Version: Command { };
-            internal class Unknown: Command
+            public class Version: Command { };
+            public class Unknown: Command
             {
                 public string UnknownCommandName;
             };
-            internal class Build: Command
+            public class Build: Command
             {
                 public string ProjectPath;
             }
