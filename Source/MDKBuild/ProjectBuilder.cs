@@ -45,14 +45,6 @@ namespace MDK.Build
         {
             this.project = project;
             config = MDKProjectProperties.Load(project.FilePath, project.Name);
-
-            // There was a check here to make sure the config's name is the same as the projects.
-            // Im not sure why it was here
-            // TODO: put it back
-
-            if (!config.IsValid)
-                // TODO: _why_ is this not valid? Print out a useful reason.
-                throw new Exception($"Config for project \"{project.Name}\" is not valid. This is a bad error message");
         }
 
         public async Task<string> BuildScript(IProgress<float> progress = null)
