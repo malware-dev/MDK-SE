@@ -366,8 +366,6 @@ namespace MDK
                 using (new StatusBarAnimation(ServiceProvider, Animation.Deploy))
                 {
                     deployedScripts = await SolutionBuilder.BuildByName(dte.Solution.FileName, project?.FileName, statusBar);
-                    //var buildModule = new BuildModule(this, dte.Solution.FileName, project?.FullName, statusBar);
-                    // deployedScripts = new MDKProjectProperties[0]; 
                 }
 
                 if (deployedScripts.Length > 0)
