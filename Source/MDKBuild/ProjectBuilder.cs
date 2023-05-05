@@ -29,7 +29,7 @@ namespace MDK.Build
 
         public string Destination {
             get {
-                return BuildModule.ExpandMacros(
+                return ExpandMacros(
                     project,
                     Path.Combine(
                         Path.GetDirectoryName(project.FilePath),
@@ -104,6 +104,24 @@ namespace MDK.Build
             var thumbFile = new FileInfo(Path.Combine(Path.GetDirectoryName(project.FilePath) ?? ".", "thumb.png"));
             if (thumbFile.Exists)
                 thumbFile.CopyTo(Path.Combine(outputInfo.FullName, "thumb.png"), true);
+        }
+
+        string ExpandMacros(Project project, string input)
+        {
+            var replacements = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase)
+            {
+                ["$(projectname)"] = project.Name ?? ""
+            };
+            foreach (DictionaryEntry envVar in Environment.GetEnvironmentVariables())
+                replacements[$"%{envVar.Key}%"] = (string)envVar.Value;
+            return Regex.Replace(input, @"\$\(ProjectName\)|%[^%]+%", match =>
+            {
+                if (replacements.TryGetValue(match.Value, out var value))
+                {
+                    return value;
+                }
+                return match.Value;
+            }, RegexOptions.IgnoreCase);
         }
     }
 }
