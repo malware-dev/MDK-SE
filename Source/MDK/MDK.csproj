@@ -62,42 +62,6 @@
     <CopyVsixExtensionLocation>..\MDKSetup\ExtensionSource</CopyVsixExtensionLocation>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Build\AnalysisExtensions.cs" />
-    <Compile Include="Build\Annotations\AnnotationExtensions.cs" />
-    <Compile Include="Build\Annotations\MdkAnnotationRewriter.cs" />
-    <Compile Include="Build\BuildException.cs" />
-    <Compile Include="Build\BuildModule.cs" />
-    <Compile Include="Build\Composers\Default\NewlineCleaner.cs" />
-    <Compile Include="Build\Composers\LiteMinifier\LiteComposer.cs" />
-    <Compile Include="Build\Composers\Minifying\ModifierProtector.cs" />
-    <Compile Include="Build\Annotations\PreserveDebugDumper.cs" />
-    <Compile Include="Build\Composers\Minifying\SymbolRenamer.SymbolCharSet.cs" />
-    <Compile Include="Build\Composers\StripComments\CommentStripper.cs" />
-    <Compile Include="Build\Composers\StripComments\StripCommentsComposer.cs" />
-    <Compile Include="Build\Composers\TokenCollisionDetector.cs" />
-    <Compile Include="Build\DocumentAnalysis\DocumentAnalysisResult.cs" />
-    <Compile Include="Build\DocumentAnalysis\DocumentAnalyzer.cs" />
-    <Compile Include="Build\DocumentAnalysis\ExtensionScriptPart.cs" />
-    <Compile Include="Build\Composers\Minifying\LineWrapper.cs" />
-    <Compile Include="Build\Composers\Minifying\MinifyingComposer.cs" />
-    <Compile Include="Build\Composers\Minifying\ProgramRewriter.cs" />
-    <Compile Include="Build\Composers\Minifying\CodeSimplifier.cs" />
-    <Compile Include="Build\Composers\Minifying\SymbolRenamer.cs" />
-    <Compile Include="Build\Composers\Minifying\WhitespaceCompactor.cs" />
-    <Compile Include="Build\DocumentAnalysis\ProgramScriptPart.cs" />
-    <Compile Include="Build\ProgressChangedEventArgs.cs" />
-    <Compile Include="Build\ProjectContent.cs" />
-    <Compile Include="Build\Composers\ScriptComposer.cs" />
-    <Compile Include="Build\Composers\Default\DefaultComposer.cs" />
-    <Compile Include="Build\DocumentAnalysis\ScriptPart.cs" />
-    <Compile Include="Build\Solution\ProgramComposition.cs" />
-    <Compile Include="Build\Solution\ProgramDocumentComposer.cs" />
-    <Compile Include="Build\TypeTrimming\TypeTrimmer.cs" />
-    <Compile Include="Build\UsageAnalysis\SymbolAnalyzer.cs" />
-    <Compile Include="Build\UsageAnalysis\SymbolDefinitionInfo.cs" />
-    <Compile Include="Build\UsageAnalysis\UsageAnalyzer.cs" />
-    <Compile Include="Build\Solution\UsingDirectiveComparer.cs" />
-    <Compile Include="Build\DocumentAnalysis\WeightedPartSorter.cs" />
     <Compile Include="Commands\GlobalBlueprintManagerCommand.cs" />
     <Compile Include="Commands\ScriptManagerCommand.cs" />
     <Compile Include="Commands\CommandGroups.cs" />
@@ -187,14 +151,12 @@
     <Compile Include="VisualStudio\StatusBarAnimation.cs" />
     <Compile Include="VisualStudio\StatusBarProgressBar.cs" />
     <Compile Include="VisualStudio\Command.cs" />
-    <Compile Include="Build\DeclarationFullNameFlags.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Commands\RefreshWhitelistCacheCommand.cs" />
     <Compile Include="Commands\QuickDeploySolutionCommand.cs" />
     <Compile Include="MDKPackage.cs">
       <VSIXSubPath>Analyzers</VSIXSubPath>
     </Compile>
-    <Compile Include="Build\StringExtensions.cs" />
     <Compile Include="Views\ModelCommand.cs" />
     <Compile Include="Views\Options\ScriptOptionsDialogModel.cs" />
     <Compile Include="Views\BooleanVisibilityConverter.cs" />
@@ -241,6 +203,10 @@
       <Name>MDKAnalyzer</Name>
       <VSIXSubPath>Analyzers</VSIXSubPath>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\MDKBuild\MDKBuild.csproj">
+      <Project>{48e00674-ac5f-46d3-975f-bd9e348f442b}</Project>
+      <Name>MDKBuild</Name>
     </ProjectReference>
     <ProjectReference Include="..\MDKServices\MDKServices.csproj">
       <Project>{b76a0b75-34b1-4110-accd-6cea981fe0d6}</Project>
