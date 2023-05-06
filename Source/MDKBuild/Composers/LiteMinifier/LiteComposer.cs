@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MDK.Build.Composers.Minifying
 {
-    public class LiteComposer : MinifyingComposer
+    class LiteComposer : MinifyingComposer
     {
         public async override Task<string> GenerateAsync(ProgramComposition composition, MDKProjectProperties config)
         {
