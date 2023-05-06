@@ -9,6 +9,7 @@
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>mdk</ToolCommandName>
     <PackageOutputPath>./nupkg</PackageOutputPath>
+    <Version>1.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,5 +20,4 @@
   <ItemGroup>
     <ProjectReference Include="..\MDKBuild\MDKBuild.csproj" />
   </ItemGroup>
-
 </Project>

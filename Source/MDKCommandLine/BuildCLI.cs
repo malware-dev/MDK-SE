@@ -2,6 +2,8 @@
 using Microsoft.CodeAnalysis.MSBuild;
 
 using MDK.Build;
+using System.Reflection;
+using System.Diagnostics;
 
 namespace MDK
 {
@@ -39,10 +41,13 @@ namespace MDK
 
         static void HandleVersion()
         {
-            // TODO: I'm sure MDK has some kind of version autogenerator
-            // I just need to find it
-            Console.WriteLine("MDKCommandLine Version X.X.X");
-            Console.WriteLine("MDK.Build Version X.X.X");
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
+            string? cliVersion = fileVersionInfo.ProductVersion;
+            string buildVersion = AssemblyVersion.Version;
+
+            Console.WriteLine($"MDKCommandLine Version {cliVersion}");
+            Console.WriteLine($"MDK.Build Version {buildVersion}");
         }
         static void HandleUnknown(Command.Unknown unknown)
         {
