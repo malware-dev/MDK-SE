@@ -9,5 +9,18 @@
     <PackageReference Include="JetBrains.Annotations" Version="2022.3.1" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="4.5.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Text.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Text.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Text.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Text.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="..\Mixin.MDKProjectProperties\Mixin.MDKProjectProperties.projitems" Label="Shared" />
 </Project>

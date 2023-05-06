@@ -234,7 +234,7 @@ namespace MDK.Build.Solution
             }
             catch (Exception e)
             {
-                throw new BuildException($"Error generating the combined script for {project.FilePath}", e);
+                throw new BuildException(string.Format(Text.BuildModule_CreateProgramDocument_Error, project.FilePath), e);
             }
         }
     }

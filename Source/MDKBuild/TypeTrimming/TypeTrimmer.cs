@@ -100,7 +100,7 @@ namespace MDK.Build.TypeTrimming
             var program = symbolDefinitions.FirstOrDefault(d => d.FullName == "Program");
             if (program == null || !nodes.TryGetValue(program.Symbol, out var programNode))
             {
-                throw new BuildException($"Unable to find Program entry point for {composition.Document.Project.FilePath}");
+                throw new BuildException(string.Format(Text.TypeTrimmer_ProcessAsync_NoEntryPoint, composition.Document.Project.FilePath));
             }
 
             var usedNodes = new List<Node>();
