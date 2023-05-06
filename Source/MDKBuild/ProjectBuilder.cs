@@ -15,7 +15,6 @@ using MDK.Build.Composers.Minifying;
 using MDK.Build.Solution;
 using MDK.Build.TypeTrimming;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.MSBuild;
 
 namespace MDK.Build
 {

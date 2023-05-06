@@ -52,6 +52,7 @@ namespace MDK
         {
             var projectPath = ResolveProjectPath(build);
             MSBuildLocator.RegisterDefaults();
+
             using (var workspace = MSBuildWorkspace.Create())
             {
                 var project = await workspace.OpenProjectAsync(projectPath);

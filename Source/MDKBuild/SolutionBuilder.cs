@@ -1,7 +1,6 @@
 ﻿using JetBrains.Annotations;
 using Malware.MDKServices;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.MSBuild;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -28,25 +27,21 @@ namespace MDK.Build
                 .ToDictionary(builder => builder.project.Id);
         }
 
-        public static async Task<MDKProjectProperties[]> BuildByName(
-            string solutionPath,
+        public async Task<MDKProjectProperties[]> BuildByName(
             string targetProjectPath = null,
             IProgress<float> progress = null
             )
         {
-            var workspace = MSBuildWorkspace.Create();
-            var solution = await workspace.OpenSolutionAsync(solutionPath);
-            var builder = new SolutionBuilder(solution);
             if (targetProjectPath != null)
             {
-                var targetBuilder = builder.ProjectBuilders.Values
+                var targetBuilder = ProjectBuilders.Values
                     .First(projectBuilder => projectBuilder.project.FilePath == targetProjectPath);
-                await builder.BuildProject(targetBuilder.project.Id, progress);
+                await BuildProject(targetBuilder.project.Id, progress);
                 return new[] { targetBuilder.config }; 
             } else
             {
-                await builder.BuildAll(progress);
-                return builder.ProjectBuilders.Values
+                await BuildAll(progress);
+                return ProjectBuilders.Values
                     .Select(projectBuilder => projectBuilder.config)
                     .ToArray();
             }
