@@ -1,4 +1,7 @@
-﻿using System;
+﻿#r "System.Xml"
+#r "System.Xml.Linq"
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
@@ -6,9 +9,12 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 
 const string Xmlns = "http://schemas.microsoft.com/developer/msbuild/2003";
+readonly string ProjectFilePath = Path.GetFullPath("MDK.csproj");
+
+Console.WriteLine("GENERATING PACKAGE INFORMATION");
 
 var namespaceName = "MDK";
-var manifest = XDocument.Load(Path.Combine(Path.GetDirectoryName(Context.ProjectFilePath), "source.extension.vsixmanifest"));
+var manifest = XDocument.Load(Path.Combine(Path.GetDirectoryName(ProjectFilePath), "source.extension.vsixmanifest"));
 var identity = manifest
     .Element(XName.Get("PackageManifest", "http://schemas.microsoft.com/developer/vsx-schema/2011"))
     .Element(XName.Get("Metadata", "http://schemas.microsoft.com/developer/vsx-schema/2011"))
@@ -20,7 +26,7 @@ var gameAssemblies = new List<string>();
 var utilityAssemblies = new List<string>();
 var gameFiles = new List<string>();
 var utilityFiles = new List<string>();
-var projectTemplate = XDocument.Load(Path.Combine(Path.GetDirectoryName(Context.ProjectFilePath), "..\\IngameScriptTemplate\\ProjectTemplate.csproj"));
+var projectTemplate = XDocument.Load(Path.Combine(Path.GetDirectoryName(ProjectFilePath), "..\\IngameScriptTemplate\\ProjectTemplate.csproj"));
 var xmlns = new XmlNamespaceManager(new NameTable());
 xmlns.AddNamespace("ms", Xmlns);
 foreach (var element in projectTemplate.XPathSelectElements("/ms:Project/ms:ItemGroup/ms:Reference", xmlns))
@@ -40,14 +46,18 @@ foreach (var element in projectTemplate.XPathSelectElements("/ms:Project/ms:Item
         utilityFiles.Add($"\"{include.Substring(16).Replace("\\", "\\\\")}\"");
 }
 
-var other = XDocument.Load(Path.Combine(Path.GetDirectoryName(Context.ProjectFilePath), "other.xml"));
+var other = XDocument.Load(Path.Combine(Path.GetDirectoryName(ProjectFilePath), "other.xml"));
 var isPrerelease = string.Equals(other.XPathSelectElement("/Other/IsPrerelease")?.Value ?? "True", "true", StringComparison.CurrentCultureIgnoreCase)? "true" : "false";
 var helpPageUrl = other.XPathSelectElement("/Other/HelpPageUrl")?.Value ?? "";
 var releasePageUrl = other.XPathSelectElement("/Other/ReleasePageUrl")?.Value ?? "";
 var issuesPageUrl = other.XPathSelectElement("/Other/IssuesPageUrl")?.Value ?? "";
 var requiredIdeVersion = other.XPathSelectElement("/Other/RequiredIdeVersion")?.Value ?? "";
 
-Context.Output.WriteLine($@"using System;
+
+readonly string TargetFileName = Path.Combine(Path.GetDirectoryName(ProjectFilePath), "MDKPackage.GeneratedInfo.cs");
+Console.WriteLine(TargetFileName);
+
+File.WriteAllText(TargetFileName, $@"using System;
 using System.Collections.Immutable;
 using Microsoft.VisualStudio.Shell;
 

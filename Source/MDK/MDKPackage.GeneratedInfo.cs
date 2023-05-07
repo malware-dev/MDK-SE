@@ -4,13 +4,13 @@ using Microsoft.VisualStudio.Shell;
 
 namespace MDK 
 {
-    [InstalledProductRegistration("#110", "#112", "1.4", IconResourceID = 400)] // Info on this package for Help/About
+    [InstalledProductRegistration("#110", "#112", "1.5", IconResourceID = 400)] // Info on this package for Help/About
 	public partial class MDKPackage 
     {
 	    /// <summary>
 		/// The current package version
 		/// </summary>
-		public static readonly Version Version = new Version("1.4.14");
+		public static readonly Version Version = new Version("1.5.16");
 
         /// <summary>
 		/// The required IDE version

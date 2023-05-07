@@ -420,6 +420,43 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="..\Mixin.SteamAndSE\Mixin.SteamAndSE.projitems" Label="Shared" />
+  <UsingTask TaskName="FindCsi" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+	  <ParameterGroup>
+		  <CsiPath ParameterType="System.String" Output="true" />
+	  </ParameterGroup>
+	  <Task>
+		  <Using Namespace="System" />
+		  <Using Namespace="System.Diagnostics" />
+		  <Using Namespace="System.IO" />
+		  <Using Namespace="System.Linq" />
+		  <Code Type="Fragment" Language="cs">
+			  <![CDATA[
+        var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+        var vsWherePath = Path.Combine(programFiles, @"Microsoft Visual Studio\Installer\vswhere.exe");
+        var startInfo = new ProcessStartInfo(vsWherePath)
+        {
+          RedirectStandardOutput = true,
+          UseShellExecute = false,
+          CreateNoWindow = true,
+          Arguments = "-latest -products * -requires Microsoft.Component.MSBuild -property installationPath"
+        };
+        var process = new Process { StartInfo = startInfo };
+        process.Start();
+        var vsInstallDir = process.StandardOutput.ReadToEnd().Trim();
+        process.WaitForExit();
+        var roslynPath = Directory.GetDirectories(Path.Combine(vsInstallDir, @"MSBuild\Current\Bin"), "Roslyn", SearchOption.AllDirectories).FirstOrDefault();
+        CsiPath = roslynPath != null ? Path.Combine(roslynPath, "csi.exe") : string.Empty;
+      ]]>
+		  </Code>
+	  </Task>
+  </UsingTask>
+  <Target Name="BeforeBuild">
+	  <FindCsi>
+		  <Output TaskParameter="CsiPath" PropertyName="CsiExePath" />
+	  </FindCsi>
+	  <Exec Command="&quot;$(CsiExePath)&quot; &quot;MDKPackage.GeneratedInfo.csx&quot;" />
+  </Target>
+
   <PropertyGroup>
     <PostBuildEvent>"$(ProjectDir)deploy.bat" $(ConfigurationName) "$(ProjectDir)..\..\Release" "$(TargetDir)$(TargetName).vsix"</PostBuildEvent>
   </PropertyGroup>
