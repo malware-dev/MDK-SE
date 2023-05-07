@@ -1,20 +1,21 @@
-﻿using System;
-using Malware.MDKServices;
+﻿using Malware.MDKServices;
 using MDK.Resources;
+using System;
+using System.Threading.Tasks;
 
 namespace MDK.Views.ProjectHealth.Fixes
 {
-    class OutdatedFix : Fix
+    class OutdatedFix: Fix
     {
-        public OutdatedFix() : base(1000, HealthCode.Outdated) { }
+        public OutdatedFix(): base(1000, HealthCode.Outdated) { }
 
-        public override void Apply(HealthAnalysis analysis, FixStatus status)
+        public override async Task ApplyAsync(HealthAnalysis analysis, FixStatus status)
         {
             status.Description = "Upgrading outdated project format";
             if (analysis.Properties.Options.Version < new Version(1, 2))
             {
                 var upgrader = new UpgradeFrom_1_1();
-                upgrader.Upgrade(analysis);
+                await Task.Run(() => upgrader.Upgrade(analysis));
                 status.Description = "Project format updated";
                 return;
             }

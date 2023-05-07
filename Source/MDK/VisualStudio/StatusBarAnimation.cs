@@ -16,17 +16,23 @@ namespace MDK.VisualStudio
         /// Creates an instance of the <see cref="StatusBarAnimation"/>
         /// </summary>
         /// <param name="serviceProvider">The Visual Studio service provider</param>
-        public StatusBarAnimation(IServiceProvider serviceProvider) : base(serviceProvider)
-        { }
+#pragma warning disable VSTHRD010
+        public StatusBarAnimation(IServiceProvider serviceProvider): base(serviceProvider)
+#pragma warning restore VSTHRD010
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+        }
 
         /// <summary>
         /// Creates and shows an instance of the <see cref="StatusBarAnimation"/>
         /// </summary>
         /// <param name="serviceProvider">The Visual Studio service provider</param>
         /// <param name="animation">The animation to display</param>
-        public StatusBarAnimation(IServiceProvider serviceProvider, Animation animation)
-            : base(serviceProvider)
+#pragma warning disable VSTHRD010
+        public StatusBarAnimation(IServiceProvider serviceProvider, Animation animation): base(serviceProvider)
+#pragma warning restore VSTHRD010
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             Animation = animation;
             IsEnabled = true;
         }
@@ -39,6 +45,7 @@ namespace MDK.VisualStudio
             get => _animation;
             set
             {
+                ThreadHelper.ThrowIfNotOnUIThread();
                 _animation = value;
                 if (_isEnabled)
                 {
@@ -93,6 +100,7 @@ namespace MDK.VisualStudio
         /// <inheritdoc />
         protected override void Dispose(bool disposing)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (disposing)
             {
                 IsEnabled = false;

@@ -18,6 +18,7 @@ namespace MDK.Commands
 
         protected override async void OnExecute()
         {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             if (!TryGetValidProject(out Project project, out _))
             {
                 VsShellUtilities.ShowMessageBox(ServiceProvider, Text.ProjectOptionsCommand_OnExecute_NoMDKProjectsDescription, Text.ProjectOptionsCommand_OnExecute_NoMDKProjects, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);

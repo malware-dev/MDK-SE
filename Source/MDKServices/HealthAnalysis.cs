@@ -1,4 +1,5 @@
 ﻿using EnvDTE;
+using Microsoft.VisualStudio.Shell;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -22,13 +23,38 @@ namespace Malware.MDKServices
         // ReSharper disable once InconsistentNaming
         private static readonly Guid C_SHARP_PROJECT_KIND = new Guid("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}");
 
+        ///// <summary>
+        /////     Analyze an individual project
+        ///// </summary>
+        ///// <param name="project"></param>
+        ///// <param name="options"></param>
+        ///// <returns></returns>
+        //public static Task<HealthAnalysis> AnalyzeAsync(Project project, HealthAnalysisOptions options) => Task.Run(() => Analyze(project, options));
+
+        ///// <summary>
+        /////     Analyze an entire solution's worth of projects
+        ///// </summary>
+        ///// <param name="solution"></param>
+        ///// <param name="options"></param>
+        ///// <returns></returns>
+        //public static async Task<HealthAnalysis[]> AnalyzeAsync(Solution solution, HealthAnalysisOptions options)
+        //{
+        //    await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+        //    var projectTaks = GetProjects(solution.Projects.Cast<Project>()).Select(project => Task.Run(() => Analyze(project, options)));
+        //    return await Task.WhenAll(projectTaks);
+        //}
+
         /// <summary>
         ///     Analyze an individual project
         /// </summary>
         /// <param name="project"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static Task<HealthAnalysis> AnalyzeAsync(Project project, HealthAnalysisOptions options) => Task.Run(() => Analyze(project, options));
+        public static HealthAnalysis Analyze(Project project, HealthAnalysisOptions options)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            return AnalyzeCore(project, options);
+        }
 
         /// <summary>
         ///     Analyze an entire solution's worth of projects
@@ -36,14 +62,15 @@ namespace Malware.MDKServices
         /// <param name="solution"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static Task<HealthAnalysis[]> AnalyzeAsync(Solution solution, HealthAnalysisOptions options)
+        public static HealthAnalysis[] Analyze(Solution solution, HealthAnalysisOptions options)
         {
-            var projectTaks = GetProjects(solution.Projects.Cast<Project>()).Select(project => Task.Run(() => Analyze(project, options)));
-            return Task.WhenAll(projectTaks);
+            ThreadHelper.ThrowIfNotOnUIThread();
+            return GetProjects(solution.Projects.Cast<Project>()).Select(project => AnalyzeCore(project, options)).ToArray();
         }
 
         private static IEnumerable<Project> GetProjects(IEnumerable<Project> projects)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             var result = new List<Project>();
             GetProjects(projects, result);
             return result;
@@ -51,6 +78,7 @@ namespace Malware.MDKServices
 
         private static void GetProjects(IEnumerable<Project> projects, List<Project> result)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (projects == null)
                 return;
 
@@ -66,12 +94,17 @@ namespace Malware.MDKServices
                 }
 
                 if (project.ProjectItems != null)
-                    GetProjects(project.ProjectItems.Cast<ProjectItem>().Select(x => x.SubProject), result);
+                    GetProjects(project.ProjectItems.Cast<ProjectItem>().Select(x =>
+                    {
+                        ThreadHelper.ThrowIfNotOnUIThread();
+                        return x.SubProject;
+                    }), result);
             }
         }
 
-        static HealthAnalysis Analyze(Project project, HealthAnalysisOptions options)
+        static HealthAnalysis AnalyzeCore(Project project, HealthAnalysisOptions options)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             options.Echo?.Invoke($"{project.Name}: Analyzing project...");
             int repetitions = 60;
             while (true)
@@ -113,6 +146,13 @@ namespace Malware.MDKServices
             {
                 options.Echo?.Invoke($"{project.Name}: This project format is outdated.");
                 analysis._problems.Add(new HealthProblem(HealthCode.Outdated, HealthSeverity.Critical, "This project format is outdated"));
+            }
+
+            var property = project.Properties.Item("TargetFrameworkMoniker");
+            if (!(property.Value is string moniker) || moniker != ".NETFramework,Version=v4.8")
+            {
+                options.Echo?.Invoke($"{project.Name}: This project is not referencing .NET 4.8.");
+                analysis._problems.Add(new HealthProblem(HealthCode.BadDotNetVersion, HealthSeverity.Critical, "This project is not referencing .NET 4.8"));
             }
 
             var whitelistFileName = Path.Combine(Path.GetDirectoryName(project.FullName), "mdk\\whitelist.cache");
@@ -173,6 +213,7 @@ namespace Malware.MDKServices
 
         HealthAnalysis(Project project, MDKProjectProperties properties, HealthAnalysisOptions analysisOptions)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             Project = project;
             try
             {

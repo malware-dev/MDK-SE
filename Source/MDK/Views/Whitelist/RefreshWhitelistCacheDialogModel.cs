@@ -9,6 +9,7 @@ using JetBrains.Annotations;
 using Malware.MDKServices;
 using MDK.Services;
 using MDK.Views.Options;
+using Microsoft.VisualStudio.Shell;
 
 namespace MDK.Views.Whitelist
 {
@@ -37,6 +38,8 @@ namespace MDK.Views.Whitelist
         /// <returns></returns>
         protected override bool OnSave()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             if (_isDone)
                 return true;
             if (_isWorking)
@@ -50,6 +53,8 @@ namespace MDK.Views.Whitelist
 
         async void Refresh()
         {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
             SaveAndCloseCommand.IsEnabled = false;
             CancelCommand.IsEnabled = false;
             _isWorking = true;
@@ -59,18 +64,20 @@ namespace MDK.Views.Whitelist
             var dte2 = (EnvDTE80.DTE2)_package.DTE;
             var projects = ((IEnumerable)dte2.ToolWindows.SolutionExplorer.SelectedItems)
                 .OfType<UIHierarchyItem>()
-                .Select(item => item.Object)
+                .Select(item =>
+                {
+                    ThreadHelper.ThrowIfNotOnUIThread();
+                    return item.Object;
+                })
                 .OfType<Project>();
             foreach (var project in projects)
             {
                 var projectProperties = MDKProjectProperties.Load(project.FullName, project.Name);
-                if (projectProperties.IsValid)
-                {
-                    var targetCacheFile = Path.Combine(Path.GetDirectoryName(projectProperties.FileName) ?? ".", "MDK\\whitelist.cache");
-                    var sourceCacheFile = Path.Combine(_package.InstallPath.FullName, "Analyzers\\whitelist.cache");
-                    if (File.Exists(sourceCacheFile))
-                        File.Copy(sourceCacheFile, targetCacheFile, true);
-                }
+                if (!projectProperties.IsValid) continue;
+                var targetCacheFile = Path.Combine(Path.GetDirectoryName(projectProperties.FileName) ?? ".", "MDK\\whitelist.cache");
+                var sourceCacheFile = Path.Combine(_package.InstallPath.FullName, "Analyzers\\whitelist.cache");
+                if (File.Exists(sourceCacheFile))
+                    File.Copy(sourceCacheFile, targetCacheFile, true);
             }
 
             _isDone = true;

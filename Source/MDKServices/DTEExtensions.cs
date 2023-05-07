@@ -26,6 +26,7 @@ namespace Malware.MDKServices
         [DebuggerNonUserCode]
         public static bool IsLoaded(this Project project)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             // This is downright dirty, but it's the only way to determine if a project is loaded or not.
             try
             {
@@ -58,6 +59,7 @@ namespace Malware.MDKServices
             ThreadHelper.ThrowIfNotOnUIThread();
             var serviceProvider = new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)project.DTE);
             var solutionService = (IVsSolution)serviceProvider.GetService(typeof(SVsSolution));
+            if (solutionService == null) throw new ArgumentNullException(nameof(solutionService));
             var hr = solutionService.GetProjectOfUniqueName(project.UniqueName, out IVsHierarchy projectHierarchy);
             ErrorHandler.ThrowOnFailure(hr);
             hr = solutionService.GetGuidOfProject(projectHierarchy, out Guid projectGuid);
@@ -108,12 +110,12 @@ namespace Malware.MDKServices
                 await Task.Delay(250);
                 try
                 {
-                    ThreadHelper.ThrowIfNotOnUIThread();
-                    _solutionService4.UnloadProject(ref _projectGuid, (int)_VSProjectUnloadStatus.UNLOADSTATUS_LoadPendingIfNeeded);
+
+                    await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                    _solutionService4.UnloadProject(ref _projectGuid, (int)_VSProjectUnloadStatus.UNLOADSTATUS_UnloadedByUser);
                     await Task.Delay(250);
                     _solutionService4.ReloadProject(ref _projectGuid);
                     await Task.Delay(250);
-                    _solutionService4.EnsureProjectIsLoaded(ref _projectGuid, (int)__VSBSLFLAGS.VSBSLFLAGS_None);
                     return true;
                 }
                 catch (Exception)

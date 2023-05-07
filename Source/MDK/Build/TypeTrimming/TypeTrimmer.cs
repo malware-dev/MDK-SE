@@ -68,14 +68,14 @@ namespace MDK.Build.TypeTrimming
                 throw new ArgumentNullException(nameof(composition));
             if (config == null)
                 throw new ArgumentNullException(nameof(config));
-            var nodes = new Dictionary<ISymbol, Node>();
+            var nodes = new Dictionary<ISymbol, Node>(SymbolEqualityComparer.Default);
             var analyzer = new UsageAnalyzer();
             var symbolDefinitions = await analyzer.FindUsagesAsync(composition, config);
-            var symbolLookup = symbolDefinitions.GroupBy(d => d.Symbol).ToDictionary(g => g.Key, g => g.ToList());
+            var symbolLookup = symbolDefinitions.GroupBy(d => d.Symbol, SymbolEqualityComparer.Default).ToDictionary(g => g.Key, g => g.ToList(), SymbolEqualityComparer.Default);
             var rootNode = composition.RootNode;
             foreach (var definition in symbolDefinitions)
             {
-                if (!(definition.Symbol is ITypeSymbol typeSymbol))
+                if (definition.Symbol is not ITypeSymbol typeSymbol)
                     continue;
                 if (typeSymbol.TypeKind == TypeKind.TypeParameter)
                     continue;

@@ -77,8 +77,9 @@ namespace MDK.Build.Composers.Minifying
 
                 var document = composition.Document;
                 var documentId = document.Id;
-                var newSolution = await Renamer.RenameSymbolAsync(document.Project.Solution, definition.Symbol, newName, document.Project.Solution.Options);
-                composition = await composition.WithDocumentAsync(newSolution.GetDocument(documentId));
+                //var newSolution = await Renamer.RenameSymbolAsync(document.Project.Solution, definition.Symbol, newName, document.Project.Solution.Options);
+                var newSolution = await Renamer.RenameSymbolAsync(document.Project.Solution, definition.Symbol, new SymbolRenameOptions(), newName);
+                composition = await composition.WithDocumentAsync(newSolution.GetDocument(documentId)!);
                 symbolDefinitions = analyzer.FindSymbols(composition, config).ToList();
                 symbolDefinitions.Sort((a, b) => a.SyntaxNode.FullSpan.Start);
             }

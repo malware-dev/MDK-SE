@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Malware.MDKServices;
 using System.Threading.Tasks;
-using Malware.MDKServices;
 
 namespace MDK.Views.ProjectHealth.Fixes
 {
@@ -11,7 +7,7 @@ namespace MDK.Views.ProjectHealth.Fixes
     {
         public MissingPathsFileFix() : base(2000, HealthCode.MissingPathsFile) { }
 
-        public override void Apply(HealthAnalysis analysis, FixStatus status)
+        public override Task ApplyAsync(HealthAnalysis analysis, FixStatus status)
         {
             status.Description = "Restoring missing paths file";
             analysis.Properties.Paths.InstallPath = analysis.AnalysisOptions.InstallPath;
@@ -23,6 +19,7 @@ namespace MDK.Views.ProjectHealth.Fixes
                 analysis.Properties.Paths.AnalyzerReferences.Add(reference);
             analysis.Properties.Paths.Save();
             status.Description = "Restored missing paths file";
+            return Task.CompletedTask;
         }
     }
 }

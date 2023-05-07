@@ -58,7 +58,7 @@ namespace MDK.Build.Composers.Minifying
                     newTrivia.Add(triviaItem);
                     continue;
                 }
-                if (lastPreserved && triviaItem.Kind() == SyntaxKind.WhitespaceTrivia)
+                if (lastPreserved && triviaItem.IsKind(SyntaxKind.WhitespaceTrivia))
                 {
                     lastPreserved = false;
                     continue;
@@ -70,11 +70,11 @@ namespace MDK.Build.Composers.Minifying
                     case SyntaxKind.DocumentationCommentExteriorTrivia:
                     case SyntaxKind.SingleLineDocumentationCommentTrivia:
                     case SyntaxKind.MultiLineDocumentationCommentTrivia:
-                        while (index < trivia.Count && trivia[index].Kind() != SyntaxKind.EndOfLineTrivia)
+                        while (index < trivia.Count && !trivia[index].IsKind(SyntaxKind.EndOfLineTrivia))
                             index++;
                         if (trailingMode)
                             index--;
-                        while (newTrivia.Count > 0 && newTrivia[newTrivia.Count - 1].Kind() == SyntaxKind.WhitespaceTrivia)
+                        while (newTrivia.Count > 0 && newTrivia[newTrivia.Count - 1].IsKind(SyntaxKind.WhitespaceTrivia))
                             newTrivia.RemoveAt(newTrivia.Count - 1);
                         continue;
 

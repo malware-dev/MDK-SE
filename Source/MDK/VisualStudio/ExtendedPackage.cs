@@ -49,6 +49,7 @@ namespace MDK.VisualStudio
         /// <param name="commands"></param>
         protected void AddCommand(params Command[] commands)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             foreach (var command in commands)
             {
                 _commands.Add(command);
@@ -70,7 +71,7 @@ namespace MDK.VisualStudio
             outWindow.GetPane(ref generalPaneGuid, out var generalPane);
             if (generalPane == null)
                 return;
-            generalPane.OutputString($"{category}:{exception}");
+            generalPane.OutputStringThreadSafe($"{category}:{exception}");
             generalPane.Activate();
         }
     }

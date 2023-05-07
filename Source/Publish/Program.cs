@@ -23,9 +23,12 @@ namespace Malware.BuildForPublish
             var releaseType = GetReleaseType();
             if (releaseType == ReleaseType.None)
                 return;
+            var isPrerelease = DetermineWhetherPrerelease();
+            if (isPrerelease == null)
+                return;
             Console.WriteLine();
             // Ugh. So a Visual Studio update made the call above stop working, even after updating the nuget package. Thanks, MS.
-            var msbuildExe = @"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe";
+            var msbuildExe = @"C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe";
             var c = Directory.GetCurrentDirectory();
             var solutionPath = Path.GetFullPath(args[0]);
             var manifestPath = Path.Combine(Path.GetDirectoryName(solutionPath), @"MDK\source.extension.vsixmanifest");
@@ -34,8 +37,8 @@ namespace Malware.BuildForPublish
             if (releaseType != ReleaseType.SameVersion)
             {
                 UpdateManifestVersion(manifestPath, releaseType);
-                UpdateAppConfigVersion(appConfigPath, releaseType);
             }
+            UpdatePrereleaseState(appConfigPath, releaseType, isPrerelease.Value);
 
             Build(msbuildExe, solutionPath);
         }
@@ -43,7 +46,6 @@ namespace Malware.BuildForPublish
         static ReleaseType GetReleaseType()
         {
             Console.WriteLine("Release type:");
-            Console.WriteLine("P: Prerelease");
             Console.WriteLine("B: Bugfix Release");
             Console.WriteLine("F: Feature Release");
             Console.WriteLine("0: Same Version");
@@ -54,8 +56,6 @@ namespace Malware.BuildForPublish
                 var r = Console.ReadLine();
                 switch (r?.ToUpper().Trim())
                 {
-                    case "P":
-                        return ReleaseType.Prerelease;
                     case "B":
                         return ReleaseType.BugfixRelease;
                     case "F":
@@ -68,11 +68,33 @@ namespace Malware.BuildForPublish
             }
         }
 
-        static void UpdateAppConfigVersion(string appConfigPath, ReleaseType releaseType)
+        static bool ?DetermineWhetherPrerelease()
+        {
+            Console.WriteLine("Is this a prerelease?");
+            Console.WriteLine("Y: Yes");
+            Console.WriteLine("N: No");
+            Console.WriteLine("X: Cancel");
+            while (true)
+            {
+                Console.Write("> ");
+                var r = Console.ReadLine();
+                switch (r?.ToUpper().Trim())
+                {
+                    case "Y":
+                        return true;
+                    case "N":
+                        return false;
+                    case "X":
+                        return null;
+                }
+            }
+        }
+
+        static void UpdatePrereleaseState(string appConfigPath, ReleaseType releaseType, bool isPrerelease)
         {
             var document = XDocument.Load(appConfigPath);
             var element = document.XPathSelectElement("/Other/IsPrerelease");
-            element.Value = releaseType == ReleaseType.Prerelease ? bool.TrueString : bool.FalseString;
+            element.Value = isPrerelease ? bool.TrueString : bool.FalseString;
             document.Save(appConfigPath);
         }
 
@@ -87,9 +109,6 @@ namespace Malware.BuildForPublish
             Version newVersion;
             switch (releaseType)
             {
-                case ReleaseType.Prerelease:
-                    newVersion = new Version(version.Major, version.Minor, version.Build + 1);
-                    break;
                 case ReleaseType.BugfixRelease:
                     newVersion = new Version(version.Major, version.Minor, version.Build + 1);
                     break;
@@ -152,7 +171,6 @@ namespace Malware.BuildForPublish
         enum ReleaseType
         {
             None,
-            Prerelease,
             BugfixRelease,
             FeatureRelease,
             SameVersion

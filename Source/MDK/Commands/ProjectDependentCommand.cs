@@ -3,6 +3,7 @@ using System.Linq;
 using EnvDTE;
 using Malware.MDKServices;
 using MDK.VisualStudio;
+using Microsoft.VisualStudio.Shell;
 using Command = MDK.VisualStudio.Command;
 
 namespace MDK.Commands
@@ -14,18 +15,24 @@ namespace MDK.Commands
 
         protected override void OnBeforeQueryStatus()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             var package = (MDKPackage)Package;
             OleCommand.Visible = package.IsEnabled && TryGetValidProject(out _);
         }
 
         protected bool TryGetValidProject(out Project project, out MDKProjectProperties projectProperties)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             var package = (MDKPackage)Package;
             package.Echo("MDK Command", Id, "is attempting to retrieve an MDK project");
             var dte2 = (EnvDTE80.DTE2)Package.DTE;
             project = ((IEnumerable)dte2.ToolWindows.SolutionExplorer.SelectedItems)
                 .OfType<UIHierarchyItem>()
-                .Select(item => item.Object)
+                .Select(item =>
+                {
+                    ThreadHelper.ThrowIfNotOnUIThread();
+                    return item.Object;
+                })
                 .OfType<Project>()
                 .FirstOrDefault();
             if (project == null)
@@ -45,6 +52,9 @@ namespace MDK.Commands
         }
 
         protected bool TryGetValidProject(out MDKProjectProperties projectProperties)
-            => TryGetValidProject(out _, out projectProperties);
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            return TryGetValidProject(out _, out projectProperties);
+        }
     }
 }

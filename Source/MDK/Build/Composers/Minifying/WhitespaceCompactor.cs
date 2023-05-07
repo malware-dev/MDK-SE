@@ -15,7 +15,7 @@ namespace MDK.Build.Composers.Minifying
         public override SyntaxTrivia VisitTrivia(SyntaxTrivia trivia)
         {
             trivia = base.VisitTrivia(trivia);
-            if (trivia.Kind() == SyntaxKind.EndOfLineTrivia && trivia.ToString() == "\r\n")
+            if (trivia.IsKind(SyntaxKind.EndOfLineTrivia) && trivia.ToString() == "\r\n")
                 trivia = trivia.CopyAnnotationsTo(SyntaxFactory.EndOfLine("\n"));
 
             return trivia;

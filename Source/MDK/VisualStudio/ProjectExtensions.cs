@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using EnvDTE;
 using EnvDTE80;
+using Microsoft.VisualStudio.Shell;
 // ReSharper disable SuspiciousTypeConversion.Global
 
 namespace MDK.VisualStudio
@@ -21,6 +22,7 @@ namespace MDK.VisualStudio
         /// <param name="project"></param>
         public static void Unload(this Project project)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             var dte = project.DTE;
             var solutionName = Path.GetFileNameWithoutExtension(dte.Solution.FullName);
             var projectName = project.Name;
@@ -37,6 +39,7 @@ namespace MDK.VisualStudio
         /// <param name="project"></param>
         public static void Reload(this Project project)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             var dte = project.DTE;
             var solutionName = Path.GetFileNameWithoutExtension(dte.Solution.FullName);
             var projectName = project.Name;

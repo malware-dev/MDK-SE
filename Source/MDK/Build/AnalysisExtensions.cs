@@ -28,7 +28,7 @@ namespace MDK.Build
                 .Any(member =>
                 {
                     var implementation = symbol.ContainingType.FindImplementationForInterfaceMember(member);
-                    return implementation != null && implementation.Equals(symbol);
+                    return implementation != null && SymbolEqualityComparer.Default.Equals(implementation, symbol);
                 });
         }
 
