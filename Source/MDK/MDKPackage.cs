@@ -127,7 +127,7 @@ namespace MDK
             AddCommand(
                 new QuickDeploySolutionCommand(this),
                 new DeployProjectCommand(this),
-                new RefreshWhitelistCacheCommand(this),
+                //new RefreshWhitelistCacheCommand(this),
                 new CheckForUpdatesCommand(this),
                 new ProjectOptionsCommand(this),
                 new BlueprintManagerCommand(this),
