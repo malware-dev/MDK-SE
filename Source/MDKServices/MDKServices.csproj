@@ -72,9 +72,6 @@
     <Compile Include="HealthSeverity.cs" />
     <Compile Include="Legacy\LegacyProjectScriptInfo_1_1.cs" />
     <Compile Include="Legacy\ProjectUpgrader_1_2.cs" />
-    <Compile Include="MDKProjectOptions.Legacy_1_1.cs" />
-    <Compile Include="MDKProjectPaths.Legacy_1_1.cs" />
-    <Compile Include="MDKProjectProperties.Legacy_1_1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="HealthAnalysisOptions.cs" />
     <Compile Include="WhitelistReference.cs" />
@@ -83,7 +80,6 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="Key.snk" />
-    <None Include="MDKProjectProperties.GeneratedInfo.csx" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
@@ -142,7 +138,12 @@
       <Version>4.3.2</Version>
     </PackageReference>-->
   </ItemGroup>
-  <Import Project="..\Mixin.MDKProjectProperties\Mixin.MDKProjectProperties.projitems" Label="Shared" />
+  <ItemGroup>
+    <ProjectReference Include="..\MDKBuild\MDKBuild.csproj">
+      <Project>{48e00674-ac5f-46d3-975f-bd9e348f442b}</Project>
+      <Name>MDKBuild</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="..\Mixin.SteamAndSE\Mixin.SteamAndSE.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

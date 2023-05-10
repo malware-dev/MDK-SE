@@ -19,6 +19,7 @@ using MDK.Views.DeploymentBar;
 using MDK.Views.ProjectHealth;
 using MDK.Views.UpdateDetection;
 using MDK.VisualStudio;
+using Microsoft.CodeAnalysis.MSBuild;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -365,8 +366,12 @@ namespace MDK
                 using (var statusBar = new StatusBarProgressBar(ServiceProvider, title, 100))
                 using (new StatusBarAnimation(ServiceProvider, Animation.Deploy))
                 {
-                    var buildModule = new BuildModule(this, dte.Solution.FileName, project?.FullName, statusBar);
-                    deployedScripts = await buildModule.RunAsync();
+                    using (var workspace = MSBuildWorkspace.Create())
+                    {
+                        var msSolution = await workspace.OpenSolutionAsync(dte.Solution.FileName);
+                        var builder = new SolutionBuilder(msSolution);
+                        deployedScripts = await builder.BuildByName(project?.FileName, statusBar);
+                    }
                 }
 
                 if (deployedScripts.Length > 0)
