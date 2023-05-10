@@ -15,10 +15,7 @@ No. Visual Studio Code and Visual Studio has nothing in common outside of the na
 If you see an error in Visual Studio like:
 >Unable to create project (MDK.Services.IngameScriptWizard does not exist)
 
-Make sure you're up to date with the latest version of Visual Studio.
-
-### Visual Studio 2022 Support...?
-... is in preview right now (see releases) and will be publicly released very soon once I feel it has been thoroughly enough tested.
+Make sure you're up to date with the latest version of Visual Studio 2022.
 
 ### General features
 * Helps you create a fully connected script project in Visual Studio, with all references in place
