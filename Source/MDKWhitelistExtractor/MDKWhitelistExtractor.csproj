@@ -87,6 +87,7 @@
     <Compile Include="CommandLine.cs" />
     <Compile Include="Digi\TempBlockSpawn.cs" />
     <Compile Include="ExtractorPlugin.cs" />
+    <Compile Include="GameThread.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

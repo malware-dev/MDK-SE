@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Mal.DocGen2.Services.Markdown;
+using Mal.DocGen2.Services.XmlDocs;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -6,12 +8,10 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
-using Mal.DocGen2.Services.Markdown;
-using Mal.DocGen2.Services.XmlDocs;
 
 namespace Mal.DocGen2.Services.MarkdownGenerators
 {
-    class TypeGenerator : DocumentGenerator
+    class TypeGenerator: DocumentGenerator
     {
         readonly TypeDefinitions _typeDefinitions;
 
@@ -84,7 +84,14 @@ namespace Mal.DocGen2.Services.MarkdownGenerators
 
         async Task WriteTypeDefinitions(ApiEntry entry, MarkdownWriter writer)
         {
-            var defs = _typeDefinitions.Definitions.Where(d => d.TypeName == entry.FullName).ToList();
+            if (entry.Name == null
+                || entry.Name.EndsWith("IMyFunctionalBlock")
+                || entry.Name.EndsWith("IMyTerminalBlock")
+                || entry.Name.EndsWith("IMyCubeBlock")
+                || entry.Name.EndsWith("IMyEntity"))
+                return;
+
+            var defs = _typeDefinitions.Definitions.Where(d => IsRelevantDefinition(entry, d)).ToList();
             if (!defs.Any())
                 return;
             await writer.BeginParagraphAsync();
@@ -99,9 +106,16 @@ namespace Mal.DocGen2.Services.MarkdownGenerators
             await writer.EndParagraphAsync();
         }
 
+        private bool IsRelevantDefinition(ApiEntry entry, TypeDefinitions.Definition definition)
+        {
+            if (definition.TypeName == entry.FullName)
+                return true;
+            return entry.InheritorEntries.Any(e => IsRelevantDefinition(e, definition));
+        }
+
         string ConstructOf(ApiEntry entry)
         {
-            var type = (Type) entry.Member;
+            var type = (Type)entry.Member;
             if (typeof(Delegate).IsAssignableFrom(type))
                 return "Delegate";
             if (type.IsEnum)
@@ -127,11 +141,7 @@ namespace Mal.DocGen2.Services.MarkdownGenerators
             await writer.BeginParagraphAsync();
             await writer.WriteLineAsync(MarkdownInline.Strong("Implements:  "));
 
-            var lines = entry.InheritedEntries.Select(iface => new
-                {
-                    Text = iface.ToString(ApiEntryStringFlags.ShortDisplayName),
-                    Interface = iface
-                })
+            var lines = entry.InheritedEntries.Select(iface => new { Text = iface.ToString(ApiEntryStringFlags.ShortDisplayName), Interface = iface })
                 .OrderBy(o => o.Text)
                 .Select(o => MemberGenerator.LinkTo(o.Text, o.Interface))
                 .ToList();
@@ -145,11 +155,7 @@ namespace Mal.DocGen2.Services.MarkdownGenerators
             await writer.BeginParagraphAsync();
             await writer.WriteLineAsync(MarkdownInline.Strong("Inheritors:  "));
 
-            var lines = entry.InheritorEntries.Select(iface => new
-                {
-                    Text = iface.ToString(ApiEntryStringFlags.ShortDisplayName),
-                    Interface = iface
-                })
+            var lines = entry.InheritorEntries.Select(iface => new { Text = iface.ToString(ApiEntryStringFlags.ShortDisplayName), Interface = iface })
                 .OrderBy(o => o.Text)
                 .Select(o => MemberGenerator.LinkTo(o.Text, o.Interface))
                 .ToList();
@@ -190,8 +196,11 @@ namespace Mal.DocGen2.Services.MarkdownGenerators
                 if (item.BaseEntry != null && visitedMembers.Add(item.BaseEntry))
                     stack.Push(item.BaseEntry);
                 foreach (var iface in item.InheritedEntries)
+                {
                     if (visitedMembers.Add(iface))
                         stack.Push(iface);
+                }
+
                 foreach (var member in item.MemberEntries)
                     yield return member;
             }
@@ -235,6 +244,7 @@ namespace Mal.DocGen2.Services.MarkdownGenerators
                     await writer.WriteAsync(MarkdownInline.Emphasized($"Inherited from {MemberGenerator.LinkTo(item.DeclaringEntry.ToString(ApiEntryStringFlags.ShortDisplayName), item.DeclaringEntry)}"));
                     await writer.EndParagraphAsync();
                 }
+
                 await writer.EndQuoteAsync();
 
                 //await writer.EndTableCellAsync();

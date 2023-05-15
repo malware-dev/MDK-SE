@@ -2,6 +2,7 @@
 using Sandbox.Definitions;
 using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
+using System.Threading.Tasks;
 using VRage;
 using VRage.Game;
 using VRage.Game.ModAPI;
@@ -17,23 +18,23 @@ namespace Digi.BuildInfo.Features.LiveData
 {
     public struct TempBlockSpawn
     {
-        public static void Spawn(MyCubeBlockDefinition def, bool deleteGridOnSpawn = true, Action<IMySlimBlock> callback = null)
+        public static void Spawn(MyCubeBlockDefinition def, bool deleteGridOnSpawn = true, Action<IMySlimBlock> callback = null, Vector3D? spawnPos = null)
         {
-            new TempBlockSpawn(def, deleteGridOnSpawn, callback);
+            new TempBlockSpawn(def, deleteGridOnSpawn, callback, spawnPos);
         }
 
         readonly bool _deleteGrid;
         readonly MyCubeBlockDefinition _blockDef;
         readonly Action<IMySlimBlock> _callback;
 
-        TempBlockSpawn(MyCubeBlockDefinition def, bool deleteGridOnSpawn = true, Action<IMySlimBlock> callback = null)
+        TempBlockSpawn(MyCubeBlockDefinition def, bool deleteGridOnSpawn = true, Action<IMySlimBlock> callback = null, Vector3D? spawnAt = null)
         {
             _blockDef = def;
             _deleteGrid = deleteGridOnSpawn;
             _callback = callback;
 
             MatrixD camMatrix = MyAPIGateway.Session.Camera.WorldMatrix;
-            Vector3D spawnPos = camMatrix.Translation + camMatrix.Backward * 100;
+            var spawnPos = spawnAt ?? camMatrix.Translation + camMatrix.Backward * 100;
 
             MyObjectBuilder_CubeBlock blockOB = CreateBlockOB(def.Id);
 
