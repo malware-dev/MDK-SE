@@ -277,11 +277,11 @@ VRage.MyTupleComparer<T1, T2>+*, VRage.Library
 VRage.MyTupleComparer<T1, T2, T3>+*, VRage.Library
 VRage.MyTexts.MyLanguageDescription+*, VRage
 VRage.MyLanguagesEnum+*, VRage
-VRage.Game.Components.MyComponentContainer, VRage.Game
-VRage.Game.Components.MyComponentContainer.TryGet<T>(out T), VRage.Game
-VRage.Game.Components.MyComponentContainer.Has<T>(), VRage.Game
-VRage.Game.Components.MyComponentContainer.Get<T>(), VRage.Game
-VRage.Game.Components.MyComponentContainer.TryGet(System.Type, out VRage.Game.Components.MyComponentBase), VRage.Game
+VRage.Game.Components.Interfaces.IMyComponentContainer, VRage.Game
+VRage.Game.Components.Interfaces.IMyComponentContainer.TryGet<T>(out T), VRage.Game
+VRage.Game.Components.Interfaces.IMyComponentContainer.Has<T>(), VRage.Game
+VRage.Game.Components.Interfaces.IMyComponentContainer.Get<T>(), VRage.Game
+VRage.Game.Components.Interfaces.IMyComponentContainer.TryGet(System.Type, out VRage.Game.Components.MyComponentBase), VRage.Game
 VRage.Collections.ListReader<T>+*, VRage.Library
 VRage.Game.MyDefinitionId+*, VRage.Game
 VRage.Game.MyRelationsBetweenPlayerAndBlock+*, VRage.Game
