@@ -10,6 +10,23 @@ In the mean time, you can easily roll back to the previous Visual Studio version
 
 Hopefully this will tide you over until I can either fix the problem... or finish MDK2. One or the other.
 
+Please vote:
+https://developercommunity.visualstudio.com/t/Something-got-deleted-when-VS-updated-b/10598067
+
+There is now a nuget package _early alpha_ of the MDK2 packager.
+
+Mal.Mdk2.PbPackager
+
+This should be deploying your scripts every time you build, MDK1's Deploy function will no longer be necessary... just compile your script.
+
+Of course, being an early alpha, it's likely riddled with problems.
+
+Please make issues prefixed with [MDK2] - I will take both suggestions and bug reports at this time.
+
+I am dependent on whoever may be willing to help.
+
+Some limited instructions are available at https://www.nuget.org/packages/Mal.Mdk2.PbPackager/
+
 - - -
 
 A toolkit to help with ingame script (programmable block) development for Keen Software House's space sandbox Space Engineers. It helps you create a ready-to-code project for writing ingame scripts, and provides an analyzer which warns you if you're trying to use something that is not allowed in Space Engineers.
