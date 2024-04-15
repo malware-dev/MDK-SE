@@ -27,6 +27,33 @@ I am dependent on whoever may be willing to help.
 
 Some limited instructions are available at https://www.nuget.org/packages/Mal.Mdk2.PbPackager/
 
+### Installing MDK2 in your MDK1 project
+
+* Right click on your MDK1 project
+* Select `Manage Nuget Packages`
+* Find the search bar, search for `Mal.`
+* Install the `Mal.MDK2.PbPackager` package into your project
+* Rebuild!
+
+### Creating a brand new pure MDK2 project
+
+Obviously there will eventually be a template to do this for you, but it _is_ actually possible to create a pure MDK2 project already:
+
+1. Set up a new-style C# project (create a .NET 8 class library project, for example).
+3. Open the project file:  
+    change the TargetFramework from `net8.0` to `netframework48`  
+    remove the `ImplicitUsings` and `Nullable` tags.  
+    Add a tag `<RootNamespace>IngameScript</RootNamespace>`
+    Add a tag `<GenerateAssemblyInfo>false</GenerateAssemblyInfo>`
+5. Delete the pregenerated Class1.cs file
+6. Add the nuget packages:  
+    `Mal.Mdk2.PbAnalyzers`
+    `Mal.Mdk2.References`
+    `Mal.Mdk2.PbPackager`
+5. Add a `Program` class deriving from `MyGridProgram`
+
+This is highly likely to be what the MDK2 project will finally look like when I'm done.
+
 - - -
 
 A toolkit to help with ingame script (programmable block) development for Keen Software House's space sandbox Space Engineers. It helps you create a ready-to-code project for writing ingame scripts, and provides an analyzer which warns you if you're trying to use something that is not allowed in Space Engineers.
