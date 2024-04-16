@@ -4,18 +4,14 @@ _(Malware's Development Kit for SE)_
 - - -
 
 ## Visual Studio 2022 17.9.0 Has Broken MDK
-Microsoft has broken the MDK Deploy feature in their latest version of Visual Studio in a way I don't know if I can fix (they have flat out deleted something). I am working on figuring out what to do.
-
-In the mean time, you can easily roll back to the previous Visual Studio version by starting your Visual Studio Installer, clicking the More button, there should be a Roll Back option there.
-
-Hopefully this will tide you over until I can either fix the problem... or finish MDK2. One or the other.
+Microsoft has broken the MDK Deploy feature in their latest version of Visual Studio in a way I don't know if I can fix (they have flat out deleted something). 
 
 Please vote:
 https://developercommunity.visualstudio.com/t/Something-got-deleted-when-VS-updated-b/10598067
 
 There is now a nuget package _early alpha_ of the MDK2 packager.
 
-Mal.Mdk2.PbPackager
+`Mal.Mdk2.PbPackager`
 
 This should be deploying your scripts every time you build, MDK1's Deploy function will no longer be necessary... just compile your script.
 
