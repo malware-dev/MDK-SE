@@ -27,7 +27,7 @@ Some limited instructions are available at https://www.nuget.org/packages/Mal.Md
 
 * Right click on your MDK1 project
 * Select `Manage Nuget Packages`
-* Find the search bar, search for `Mal.`
+* Find the search bar. To the right of the search bar, there is a check box named "Include prerelease". Check it, then search for `Mal.`
 * Install the `Mal.MDK2.PbPackager` package into your project
 * Rebuild!
 
@@ -42,7 +42,7 @@ Obviously there will eventually be a template to do this for you, but it _is_ ac
     Add a tag `<RootNamespace>IngameScript</RootNamespace>`
     Add a tag `<GenerateAssemblyInfo>false</GenerateAssemblyInfo>`
 5. Delete the pregenerated Class1.cs file
-6. Add the nuget packages:  
+6. Add the nuget packages (remember to enable "Include prerelease, as explained above":  
     `Mal.Mdk2.PbAnalyzers`
     `Mal.Mdk2.References`
     `Mal.Mdk2.PbPackager`
