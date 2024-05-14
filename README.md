@@ -9,7 +9,8 @@ Microsoft has broken the MDK Deploy feature in their latest version of Visual St
 Please vote:
 https://developercommunity.visualstudio.com/t/Something-got-deleted-when-VS-updated-b/10598067
 
-There is now a nuget package _early alpha_ of the MDK2 packager.
+The MDK2 packager nuget package is now complete. While I understand that you might want to stick with MDK1 for now, I do recommend trying to transition
+over to MDK2 (see below for how to create a pure MDK2 project).
 
 `Mal.Mdk2.PbPackager`
 
@@ -33,22 +34,17 @@ Some limited instructions are available at https://www.nuget.org/packages/Mal.Md
 
 ### Creating a brand new pure MDK2 project
 
-Obviously there will eventually be a template to do this for you, but it _is_ actually possible to create a pure MDK2 project already:
+Soon there will be an installer for this, but you can already install the template manually:
 
-1. Set up a new-style C# project (create a .NET 8 class library project, for example).
-3. Open the project file:  
-    change the TargetFramework from `net8.0` to `netframework48`  
-    remove the `ImplicitUsings` and `Nullable` tags.  
-    Add a tag `<RootNamespace>IngameScript</RootNamespace>`
-    Add a tag `<GenerateAssemblyInfo>false</GenerateAssemblyInfo>`
-5. Delete the pregenerated Class1.cs file
-6. Add the nuget packages (remember to enable "Include prerelease, as explained above":  
-    `Mal.Mdk2.PbAnalyzers`
-    `Mal.Mdk2.References`
-    `Mal.Mdk2.PbPackager`
-5. Add a `Program` class deriving from `MyGridProgram`
-
-This is highly likely to be what the MDK2 project will finally look like when I'm done.
+1. Open a terminal or console
+    _press the Windows `Start` button, type `cmd`, press enter (starts `Command Prompt`_
+2. In the console, type `dotnet new install Mal.Mdk2.ScriptTemplates`, press enter
+3. You should now find the templates in Visual Studio, and can create fully modern MDK2 projects.
+   3a. Jetbrains Rider should also have this template available now, you no longer need to use Visual Studio!
+   3b. VSCode too! I'm not too familiar with how VSCode does things, but I believe you'll have to use the `dotnet new` command directly
+       with the new templates to create new projects.
+       - `dotnet new mdk2pbscript` creates a new script project in the current folder.
+       - `dotnet new mdk2pbmixin` creates a new mixin project in the current folder.
 
 - - -
 
