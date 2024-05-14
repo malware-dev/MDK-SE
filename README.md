@@ -42,8 +42,8 @@ Soon there will be an installer for this, but you can already install the templa
 3. You should now find the templates in Visual Studio, and can create fully modern MDK2 projects.
    3a. Jetbrains Rider should also have this template available now, you no longer need to use Visual Studio!
    3b. VSCode too! I'm not too familiar with how VSCode does things, but I believe you'll have to use the `dotnet new` command directly
-       with the new templates to create new projects.
-       - `dotnet new mdk2pbscript` creates a new script project in the current folder.
+       with the new templates to create new projects.  
+       - `dotnet new mdk2pbscript` creates a new script project in the current folder.  
        - `dotnet new mdk2pbmixin` creates a new mixin project in the current folder.
 
 - - -
